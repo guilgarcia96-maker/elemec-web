@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f8f9fb;
+  --header-bg: #fffffff0;
+  --header-border: #e5e7eb;
+  --section-alt: #f0f2f5;
+  --card: #ffffff;
+  --card-soft: #f8f9fb;
+  --border: #e5e7eb;
+  --text: #111827;
+  --text-soft: #6b7280;
+  --brand: #111827;
+  --brand-soft: #f97316;
+  --accent: #ea580c;
+  --accent-hover: #c2410c;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
