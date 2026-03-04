@@ -21,11 +21,18 @@ export default async function ServicioDetallePage({ params }: Props) {
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        {/* Fondo degradado oscuro con el color del servicio */}
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${servicio.gradiente}`}
-        />
-        <div className="absolute inset-0 bg-black/50" />
+        {/* Fondo: imagen si existe, si no degradado del servicio */}
+        {servicio.imagen ? (
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url('${servicio.imagen}')` }}
+          />
+        ) : (
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${servicio.gradiente}`}
+          />
+        )}
+        <div className="absolute inset-0 bg-black/55" />
 
         {/* Barra de acento superior */}
         <div className="relative h-1 bg-[var(--accent)]" />

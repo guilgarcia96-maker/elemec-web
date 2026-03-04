@@ -3,6 +3,7 @@ export type Servicio = {
   titulo: string;
   icono: string;
   gradiente: string;
+  imagen?: string;
   descripcionCorta: string;
   descripcionLarga: string;
   items: string[];
@@ -89,6 +90,7 @@ export const servicios: Servicio[] = [
     titulo: "Aislación Térmica",
     icono: "🧱",
     gradiente: "from-stone-500 to-stone-700",
+    imagen: "/portada-aislacion-termica.jpg",
     descripcionCorta:
       "Línea en desarrollo para eficiencia energética y confort térmico en climas extremos del sur de Chile.",
     descripcionLarga:
