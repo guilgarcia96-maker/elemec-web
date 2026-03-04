@@ -14,25 +14,27 @@ export const servicios: Servicio[] = [
     slug: "montaje-instalaciones",
     titulo: "Montaje y Desmontaje",
     icono: "🔧",
-    gradiente: "from-blue-950 to-blue-800",
+    gradiente: "from-orange-500 to-orange-700",
     descripcionCorta:
       "Experiencia y calidad en obras de instalación y desmontaje con personal altamente calificado y certificado.",
     descripcionLarga:
       "En ELEMEC contamos con la experiencia, respaldo y calidad en obras de instalación y desmontaje. Personal altamente calificado, para entregar un servicio que cumple con los más altos estándares de seguridad. Avalados por nuestras certificaciones y experiencia en las principales obras de la Región de Magallanes.",
     items: [
-      "Redes de Gas Natural y GLP.",
-      "Sistemas de Calefacción Central.",
-      "Instalaciones Eléctricas y de Potencia.",
-      "Generadores de Vapor y sistemas asociados.",
+      "Montaje sala de calderas.",
+      "Montaje y desmontaje de equipos industriales.",
+      "Montaje matriz de gas y agua.",
+      "Montaje sala de tableros.",
+      "Montaje generadores eléctricos y de Potencia.",
+      "Montaje generadores de vapor y sistemas asociados.",
       "Redes de Utilidades Industriales.",
       "Estructuras y soportería especial.",
     ],
   },
   {
     slug: "mantencion-equipos",
-    titulo: "Mantención de Equipos",
+    titulo: "Mantención de Equipos y Redes",
     icono: "🏭",
-    gradiente: "from-orange-950 to-orange-800",
+    gradiente: "from-amber-500 to-orange-700",
     descripcionCorta:
       "Mantención en faena o en dependencias propias, con protocolos de calidad total en calderas y sistemas industriales.",
     descripcionLarga:
@@ -50,25 +52,25 @@ export const servicios: Servicio[] = [
     slug: "ingenieria-diseno",
     titulo: "Ingeniería y Diseño",
     icono: "📐",
-    gradiente: "from-slate-800 to-slate-600",
+    gradiente: "from-gray-700 to-gray-900",
     descripcionCorta:
       "Departamento técnico con experiencia en proyectos de Magallanes: diseño, cálculo, tramitaciones y eficiencia.",
     descripcionLarga:
       "Nuestro departamento técnico cuenta con el conocimiento, experiencia y respaldo de innumerables proyectos ejecutados en la Región de Magallanes y Tierra del Fuego. Modulación de equipos en obra, diseño de instalaciones, cálculo estructural, tramitaciones normativas y desarrollo de procesos enfocados en eficiencia y seguridad.",
     items: [
-      "Diseño de instalaciones de gas, vapor y electricidad.",
+      "Diseño de instalaciones de gas, agua, vapor y electricidad.",
       "Memorias de cálculo y planos de ingeniería.",
       "Tramitaciones SEC y aprobaciones normativas.",
       "Modulación y layout de equipos en obra.",
       "Ingeniería de detalle para proyectos industriales.",
-      "Coordinación con arquitectura y obra civil.",
+      "Cierre técnico y documental de obras.",
     ],
   },
   {
     slug: "asesoria-tecnica",
     titulo: "Asesoría Técnica",
     icono: "💡",
-    gradiente: "from-yellow-950 to-yellow-700",
+    gradiente: "from-yellow-400 to-orange-500",
     descripcionCorta:
       "Personal técnico en terreno para atender requerimientos de cualquier tipo de obra en la zona austral.",
     descripcionLarga:
@@ -86,7 +88,7 @@ export const servicios: Servicio[] = [
     slug: "logistica-coordinacion",
     titulo: "Logística y Coordinación",
     icono: "🗺️",
-    gradiente: "from-teal-950 to-teal-700",
+    gradiente: "from-orange-700 to-red-700",
     descripcionCorta:
       "Cobertura logística en toda la Región de Magallanes: Punta Arenas, Porvenir, Isla Dawson y más.",
     descripcionLarga:
@@ -104,7 +106,7 @@ export const servicios: Servicio[] = [
     slug: "aislacion-termica",
     titulo: "Aislación Térmica",
     icono: "🧱",
-    gradiente: "from-indigo-950 to-indigo-700",
+    gradiente: "from-stone-500 to-stone-700",
     descripcionCorta:
       "Línea en desarrollo para eficiencia energética y confort térmico en climas extremos del sur de Chile.",
     descripcionLarga:
@@ -119,10 +121,28 @@ export const servicios: Servicio[] = [
     badge: "En desarrollo",
   },
   {
+    slug: "servicios-basicos-industriales",
+    titulo: "Servicios Básicos Industriales",
+    icono: "🏗️",
+    gradiente: "from-cyan-900 to-cyan-700",
+    descripcionCorta:
+      "Provisión y mantención de servicios básicos para instalaciones industriales: agua, gas, electricidad y calefacción integrados en un solo proveedor.",
+    descripcionLarga:
+      "ELEMEC integra en un solo contrato la provisión, instalación y mantención de los servicios básicos que toda instalación industrial requiere para operar con continuidad y seguridad. Con 18 años de trayectoria en la Región de Magallanes, nuestro equipo técnico garantiza la ejecución coordinada de redes de agua, gas, electricidad y calefacción, eliminando la necesidad de múltiples proveedores y reduciendo tiempos y costos operacionales. Trabajamos con clientes industriales, hospitalarios, educacionales y de construcción en toda la zona austral.",
+    items: [
+      "Redes de agua potable e industrial para plantas y recintos.",
+      "Distribución de gas natural y GLP con tramitaciones SEC incluidas.",
+      "Instalaciones eléctricas de baja tensión y tableros de distribución.",
+      "Sistemas de calefacción central para edificios e instalaciones industriales.",
+      "Gestión unificada de todos los servicios básicos bajo un solo contrato.",
+      "Mantención preventiva y correctiva integrada con respuesta en menos de 24 horas.",
+    ],
+  },
+  {
     slug: "control-de-costos",
     titulo: "Control de Costos",
     icono: "📋",
-    gradiente: "from-green-950 to-green-700",
+    gradiente: "from-amber-600 to-orange-700",
     descripcionCorta:
       "Gestión integral de proyecto: planificación, avance y control de costos desde inicio hasta cierre.",
     descripcionLarga:
