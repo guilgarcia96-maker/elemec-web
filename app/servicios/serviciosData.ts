@@ -85,24 +85,6 @@ export const servicios: Servicio[] = [
     ],
   },
   {
-    slug: "logistica-coordinacion",
-    titulo: "Logística y Coordinación",
-    icono: "🗺️",
-    gradiente: "from-orange-700 to-red-700",
-    descripcionCorta:
-      "Cobertura logística en toda la Región de Magallanes: Punta Arenas, Porvenir, Isla Dawson y más.",
-    descripcionLarga:
-      "ELEMEC ofrece capacidad logística orientada a atender los proyectos de nuestros clientes de la manera más efectiva en la Región de Magallanes y Tierra del Fuego, con cobertura en Punta Arenas, Porvenir, Isla Dawson, Cerro Sombrero y otras zonas de la región.",
-    items: [
-      "Coordinación de equipos y materiales en terreno.",
-      "Cobertura en toda la Región de Magallanes.",
-      "Logística para faenas en zonas remotas.",
-      "Gestión de proveedores y subcontratos.",
-      "Planificación de accesos y permisos.",
-      "Respuesta a emergencias en menos de 24 horas.",
-    ],
-  },
-  {
     slug: "aislacion-termica",
     titulo: "Aislación Térmica",
     icono: "🧱",
@@ -138,22 +120,5 @@ export const servicios: Servicio[] = [
       "Mantención preventiva y correctiva integrada con respuesta en menos de 24 horas.",
     ],
   },
-  {
-    slug: "control-de-costos",
-    titulo: "Control de Costos",
-    icono: "📋",
-    gradiente: "from-amber-600 to-orange-700",
-    descripcionCorta:
-      "Gestión integral de proyecto: planificación, avance y control de costos desde inicio hasta cierre.",
-    descripcionLarga:
-      "Gestión integral de ejecución: planificación, coordinación de obra, control de avance y control de costos desde inicio hasta cierre de proyecto. Aseguramos el cumplimiento de plazos y presupuesto con menor tasa de desviaciones.",
-    items: [
-      "Planificación con carta Gantt y línea base.",
-      "Control de avance semanal con indicadores (KPI).",
-      "Gestión de estados de pago y contratos.",
-      "Informes de gestión para mandantes.",
-      "Cierre técnico y documental de obras.",
-      "Coordinación con proveedores y subcontratos.",
-    ],
-  },
 ];
+
