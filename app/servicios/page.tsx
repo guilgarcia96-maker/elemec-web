@@ -33,17 +33,33 @@ export default function ServiciosPage() {
               >
                 {/* Imagen / placeholder cuadrado */}
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${s.gradiente} transition duration-300 group-hover:brightness-75`}
-                  />
+                  {s.iconoImg ? (
+                    <>
+                      {/* Foto real con filtro industrial */}
+                      <img
+                        src={s.iconoImg}
+                        alt={s.titulo}
+                        className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        style={{ filter: "brightness(0.85) saturate(0.8)" }}
+                      />
+                      {/* Tinte naranja de marca */}
+                      <div className="absolute inset-0 bg-orange-600/15 mix-blend-multiply" />
+                    </>
+                  ) : (
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${s.gradiente} transition duration-300 group-hover:brightness-75`}
+                    />
+                  )}
                   {/* Overlay naranja al hover */}
                   <div className="absolute inset-0 bg-[var(--accent)]/0 transition duration-300 group-hover:bg-[var(--accent)]/20" />
-                  {/* Icono centrado */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-5xl transition duration-300 group-hover:scale-110">
-                      {s.icono}
-                    </span>
-                  </div>
+                  {/* Icono centrado (solo si no hay foto) */}
+                  {!s.iconoImg && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-5xl transition duration-300 group-hover:scale-110">
+                        {s.icono}
+                      </span>
+                    </div>
+                  )}
                   {/* Badge */}
                   {s.badge && (
                     <span className="absolute right-2 top-2 rounded-full bg-[var(--accent)] px-2 py-0.5 text-[10px] font-bold text-black">

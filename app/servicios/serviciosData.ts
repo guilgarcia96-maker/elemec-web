@@ -2,6 +2,7 @@ export type Servicio = {
   slug: string;
   titulo: string;
   icono: string;
+  iconoImg?: string;
   gradiente: string;
   imagen?: string;
   descripcionCorta: string;
@@ -15,6 +16,7 @@ export const servicios: Servicio[] = [
     slug: "montaje-instalaciones",
     titulo: "Montaje y Desmontaje",
     icono: "🔧",
+    iconoImg: "/icono-montaje.jpg",
     gradiente: "from-orange-500 to-orange-700",
     imagen: "/montaje-calderas2.jpeg",
     descripcionCorta:
