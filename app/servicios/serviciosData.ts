@@ -16,6 +16,7 @@ export const servicios: Servicio[] = [
     titulo: "Montaje y Desmontaje",
     icono: "🔧",
     gradiente: "from-orange-500 to-orange-700",
+    imagen: "/montaje-calderas2.jpeg",
     descripcionCorta:
       "Experiencia y calidad en obras de instalación y desmontaje con personal altamente calificado y certificado.",
     descripcionLarga:
