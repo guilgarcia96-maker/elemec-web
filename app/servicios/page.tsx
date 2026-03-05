@@ -40,10 +40,10 @@ export default function ServiciosPage() {
                         src={s.iconoImg}
                         alt={s.titulo}
                         className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                        style={{ filter: "brightness(0.85) saturate(0.8)" }}
+                        style={{ filter: "brightness(1.05) saturate(0.9)" }}
                       />
                       {/* Tinte naranja de marca */}
-                      <div className="absolute inset-0 bg-orange-600/15 mix-blend-multiply" />
+                      <div className="absolute inset-0 bg-orange-600/10 mix-blend-multiply" />
                     </>
                   ) : (
                     <div

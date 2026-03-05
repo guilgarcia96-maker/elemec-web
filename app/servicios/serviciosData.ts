@@ -111,6 +111,7 @@ export const servicios: Servicio[] = [
     slug: "servicios-basicos-industriales",
     titulo: "Servicios Básicos Industriales",
     icono: "🏗️",
+    iconoImg: "/icono-servicios-basicos.jpg",
     gradiente: "from-cyan-900 to-cyan-700",
     descripcionCorta:
       "Provisión y mantención de servicios básicos para instalaciones industriales: agua, gas, electricidad y calefacción integrados en un solo proveedor.",
