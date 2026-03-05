@@ -92,6 +92,7 @@ export const servicios: Servicio[] = [
     slug: "aislacion-termica",
     titulo: "Aislación Térmica",
     icono: "🧱",
+    iconoImg: "/icono-aislacion.jpg",
     gradiente: "from-stone-500 to-stone-700",
     imagen: "/portada-aislacion-termica.jpg",
     descripcionCorta:
