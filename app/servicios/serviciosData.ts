@@ -14,30 +14,32 @@ export type Servicio = {
 export const servicios: Servicio[] = [
   {
     slug: "montaje-instalaciones",
-    titulo: "Montaje y Desmontaje",
+    titulo: "Montaje Industrial",
     icono: "🔧",
     iconoImg: "/icono-montaje.jpg",
     gradiente: "from-orange-500 to-orange-700",
     imagen: "/montaje-calderas2.jpeg",
     descripcionCorta:
-      "Experiencia y calidad en obras de instalación y desmontaje con personal altamente calificado y certificado.",
+      "Experiencia y calidad en obras de instalación y montaje industrial con personal altamente calificado y certificado.",
     descripcionLarga:
-      "En ELEMEC contamos con la experiencia, respaldo y calidad en obras de instalación y desmontaje. Personal altamente calificado, para entregar un servicio que cumple con los más altos estándares de seguridad. Avalados por nuestras certificaciones y experiencia en las principales obras de la Región de Magallanes.",
+      "En ELEMEC contamos con la experiencia, respaldo y calidad en obras de Instalación de maquinaria y equipos para plantas industriales, centros de producción y otros proyectos. Personal altamente calificado, para entregar un servicio que cumple con los más altos estándares de seguridad. Avalados por nuestras certificaciones y experiencia en las principales obras de la Región de Magallanes.",
     items: [
       "Montaje sala de calderas.",
       "Montaje y desmontaje de equipos industriales.",
       "Montaje matriz de gas y agua.",
+      "Montaje de maquinaria pesada.",
       "Montaje sala de tableros.",
       "Montaje generadores eléctricos y de Potencia.",
       "Montaje generadores de vapor y sistemas asociados.",
       "Redes de Utilidades Industriales.",
-      "Estructuras y soportería especial.",
+      "Montaje Estructuras metálicas y soportería especial.",
     ],
   },
   {
     slug: "mantencion-equipos",
     titulo: "Mantención de Equipos y Redes",
     icono: "🏭",
+    iconoImg: "/icono-mantencion.jpg",
     gradiente: "from-amber-500 to-orange-700",
     descripcionCorta:
       "Mantención en faena o en dependencias propias, con protocolos de calidad total en calderas y sistemas industriales.",
@@ -56,6 +58,7 @@ export const servicios: Servicio[] = [
     slug: "ingenieria-diseno",
     titulo: "Ingeniería y Diseño",
     icono: "📐",
+    iconoImg: "/icono-ingenieria.jpg",
     gradiente: "from-gray-700 to-gray-900",
     descripcionCorta:
       "Departamento técnico con experiencia en proyectos de Magallanes: diseño, cálculo, tramitaciones y eficiencia.",
@@ -70,10 +73,11 @@ export const servicios: Servicio[] = [
       "Cierre técnico y documental de obras.",
     ],
   },
-  {
+  /*{
     slug: "asesoria-tecnica",
     titulo: "Asesoría Técnica",
     icono: "💡",
+    iconoImg: "/icono-asesoria.jpg",
     gradiente: "from-yellow-400 to-orange-500",
     descripcionCorta:
       "Personal técnico en terreno para atender requerimientos de cualquier tipo de obra en la zona austral.",
@@ -87,7 +91,7 @@ export const servicios: Servicio[] = [
       "Apoyo técnico para licitaciones y proyectos.",
       "Visitas a terreno sin costo inicial.",
     ],
-  },
+  },*/
   {
     slug: "aislacion-termica",
     titulo: "Aislación Térmica",
