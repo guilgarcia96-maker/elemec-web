@@ -146,20 +146,22 @@ export default function IngenieriaDisenoPage() {
           </p>
 
           {/* Botones de selección */}
-          <div className="mt-10 flex flex-wrap gap-2">
-            {alcance.map((a, i) => (
-              <button
-                key={i}
-                onClick={() => setActivo(i)}
-                className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${
-                  activo === i
-                    ? "border-[var(--accent)] bg-[var(--accent)] text-black"
-                    : "border-[var(--border)] bg-[var(--card)] text-[var(--text-soft)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
-                }`}
-              >
-                {a.titulo}
-              </button>
-            ))}
+          <div className="mt-10 -mx-6 px-6 overflow-x-auto md:mx-0 md:px-0 md:overflow-visible">
+            <div className="flex gap-2 md:flex-wrap w-max md:w-auto pb-2 md:pb-0">
+              {alcance.map((a, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActivo(i)}
+                  className={`shrink-0 rounded-full border px-4 py-1.5 text-xs font-semibold transition md:px-5 md:py-2 md:text-sm ${
+                    activo === i
+                      ? "border-[var(--accent)] bg-[var(--accent)] text-black"
+                      : "border-[var(--border)] bg-[var(--card)] text-[var(--text-soft)] hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                  }`}
+                >
+                  {a.titulo}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Panel de contenido */}
