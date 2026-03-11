@@ -28,6 +28,10 @@ const labels: Record<string, string> = {
 };
 
 export async function POST(req: NextRequest) {
+  if (!process.env.RESEND_API_KEY) {
+    console.error("RESEND_API_KEY no está definida");
+    return NextResponse.json({ error: "Configuración de servidor incompleta" }, { status: 500 });
+  }
   const resend = new Resend(process.env.RESEND_API_KEY);
   let body: Record<string, unknown>;
   try {
