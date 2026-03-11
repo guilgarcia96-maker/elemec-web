@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const DEST_EMAIL = process.env.COTIZACION_DEST_EMAIL ?? "contacto@elemec.cl";
+const DEST_EMAIL = (process.env.COTIZACION_DEST_EMAIL ?? "contacto@elemec.cl")
+  .split(",")
+  .map((e) => e.trim())
+  .filter(Boolean);
 
 const allowed = [
   "nombre", "apellidos", "compania", "rutEmpresa", "cargo",
