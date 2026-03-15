@@ -7,7 +7,6 @@ const navLinks = [
   { href: "/", label: "Inicio" },
   { href: "/quienes-somos", label: "Quiénes Somos" },
   { href: "/servicios", label: "Servicios" },
-  { href: "/productos", label: "Productos" },
   { href: "/trabajaconnosotros", label: "Trabaja con Nosotros" },
   { href: "/cotiza-aqui", label: "Cotiza Aquí" },
 ];
