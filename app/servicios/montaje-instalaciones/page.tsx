@@ -8,12 +8,12 @@ const alcance = [
     titulo: "Sala de calderas",
     foto: "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?auto=format&fit=crop&w=800&h=560&q=80",
     descripcion:
-      "Instalación completa de salas de calderas industriales: equipos de generación de vapor, sistemas de tratamiento de agua, quemadores, válvulas de seguridad y redes de distribución. Ejecutado bajo normativa SEC y estándares de seguridad industrial.",
+      "salas de calderas industriales, abarcando la instalación mecánica y funcional de calderas y equipos auxiliares, sistemas de tratamiento de agua, quemadores, líneas de alimentación, redes de vapor, agua caliente y retorno de condensado, válvulas de seguridad, instrumentación, automatización y elementos de control, garantizando su correcta integración y continuidad operativa. Ejecutado bajo normativa SEC y estándares de seguridad industrial.",
     beneficios: [
-      "Montaje según planos de ingeniería aprobados",
-      "Puesta en marcha y pruebas de funcionamiento",
+      "Servicio completo llave en mano",
+      "Cobertura total vigente por 6 años",
       "Certificación SEC de la instalación",
-      "Personal calificado con experiencia en Magallanes",
+      "Mantenciones preventivas post-venta",
     ],
   },
   {
@@ -22,9 +22,9 @@ const alcance = [
     descripcion:
       "Montaje y desmontaje de equipos industriales de todo tipo: compresores, bombas, intercambiadores de calor, separadores y maquinaria de proceso. Coordinación con proveedores y supervisión técnica en cada etapa del montaje.",
     beneficios: [
+      "Servicio completo llave en mano",
       "Alineación y nivelación de equipos",
       "Conexión a sistemas eléctricos, hidráulicos y neumáticos",
-      "Pruebas de operación y ajuste fino",
       "Registros técnicos de la intervención",
     ],
   },
@@ -41,27 +41,27 @@ const alcance = [
     ],
   },
   {
-    titulo: "Redes de gas y agua",
+    titulo: "Matriz de gas y agua",
     foto: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&h=560&q=80",
     descripcion:
-      "Instalación y montaje de matrices y redes de distribución de gas natural, gas licuado y agua potable/industrial. Incluye tendido de tuberías, soportería, válvulas, instrumentación y pruebas de hermeticidad según normativa vigente.",
+      "Montaje de matrices y redes de distribución de gas natural, gas licuado y agua potable industrial. Incluye tendido de tuberías, soportería, válvulas, instrumentación y pruebas de hermeticidad según normativa vigente, garantizando la continuidad operativa.",
     beneficios: [
-      "Tendido e instalación bajo normativa SEC",
+      "Servicio completo llave en mano",
       "Pruebas de presión y hermeticidad certificadas",
       "Soportería técnica y anclajes estructurales",
-      "Documentación as-built de la red",
+      "Certificación SEC de la red",
     ],
   },
   {
     titulo: "Sala de tableros",
     foto: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&h=560&q=80",
     descripcion:
-      "Montaje de salas de tableros eléctricos, centros de control de motores (CCM), tableros de distribución y sistemas de respaldo eléctrico. Trabajo coordinado con ingeniería eléctrica para garantizar la correcta operación e integración de los sistemas.",
+      "Montaje de salas de tableros eléctricos, centros de control de motores (CCM), tableros de distribución y sistemas de respaldo eléctrico en baja, media y alta tensión. Garantizando la seguridad y la correcta operación e integración de los sistemas.",
     beneficios: [
-      "Instalación conforme a norma eléctrica vigente",
+      "Servicio completo llave en mano",
       "Etiquetado y documentación de circuitos",
-      "Pruebas de aislación y continuidad",
-      "Tramitación SEC si aplica",
+      "Planos y memorias de cálculo",
+      "Tramitación SEC",
     ],
   },
   {
@@ -72,20 +72,8 @@ const alcance = [
     beneficios: [
       "Montaje sobre fundación o base metálica",
       "Integración con sistemas de transferencia automática (ATS)",
-      "Conexión de sistemas de combustible y escape",
-      "Pruebas de carga y ajuste de reguladores",
-    ],
-  },
-  {
-    titulo: "Generadores de vapor",
-    foto: "https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=800&h=560&q=80",
-    descripcion:
-      "Montaje de generadores de vapor industriales y todos sus sistemas asociados: redes de distribución de vapor, trampas, válvulas reductoras, sistemas de condensado y retorno. Cumplimiento estricto de normativas de presión y seguridad.",
-    beneficios: [
-      "Montaje de generador y equipos auxiliares",
-      "Instalación de redes de vapor y condensado",
-      "Pruebas hidrostáticas y de operación",
-      "Certificación de recipientes a presión si aplica",
+      "Garantia vigente por 2 años",
+      "Mantenciones preventivas programadas post-venta",
     ],
   },
   {
@@ -107,7 +95,7 @@ const alcance = [
       "Montaje de estructuras metálicas industriales, soportería especial, racks de tuberías y plataformas de acceso. Fabricación en taller propio o coordinación con maestranza, con instalación en obra y verificación estructural.",
     beneficios: [
       "Montaje según planos de detalle aprobados",
-      "Soldadura certificada AWS/CWI cuando se requiere",
+      "Soldadura certificada",
       "Galvanizado o pintura anticorrosiva para zona austral",
       "Inspección dimensional y de verticalidad",
     ],
@@ -170,13 +158,14 @@ export default function MontajeIndustrialPage() {
       {/* ── DESCRIPCIÓN ────────────────────────────────────────── */}
       <section className="border-b border-[var(--header-border)] bg-[var(--section-alt)] py-16">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-10 md:grid-cols-2 md:items-center">
+          <div className="grid gap-12 md:grid-cols-2 md:items-center">
+            {/* texto */}
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]">
-                Quiénes somos en montaje
+                Sobre el servicio
               </p>
               <h2 className="mt-3 text-3xl font-bold leading-snug text-[var(--text)]">
-                18 años instalando industria en el sur de Chile.
+                Descripción.
               </h2>
               <p className="mt-4 leading-7 text-[var(--text-soft)]">
                 En ELEMEC contamos con la experiencia, respaldo y calidad en obras de
@@ -187,19 +176,20 @@ export default function MontajeIndustrialPage() {
                 obras de la Región de Magallanes.
               </p>
             </div>
+            {/* métricas */}
             <div className="grid grid-cols-2 gap-4">
               {[
-                { valor: "18+", texto: "años de experiencia" },
-                { valor: "100%", texto: "personal certificado" },
-                { valor: "SEC", texto: "instalaciones aprobadas" },
-                { valor: "Austral", texto: "especialistas en zona extrema" },
-              ].map((s) => (
+                { valor: "21+", etiqueta: "Proyectos terminados" },
+                { valor: "100%", etiqueta: "Proyectos certificados" },
+                { valor: "SEC", etiqueta: "Instalador autorizado" },
+                { valor: "Austral", etiqueta: "Especialistas en zona" },
+              ].map(({ valor, etiqueta }) => (
                 <div
-                  key={s.texto}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 text-center"
+                  key={etiqueta}
+                  className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 text-center"
                 >
-                  <p className="text-2xl font-extrabold text-[var(--accent)]">{s.valor}</p>
-                  <p className="mt-1 text-xs text-[var(--text-soft)]">{s.texto}</p>
+                  <p className="text-3xl font-extrabold text-[var(--accent)]">{valor}</p>
+                  <p className="mt-1 text-xs text-[var(--text-soft)]">{etiqueta}</p>
                 </div>
               ))}
             </div>
