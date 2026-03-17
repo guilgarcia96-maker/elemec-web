@@ -119,6 +119,46 @@ export default function AislacionTermicaPage() {
         </div>
       </section>
 
+      {/* ── DESCRIPCIÓN ────────────────────────────────────────── */}
+      <section className="border-b border-[var(--header-border)] bg-[var(--section-alt)] py-16">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid gap-12 md:grid-cols-2 md:items-center">
+            {/* texto */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]">
+                Sobre el servicio
+              </p>
+              <h2 className="mt-3 text-3xl font-bold leading-snug text-[var(--text)]">
+                Expertos en aislación para los climas más extremos de Chile.
+              </h2>
+              <p className="mt-4 leading-7 text-[var(--text-soft)]">
+                Ejecutamos proyectos de aislación térmica y acústica para la industria
+                austral, con materiales de alta calidad y técnicas adaptadas a las
+                condiciones climáticas de la Región de Magallanes. Reducción de pérdidas
+                energéticas y cumplimiento normativo en cada proyecto.
+              </p>
+            </div>
+            {/* métricas */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { valor: "-30%", etiqueta: "Pérdidas energéticas" },
+                { valor: "100%", etiqueta: "Materiales certificados" },
+                { valor: "18+", etiqueta: "Años de experiencia" },
+                { valor: "Austral", etiqueta: "Especialistas en zona" },
+              ].map(({ valor, etiqueta }) => (
+                <div
+                  key={etiqueta}
+                  className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 text-center"
+                >
+                  <p className="text-3xl font-extrabold text-[var(--accent)]">{valor}</p>
+                  <p className="mt-1 text-xs text-[var(--text-soft)]">{etiqueta}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── ALCANCE INTERACTIVO ────────────────────────────────── */}
       <section className="py-20">
         <div className="mx-auto max-w-6xl px-6">

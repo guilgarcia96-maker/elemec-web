@@ -131,6 +131,46 @@ export default function ServiciosBasicosPage() {
         </div>
       </section>
 
+      {/* ── DESCRIPCIÓN ────────────────────────────────────────── */}
+      <section className="border-b border-[var(--header-border)] bg-[var(--section-alt)] py-16">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid gap-12 md:grid-cols-2 md:items-center">
+            {/* texto */}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-[var(--accent)]">
+                Sobre el servicio
+              </p>
+              <h2 className="mt-3 text-3xl font-bold leading-snug text-[var(--text)]">
+                Un solo contrato para todos los servicios básicos de tu planta.
+              </h2>
+              <p className="mt-4 leading-7 text-[var(--text-soft)]">
+                Gestionamos la instalación y mantención de todos los sistemas básicos
+                industriales — agua, gas, electricidad y calefacción — bajo un solo equipo
+                responsable. Coordinación eficiente, sin brechas de responsabilidad y con
+                certificación SEC en cada instalación.
+              </p>
+            </div>
+            {/* métricas */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { valor: "4", etiqueta: "Servicios en uno" },
+                { valor: "SEC", etiqueta: "Instalador autorizado" },
+                { valor: "18+", etiqueta: "Años de experiencia" },
+                { valor: "100%", etiqueta: "Proyectos certificados" },
+              ].map(({ valor, etiqueta }) => (
+                <div
+                  key={etiqueta}
+                  className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 text-center"
+                >
+                  <p className="text-3xl font-extrabold text-[var(--accent)]">{valor}</p>
+                  <p className="mt-1 text-xs text-[var(--text-soft)]">{etiqueta}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── ALCANCE INTERACTIVO ────────────────────────────────── */}
       <section className="py-20">
         <div className="mx-auto max-w-6xl px-6">
