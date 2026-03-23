@@ -38,7 +38,7 @@ async function getCotizaciones(opts: {
   );
   let query = supabase
     .from("cotizaciones")
-    .select("id,nombre,apellidos,compania,email,tipo_servicio,region,estado,created_at,monto_estimado,prioridad")
+    .select("id,codigo,nombre,apellidos,compania,email,tipo_servicio,region,estado,created_at,monto_estimado,prioridad,total,tipo_registro")
     .order("created_at", { ascending: false });
 
   if (opts.estado && ESTADOS.includes(opts.estado as Estado)) {
@@ -278,41 +278,63 @@ export default async function AdminCotizacionesPage({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-widest text-white/40">
+                <th className="px-4 py-3">Folio</th>
                 <th className="px-4 py-3">Fecha</th>
                 <th className="px-4 py-3">Contacto</th>
                 <th className="px-4 py-3">Empresa</th>
                 <th className="px-4 py-3">Servicio</th>
                 <th className="px-4 py-3 hidden md:table-cell">Región</th>
+                <th className="px-4 py-3 text-right">Monto</th>
                 <th className="px-4 py-3">Estado</th>
+                <th className="px-4 py-3">Origen</th>
                 <th className="px-4 py-3">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {cotizaciones.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-white/30">
+                  <td colSpan={10} className="px-4 py-10 text-center text-white/30">
                     No hay cotizaciones{hayFiltros ? " que coincidan con los filtros" : " registradas"}.
                   </td>
                 </tr>
               )}
-              {cotizaciones.map((c: Record<string, string>) => (
+              {cotizaciones.map((c: Record<string, unknown>) => (
                 <tr
-                  key={c.id}
+                  key={c.id as string}
                   className="border-b border-white/5 hover:bg-white/5 transition"
                 >
+                  <td className="px-4 py-3 text-xs font-mono text-[#e2b44b] whitespace-nowrap">
+                    {(c.codigo as string) || <span className="text-white/20">—</span>}
+                  </td>
                   <td className="px-4 py-3 text-white/50 whitespace-nowrap">
-                    {new Date(c.created_at).toLocaleDateString("es-CL")}
+                    {new Date(c.created_at as string).toLocaleDateString("es-CL")}
                   </td>
                   <td className="px-4 py-3">
-                    <p className="font-semibold">{c.nombre} {c.apellidos}</p>
-                    <p className="text-xs text-white/40">{c.email}</p>
+                    <p className="font-semibold">{c.nombre as string} {c.apellidos as string}</p>
+                    <p className="text-xs text-white/40">{c.email as string}</p>
                   </td>
-                  <td className="px-4 py-3 text-white/70">{c.compania || "—"}</td>
-                  <td className="px-4 py-3 text-white/70 max-w-xs truncate">{c.tipo_servicio || "—"}</td>
-                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{c.region || "—"}</td>
+                  <td className="px-4 py-3 text-white/70">{(c.compania as string) || "—"}</td>
+                  <td className="px-4 py-3 text-white/70 max-w-xs truncate">{(c.tipo_servicio as string) || "—"}</td>
+                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{(c.region as string) || "—"}</td>
+                  <td className="px-4 py-3 text-right font-mono text-white/70 whitespace-nowrap">
+                    {c.total
+                      ? `$${Number(c.total).toLocaleString("es-CL", { maximumFractionDigits: 0 })}`
+                      : c.monto_estimado
+                        ? <span className="text-white/40">~${Number(c.monto_estimado).toLocaleString("es-CL", { maximumFractionDigits: 0 })}</span>
+                        : <span className="text-white/20">—</span>}
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${BADGE[c.estado as Estado] ?? BADGE.nueva}`}>
-                      {LABEL[c.estado as Estado] ?? c.estado}
+                      {LABEL[c.estado as Estado] ?? (c.estado as string)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                      c.tipo_registro === "solicitud_cliente"
+                        ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
+                        : "border-white/10 bg-white/5 text-white/40"
+                    }`}>
+                      {c.tipo_registro === "solicitud_cliente" ? "Web" : "Backoffice"}
                     </span>
                   </td>
                   <td className="px-4 py-3">

@@ -31,6 +31,7 @@ const LABEL: Record<Estado, string> = {
 const CAMPOS: { key: string; label: string }[] = [
   { key: "codigo",        label: "Folio / Código" },
   { key: "tipo_documento",label: "Tipo de documento" },
+  { key: "tipo_registro", label: "Origen registro" },
   { key: "fecha_inicio",  label: "Fecha" },
   { key: "fecha_cierre_estimada", label: "Fecha vigencia" },
   { key: "sucursal",      label: "Sucursal" },
@@ -55,19 +56,26 @@ const CAMPOS: { key: string; label: string }[] = [
   { key: "tipo_servicio", label: "Tipo de servicio" },
   { key: "prioridad",     label: "Prioridad" },
   { key: "origen",        label: "Origen" },
+  { key: "canal",         label: "Canal" },
   // Comercial
   { key: "glosa",         label: "Glosa" },
   { key: "vendedor",      label: "Vendedor" },
   { key: "lista_precio",  label: "Lista de precios" },
   { key: "moneda",        label: "Moneda" },
   { key: "subtotal",      label: "Subtotal" },
+  { key: "descuentos",    label: "Descuentos" },
   { key: "impuestos",     label: "Impuestos" },
   { key: "total",         label: "Total" },
   { key: "condicion_venta", label: "Condición de venta" },
   { key: "fecha_vencimiento",label: "Fecha vencimiento" },
+  { key: "fecha_validez", label: "Fecha validez" },
+  { key: "margen_estimado", label: "Margen estimado %" },
+  { key: "probabilidad_cierre", label: "Probabilidad cierre %" },
+  { key: "motivo_perdida", label: "Motivo pérdida" },
   // Notas
   { key: "observaciones", label: "Observaciones" },
   { key: "comentarios",   label: "Comentarios" },
+  { key: "notas",         label: "Notas internas" },
 ];
 
 export default async function DetalleCotizacionPage({
@@ -100,14 +108,25 @@ export default async function DetalleCotizacionPage({
     .eq("cotizacion_id", id)
     .order("created_at", { ascending: false });
 
-  // Versiones y aprobaciones (consolidated schema)
+  // Versiones con items e info completa
   const { data: versionRows } = await supabase
     .from("cotizacion_versiones")
-    .select("id, version_num, total, estado")
+    .select("id, version_num, total, subtotal, descuentos, impuestos, estado, moneda, condiciones_comerciales, notas_internas, json_snapshot")
     .eq("cotizacion_id", id)
     .order("version_num", { ascending: false });
 
   const latestVersion = versionRows?.[0] ?? null;
+
+  // Fetch items de la version activa
+  const { data: itemRows } = latestVersion
+    ? await supabase
+        .from("cotizacion_items")
+        .select("id, item_num, descripcion, unidad, cantidad, precio_unitario, descuento_pct, tipo_impuesto, impuesto_pct, subtotal, total")
+        .eq("cotizacion_version_id", latestVersion.id)
+        .order("item_num")
+    : { data: [] };
+
+  const items = itemRows ?? [];
 
   const { data: aprobacionRows } = latestVersion
     ? await supabase
@@ -152,12 +171,24 @@ export default async function DetalleCotizacionPage({
         {/* Header */}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
+            {cotizacion.codigo && (
+              <p className="text-xs font-mono text-[#e2b44b] mb-1">{cotizacion.codigo}</p>
+            )}
             <h1 className="text-2xl font-bold">
               {cotizacion.nombre} {cotizacion.apellidos}
             </h1>
             <p className="mt-1 text-sm text-white/50">
               {cotizacion.compania && <span>{cotizacion.compania} · </span>}
               Recibida el {new Date(cotizacion.created_at).toLocaleDateString("es-CL")}
+              {cotizacion.tipo_registro && (
+                <span className={`ml-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                  cotizacion.tipo_registro === "solicitud_cliente"
+                    ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
+                    : "border-white/10 bg-white/5 text-white/40"
+                }`}>
+                  {cotizacion.tipo_registro === "solicitud_cliente" ? "Web" : "Backoffice"}
+                </span>
+              )}
             </p>
           </div>
           <span className={`inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${BADGE[cotizacion.estado as Estado] ?? BADGE.nueva}`}>
@@ -234,6 +265,92 @@ export default async function DetalleCotizacionPage({
             </tbody>
           </table>
         </div>
+
+        {/* Ítems de la versión activa */}
+        {items.length > 0 && (
+          <section className="mt-6 rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
+              <h2 className="text-sm font-semibold text-white/80">
+                Detalle de ítems
+                {latestVersion && <span className="ml-2 text-xs text-white/35 font-mono">Versión {latestVersion.version_num}</span>}
+              </h2>
+              {latestVersion && (
+                <span className="text-xs text-white/35">
+                  {latestVersion.moneda ?? "CLP"}
+                </span>
+              )}
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-widest text-white/40">
+                    <th className="px-4 py-2 w-10">#</th>
+                    <th className="px-4 py-2">Descripción</th>
+                    <th className="px-4 py-2 text-right w-20">Cant.</th>
+                    <th className="px-4 py-2 w-16">U.M.</th>
+                    <th className="px-4 py-2 text-right w-28">P. Unit.</th>
+                    <th className="px-4 py-2 text-right w-20">Desc.%</th>
+                    <th className="px-4 py-2 w-20">Imp.</th>
+                    <th className="px-4 py-2 text-right w-28">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((item: Record<string, unknown>) => (
+                    <tr key={item.id as string} className="border-b border-white/5">
+                      <td className="px-4 py-2 text-white/30">{item.item_num as number}</td>
+                      <td className="px-4 py-2 text-white/80">{item.descripcion as string}</td>
+                      <td className="px-4 py-2 text-right font-mono text-white/70">{Number(item.cantidad)}</td>
+                      <td className="px-4 py-2 text-white/50">{(item.unidad as string) || "UN"}</td>
+                      <td className="px-4 py-2 text-right font-mono text-white/70">
+                        ${Number(item.precio_unitario).toLocaleString("es-CL", { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-4 py-2 text-right font-mono text-white/50">
+                        {Number(item.descuento_pct) > 0 ? `${item.descuento_pct}%` : "—"}
+                      </td>
+                      <td className="px-4 py-2">
+                        <span className={`inline-flex rounded border px-1.5 py-0.5 text-[10px] font-medium ${
+                          item.tipo_impuesto === "exenta"
+                            ? "border-green-500/30 bg-green-500/10 text-green-300"
+                            : "border-blue-500/30 bg-blue-500/10 text-blue-300"
+                        }`}>
+                          {item.tipo_impuesto === "exenta" ? "Exenta" : `${item.impuesto_pct ?? 19}%`}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 text-right font-mono font-semibold text-white/80">
+                        ${Number(item.total).toLocaleString("es-CL", { minimumFractionDigits: 2 })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Totales de la versión */}
+            {latestVersion && (
+              <div className="flex justify-end border-t border-white/10 px-5 py-4">
+                <div className="w-64 space-y-1 text-sm">
+                  <div className="flex justify-between text-white/50">
+                    <span>Subtotal</span>
+                    <span className="font-mono">${Number(latestVersion.subtotal ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
+                  </div>
+                  {Number(latestVersion.descuentos ?? 0) > 0 && (
+                    <div className="flex justify-between text-white/50">
+                      <span>Descuentos</span>
+                      <span className="font-mono">-${Number(latestVersion.descuentos).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-white/50">
+                    <span>Impuestos</span>
+                    <span className="font-mono">${Number(latestVersion.impuestos ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="flex justify-between border-t border-white/10 pt-1 font-bold text-[#e2b44b]">
+                    <span>Total</span>
+                    <span className="font-mono">${Number(latestVersion.total ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Notas internas */}
         <form action="/api/admin/cotizaciones/notas" method="POST" className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">

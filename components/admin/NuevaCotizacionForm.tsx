@@ -159,6 +159,9 @@ export default function NuevaCotizacionForm({
   const [nombreDir,      setNombreDir]      = useState('');
   const [telefono,       setTelefono]       = useState('');
   const [email,          setEmail]          = useState(initialData?.email ?? '');
+  const [rutEmpresa,     setRutEmpresa]     = useState('');
+  const [movil,          setMovil]          = useState('');
+  const [cargo,          setCargo]          = useState('');
   const [glosa,          setGlosa]          = useState('');
   const [vendedor,       setVendedor]       = useState('');
   const [comision,       setComision]       = useState('');
@@ -238,6 +241,9 @@ export default function NuevaCotizacionForm({
       nombre_dir:      nombreDir || undefined,
       telefono:        telefono || undefined,
       email:           email || undefined,
+      rut_empresa:     rutEmpresa || undefined,
+      cargo:           cargo || undefined,
+      movil:           movil || undefined,
       glosa:           glosa || undefined,
       vendedor:        vendedor || undefined,
       comision_pct:    comision ? parseFloat(comision) : undefined,
@@ -462,6 +468,27 @@ export default function NuevaCotizacionForm({
               <Label>Email</Label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                 className={inputCls()} placeholder="correo@empresa.cl" />
+            </div>
+
+            {/* RUT Empresa */}
+            <div>
+              <Label>RUT Empresa</Label>
+              <input value={rutEmpresa} onChange={e => setRutEmpresa(e.target.value)}
+                className={inputCls()} placeholder="76.715.440-2" />
+            </div>
+
+            {/* Cargo */}
+            <div>
+              <Label>Cargo</Label>
+              <input value={cargo} onChange={e => setCargo(e.target.value)}
+                className={inputCls()} placeholder="Cargo del contacto" />
+            </div>
+
+            {/* Móvil */}
+            <div>
+              <Label>Móvil</Label>
+              <input value={movil} onChange={e => setMovil(e.target.value)}
+                className={inputCls()} placeholder="+56 9 xxxx xxxx" />
             </div>
 
           </div>
@@ -870,6 +897,9 @@ export default function NuevaCotizacionForm({
             nombreDir,
             telefono,
             email,
+            rutEmpresa,
+            cargo,
+            movil,
             nombreObra,
             sucursal,
             glosa,

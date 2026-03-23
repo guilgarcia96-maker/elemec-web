@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getAdminSessionFromRequest } from "@/lib/admin-auth";
 
-const ESTADOS = ["nueva", "en_revision", "cotizada", "ganada", "perdida"];
+const ESTADOS = ["proceso", "nueva", "en_revision", "cotizada", "ganada", "perdida"];
 
 const LABEL: Record<string, string> = {
+  proceso:     "En proceso",
   nueva:       "Nueva",
   en_revision: "En revisión",
   cotizada:    "Cotizada",
@@ -39,9 +40,9 @@ export async function GET(req: NextRequest) {
   let query = supabase
     .from("cotizaciones")
     .select(
-      "id,nombre,apellidos,compania,rut_empresa,cargo,email,movil,telefono," +
+      "id,codigo,nombre,apellidos,compania,rut_empresa,cargo,email,movil,telefono," +
       "nombre_obra,fecha_inicio,direccion,region,tipo_obra,tipo_servicio," +
-      "comentarios,estado,monto_estimado,created_at"
+      "comentarios,estado,monto_estimado,total,tipo_registro,created_at"
     )
     .order("created_at", { ascending: false });
 
@@ -69,10 +70,10 @@ export async function GET(req: NextRequest) {
   const rows = (data as unknown as Array<Record<string, unknown>>) ?? [];
 
   const headers = [
-    "ID", "Nombre", "Apellidos", "Compañía", "RUT Empresa", "Cargo",
+    "ID", "Folio", "Nombre", "Apellidos", "Compañía", "RUT Empresa", "Cargo",
     "Email", "Móvil", "Teléfono", "Obra / Proyecto", "Fecha Inicio",
     "Dirección", "Región", "Tipo Obra", "Tipo Servicio", "Comentarios",
-    "Estado", "Monto Estimado", "Fecha Solicitud",
+    "Estado", "Monto Estimado", "Total", "Origen", "Fecha Solicitud",
   ];
 
   const csvLines = [
@@ -80,6 +81,7 @@ export async function GET(req: NextRequest) {
     ...rows.map((r) =>
       [
         r.id,
+        r.codigo,
         r.nombre,
         r.apellidos,
         r.compania,
@@ -97,6 +99,8 @@ export async function GET(req: NextRequest) {
         r.comentarios,
         LABEL[r.estado as string] ?? r.estado,
         r.monto_estimado ?? "",
+        r.total ?? "",
+        r.tipo_registro === "solicitud_cliente" ? "Web" : "Backoffice",
         new Date(r.created_at as string).toLocaleDateString("es-CL"),
       ]
         .map(csvEscape)

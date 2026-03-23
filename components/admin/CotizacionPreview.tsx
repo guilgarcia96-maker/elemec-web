@@ -26,8 +26,6 @@ export interface CotizacionPreviewData {
   tipoLabel:     string;
   fecha:         string;
   fechaVigencia: string;
-  // Emisor (ELEMEC)
-  // (hardcoded in component, editable below)
   // Receptor
   cliente:       string;
   giro:          string;
@@ -39,6 +37,9 @@ export interface CotizacionPreviewData {
   nombreDir:     string;
   telefono:      string;
   email:         string;
+  rutEmpresa:    string;
+  cargo:         string;
+  movil:         string;
   // Project
   nombreObra:    string;
   // Commercial
@@ -352,11 +353,14 @@ function DocumentBody({
           </div>
           {[
             { label: 'Cliente',   value: data.cliente },
+            { label: 'RUT',      value: data.rutEmpresa },
             { label: 'Giro',      value: data.giro },
             { label: 'Dirección', value: [data.direccion, data.comuna, data.ciudad].filter(Boolean).join(', ') },
             { label: 'Región',    value: data.region },
             { label: 'Contacto',  value: data.contacto },
+            { label: 'Cargo',     value: data.cargo },
             { label: 'Teléfono',  value: data.telefono },
+            { label: 'Móvil',     value: data.movil },
             { label: 'Email',     value: data.email },
           ].filter(r => r.value).map(({ label, value }) => (
             <div key={label} className="party-row flex gap-1.5 mb-1">

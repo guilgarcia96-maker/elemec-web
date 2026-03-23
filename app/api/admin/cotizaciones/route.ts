@@ -12,11 +12,13 @@ const COTIZACION_FIELDS = new Set([
   // extended fields
   "tipo_documento","sucursal","giro","glosa","vendedor",
   "lista_precio","observaciones","contacto","nombre_dir",
-  "moneda","subtotal","impuestos","total",
+  "moneda","subtotal","descuentos","impuestos","total",
   // condiciones comerciales
-  "condicion_venta","fecha_vencimiento",
+  "condicion_venta","fecha_vencimiento","fecha_validez",
+  // v2 extended
+  "canal","margen_estimado","probabilidad_cierre","motivo_perdida",
   // workflow
-  "solicitud_id",
+  "solicitud_id","ejecutivo_id",
 ]);
 
 /* ── allowed fields on cotizacion_items ──────────────────────────────── */
@@ -69,10 +71,11 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Comision: store in metadata via notas if needed (not a DB column — skip safely)
   // fecha fields normalisation
   if (body.fecha) cotizPayload["fecha_inicio"] = body.fecha;
   if (body.fecha_vigencia) cotizPayload["fecha_cierre_estimada"] = body.fecha_vigencia;
+  // ensure descuentos synced to main table
+  if (body.descuentos !== undefined) cotizPayload["descuentos"] = body.descuentos;
 
   /* ── 2. Insert cotización ─────────────────────────────────────────── */
   const { data: cotizData, error: cotizError } = await supabase
