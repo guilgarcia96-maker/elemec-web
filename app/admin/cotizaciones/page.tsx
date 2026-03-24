@@ -47,7 +47,7 @@ async function getCotizaciones(opts: {
   if (opts.busqueda) {
     const q = opts.busqueda.trim();
     query = query.or(
-      `nombre.ilike.%${q}%,apellidos.ilike.%${q}%,email.ilike.%${q}%,compania.ilike.%${q}%`
+      `nombre.ilike.%${q}%,apellidos.ilike.%${q}%,email.ilike.%${q}%,compania.ilike.%${q}%,codigo.ilike.%${q}%`
     );
   }
   if (opts.desde) {

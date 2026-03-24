@@ -7,8 +7,12 @@ const COTIZACION_FIELDS = new Set([
   "nombre","apellidos","compania","rut_empresa","cargo",
   "email","movil","telefono",
   "nombre_obra","fecha_inicio","direccion","region","comuna","ciudad",
-  "tipo_obra","tipo_servicio","comentarios","notas",
+  "tipo_obra","tipo_servicio","comentarios",
   "monto_estimado","prioridad","origen","fecha_cierre_estimada",
+  // campos estructurados de solicitud
+  "modalidad","plazo_deseado","presupuesto_estimado","servicio_principal",
+  // notas internas (renombrado desde notas)
+  "notas_internas",
   // extended fields
   "tipo_documento","sucursal","giro","glosa","vendedor",
   "lista_precio","observaciones","contacto","nombre_dir",

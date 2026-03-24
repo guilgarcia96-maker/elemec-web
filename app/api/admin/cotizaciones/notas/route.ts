@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData();
   const id = formData.get("id") as string;
-  const notas = (formData.get("notas") as string)?.slice(0, 5000) ?? "";
+  const notas_internas = (formData.get("notas_internas") as string)?.slice(0, 5000) ?? "";
 
   if (!id) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  await supabase.from("cotizaciones").update({ notas }).eq("id", id);
+  await supabase.from("cotizaciones").update({ notas_internas }).eq("id", id);
   await supabase.from("cotizacion_seguimientos").insert([
     {
       cotizacion_id: id,

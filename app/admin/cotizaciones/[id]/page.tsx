@@ -6,6 +6,7 @@ import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/admin-auth";
 import CotizacionAdjuntosForm from "@/components/admin/CotizacionAdjuntosForm";
 import CotizacionAdjuntoActions from "@/components/admin/CotizacionAdjuntoActions";
 import AdminShell from "@/components/admin/AdminShell";
+import EstadoConfirmDialog from "@/components/admin/EstadoConfirmDialog";
 
 const ESTADOS = ["proceso", "nueva", "en_revision", "cotizada", "ganada", "perdida"] as const;
 type Estado = (typeof ESTADOS)[number];
@@ -75,13 +76,15 @@ const CAMPOS: { key: string; label: string }[] = [
   // Notas
   { key: "observaciones", label: "Observaciones" },
   { key: "comentarios",   label: "Comentarios" },
-  { key: "notas",         label: "Notas internas" },
+  { key: "notas_internas", label: "Notas internas" },
 ];
 
 export default async function DetalleCotizacionPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ version?: string }>;
 }) {
   const cookieStore = await cookies();
   const session = await verifyAdminSession(cookieStore.get(ADMIN_SESSION_COOKIE)?.value);
@@ -90,6 +93,7 @@ export default async function DetalleCotizacionPage({
   }
 
   const { id } = await params;
+  const sp = await searchParams;
   const canDeleteAttachments = ["admin", "ventas", "operaciones"].includes(session.role);
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -104,51 +108,69 @@ export default async function DetalleCotizacionPage({
 
   const { data: attachmentRows, error: attachmentError } = await supabase
     .from("cotizacion_adjuntos")
-    .select("id, nombre_archivo, created_at")
+    .select("id, nombre_archivo, created_at, subido_por")
     .eq("cotizacion_id", id)
     .order("created_at", { ascending: false });
 
   // Versiones con items e info completa
   const { data: versionRows } = await supabase
     .from("cotizacion_versiones")
-    .select("id, version_num, total, subtotal, descuentos, impuestos, estado, moneda, condiciones_comerciales, notas_internas, json_snapshot")
+    .select("id, version_num, total, subtotal, descuentos, impuestos, estado, moneda, condiciones_comerciales, notas_internas, json_snapshot, created_at, created_by")
     .eq("cotizacion_id", id)
     .order("version_num", { ascending: false });
 
-  const latestVersion = versionRows?.[0] ?? null;
+  // Seleccionar versión según query param o usar la más reciente
+  const selectedVersionNum = sp.version ? parseInt(sp.version) : null;
+  const activeVersion = selectedVersionNum
+    ? versionRows?.find((v) => v.version_num === selectedVersionNum) ?? versionRows?.[0] ?? null
+    : versionRows?.[0] ?? null;
 
   // Fetch items de la version activa
-  const { data: itemRows } = latestVersion
+  const { data: itemRows } = activeVersion
     ? await supabase
         .from("cotizacion_items")
         .select("id, item_num, descripcion, unidad, cantidad, precio_unitario, descuento_pct, tipo_impuesto, impuesto_pct, subtotal, total")
-        .eq("cotizacion_version_id", latestVersion.id)
+        .eq("cotizacion_version_id", activeVersion.id)
         .order("item_num")
     : { data: [] };
 
   const items = itemRows ?? [];
 
-  const { data: aprobacionRows } = latestVersion
+  const { data: aprobacionRows } = activeVersion
     ? await supabase
         .from("cotizacion_aprobaciones")
         .select("id, nivel, estado, aprobado_at, comentario")
-        .eq("cotizacion_version_id", latestVersion.id)
+        .eq("cotizacion_version_id", activeVersion.id)
         .order("nivel")
     : { data: [] };
 
   const aprobaciones = aprobacionRows ?? [];
 
+  // Cotizaciones derivadas (formales generadas desde esta solicitud)
+  const { data: derivadasRows } = await supabase
+    .from("cotizaciones")
+    .select("id, codigo, estado, total, created_at")
+    .eq("solicitud_id", id)
+    .order("created_at", { ascending: false });
+
+  const derivadas = derivadasRows ?? [];
+
   if (!cotizacion) notFound();
 
   const attachments = attachmentError ? [] : (attachmentRows ?? []);
 
+  // Separar adjuntos: cliente (subido_por IS NULL) vs internos (subido_por IS NOT NULL)
+  const adjuntosCliente = attachments.filter((a) => !a.subido_por);
+  const adjuntosInternos = attachments.filter((a) => !!a.subido_por);
+
   // Determine if approval is required (rule: > 50MM CLP)
-  const montoActual: number = latestVersion?.total ?? cotizacion.monto_estimado ?? cotizacion.total ?? 0;
+  const montoActual: number = activeVersion?.total ?? cotizacion.monto_estimado ?? cotizacion.total ?? 0;
   const requiereAprobacion = montoActual > 50_000_000;
   const pendingApproval = aprobaciones.find((a) => a.estado === "pendiente");
   const isAdmin = session.role === "admin";
 
   // Build URL for pre-populating the nueva cotización form from this solicitud
+  // Incluir todos los campos disponibles
   const desarrollarParams: Record<string, string> = { from_id: cotizacion.id };
   if (cotizacion.compania)      desarrollarParams.compania      = cotizacion.compania;
   if (cotizacion.nombre_obra)   desarrollarParams.nombre_obra   = cotizacion.nombre_obra;
@@ -156,9 +178,16 @@ export default async function DetalleCotizacionPage({
   if (cotizacion.region)        desarrollarParams.region        = cotizacion.region;
   if (cotizacion.tipo_servicio) desarrollarParams.tipo_servicio = cotizacion.tipo_servicio;
   if (cotizacion.direccion)     desarrollarParams.direccion     = cotizacion.direccion;
+  if (cotizacion.telefono)      desarrollarParams.telefono      = cotizacion.telefono;
+  if (cotizacion.movil)         desarrollarParams.movil         = cotizacion.movil;
+  if (cotizacion.rut_empresa)   desarrollarParams.rut_empresa   = cotizacion.rut_empresa;
+  if (cotizacion.cargo)         desarrollarParams.cargo         = cotizacion.cargo;
+  if (cotizacion.prioridad)     desarrollarParams.prioridad     = cotizacion.prioridad;
   const nombreCompleto = [cotizacion.nombre, cotizacion.apellidos].filter(Boolean).join(" ");
   if (nombreCompleto) desarrollarParams.nombre = nombreCompleto;
   const desarrollarHref = "/admin/cotizaciones/nueva?" + new URLSearchParams(desarrollarParams).toString();
+
+  const hasMultipleVersions = (versionRows?.length ?? 0) > 1;
 
   return (
     <AdminShell session={session} active="cotizaciones">
@@ -196,28 +225,8 @@ export default async function DetalleCotizacionPage({
           </span>
         </div>
 
-        {/* Cambiar estado */}
-        <form action="/api/admin/cotizaciones/estado" method="POST" className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
-          <input type="hidden" name="id" value={cotizacion.id} />
-          <p className="mb-3 text-sm font-semibold text-white/70">Cambiar estado</p>
-          <div className="flex flex-wrap gap-2">
-            {ESTADOS.map((e) => (
-              <button
-                key={e}
-                name="estado"
-                value={e}
-                type="submit"
-                className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
-                  cotizacion.estado === e
-                    ? "border-[#e2b44b] bg-[#e2b44b]/10 text-[#e2b44b]"
-                    : "border-white/20 text-white/50 hover:border-white/40 hover:text-white"
-                }`}
-              >
-                {LABEL[e]}
-              </button>
-            ))}
-          </div>
-        </form>
+        {/* Cambiar estado — con confirmación */}
+        <EstadoConfirmDialog cotizacionId={cotizacion.id} estadoActual={cotizacion.estado} />
 
         {/* Generar cotización formal */}
         <div className="mt-6 rounded-xl border border-orange-500/30 bg-orange-500/5 p-5">
@@ -225,7 +234,7 @@ export default async function DetalleCotizacionPage({
             <div>
               <h2 className="text-sm font-semibold text-orange-300">Generar cotización formal</h2>
               <p className="mt-1 text-xs text-white/40">
-                Desarrolla esta solicitud con ítems, precios y folio oficial. Puedes generar múltiples cotizaciones por solicitud.
+                Desarrolla esta solicitud con items, precios y folio oficial. Puedes generar múltiples cotizaciones por solicitud.
               </p>
             </div>
             <Link
@@ -239,6 +248,39 @@ export default async function DetalleCotizacionPage({
             </Link>
           </div>
         </div>
+
+        {/* Cotizaciones derivadas */}
+        {derivadas.length > 0 && (
+          <section className="mt-6 rounded-xl border border-purple-500/20 bg-purple-500/5 p-5">
+            <h2 className="text-sm font-semibold text-purple-300 mb-3">Cotizaciones derivadas</h2>
+            <div className="space-y-2">
+              {derivadas.map((d) => (
+                <Link
+                  key={d.id}
+                  href={`/admin/cotizaciones/${d.id}`}
+                  className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm hover:bg-white/10 transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-xs text-[#e2b44b]">{d.codigo ?? d.id.slice(0, 8)}</span>
+                    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${BADGE[d.estado as Estado] ?? BADGE.nueva}`}>
+                      {LABEL[d.estado as Estado] ?? d.estado}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    {d.total && (
+                      <span className="font-mono text-xs text-white/60">
+                        ${Number(d.total).toLocaleString("es-CL", { maximumFractionDigits: 0 })}
+                      </span>
+                    )}
+                    <span className="text-[10px] text-white/30">
+                      {new Date(d.created_at).toLocaleDateString("es-CL")}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Datos de la cotización */}
         <div className="mt-6 rounded-xl border border-white/10 bg-white/5 overflow-hidden">
@@ -266,17 +308,68 @@ export default async function DetalleCotizacionPage({
           </table>
         </div>
 
-        {/* Ítems de la versión activa */}
+        {/* Selector de versiones (solo si hay más de una) */}
+        {hasMultipleVersions && (
+          <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
+            <h2 className="text-sm font-semibold text-white/80 mb-3">Historial de versiones</h2>
+            <div className="space-y-2">
+              {versionRows!.map((v) => {
+                const isActive = v.id === activeVersion?.id;
+                return (
+                  <Link
+                    key={v.id}
+                    href={`/admin/cotizaciones/${id}?version=${v.version_num}`}
+                    className={`flex items-center justify-between rounded-lg border px-4 py-2.5 text-sm transition ${
+                      isActive
+                        ? "border-[#e2b44b]/40 bg-[#e2b44b]/10"
+                        : "border-white/10 bg-white/5 hover:bg-white/10"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`font-mono text-xs ${isActive ? "text-[#e2b44b]" : "text-white/50"}`}>
+                        v{v.version_num}
+                      </span>
+                      {v.estado && (
+                        <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${BADGE[v.estado as Estado] ?? "border-white/10 bg-white/5 text-white/40"}`}>
+                          {LABEL[v.estado as Estado] ?? v.estado}
+                        </span>
+                      )}
+                      {v.created_at && (
+                        <span className="text-[10px] text-white/30">
+                          {new Date(v.created_at).toLocaleDateString("es-CL")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {v.total != null && (
+                        <span className="font-mono text-xs text-white/60">
+                          ${Number(v.total).toLocaleString("es-CL", { minimumFractionDigits: 2 })}
+                        </span>
+                      )}
+                      {isActive && (
+                        <span className="rounded border border-[#e2b44b]/30 bg-[#e2b44b]/10 px-2 py-0.5 text-[10px] font-medium text-[#e2b44b]">
+                          Seleccionada
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Items de la versión activa */}
         {items.length > 0 && (
           <section className="mt-6 rounded-xl border border-white/10 bg-white/5 overflow-hidden">
             <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
               <h2 className="text-sm font-semibold text-white/80">
-                Detalle de ítems
-                {latestVersion && <span className="ml-2 text-xs text-white/35 font-mono">Versión {latestVersion.version_num}</span>}
+                Detalle de items
+                {activeVersion && <span className="ml-2 text-xs text-white/35 font-mono">Version {activeVersion.version_num}</span>}
               </h2>
-              {latestVersion && (
+              {activeVersion && (
                 <span className="text-xs text-white/35">
-                  {latestVersion.moneda ?? "CLP"}
+                  {activeVersion.moneda ?? "CLP"}
                 </span>
               )}
             </div>
@@ -305,7 +398,7 @@ export default async function DetalleCotizacionPage({
                         ${Number(item.precio_unitario).toLocaleString("es-CL", { minimumFractionDigits: 2 })}
                       </td>
                       <td className="px-4 py-2 text-right font-mono text-white/50">
-                        {Number(item.descuento_pct) > 0 ? `${item.descuento_pct}%` : "—"}
+                        {Number(item.descuento_pct) > 0 ? `${item.descuento_pct}%` : "\u2014"}
                       </td>
                       <td className="px-4 py-2">
                         <span className={`inline-flex rounded border px-1.5 py-0.5 text-[10px] font-medium ${
@@ -325,26 +418,26 @@ export default async function DetalleCotizacionPage({
               </table>
             </div>
             {/* Totales de la versión */}
-            {latestVersion && (
+            {activeVersion && (
               <div className="flex justify-end border-t border-white/10 px-5 py-4">
                 <div className="w-64 space-y-1 text-sm">
                   <div className="flex justify-between text-white/50">
                     <span>Subtotal</span>
-                    <span className="font-mono">${Number(latestVersion.subtotal ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
+                    <span className="font-mono">${Number(activeVersion.subtotal ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
                   </div>
-                  {Number(latestVersion.descuentos ?? 0) > 0 && (
+                  {Number(activeVersion.descuentos ?? 0) > 0 && (
                     <div className="flex justify-between text-white/50">
                       <span>Descuentos</span>
-                      <span className="font-mono">-${Number(latestVersion.descuentos).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
+                      <span className="font-mono">-${Number(activeVersion.descuentos).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-white/50">
                     <span>Impuestos</span>
-                    <span className="font-mono">${Number(latestVersion.impuestos ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
+                    <span className="font-mono">${Number(activeVersion.impuestos ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-between border-t border-white/10 pt-1 font-bold text-[#e2b44b]">
                     <span>Total</span>
-                    <span className="font-mono">${Number(latestVersion.total ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
+                    <span className="font-mono">${Number(activeVersion.total ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
                   </div>
                 </div>
               </div>
@@ -359,9 +452,9 @@ export default async function DetalleCotizacionPage({
             Notas internas
           </label>
           <textarea
-            name="notas"
+            name="notas_internas"
             rows={4}
-            defaultValue={cotizacion.notas ?? ""}
+            defaultValue={cotizacion.notas_internas ?? ""}
             className="w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
             placeholder="Agrega observaciones, seguimiento, comentarios internos..."
           />
@@ -385,9 +478,9 @@ export default async function DetalleCotizacionPage({
                     : "Registro de aprobaciones de esta versión."}
                 </p>
               </div>
-              {latestVersion && (
+              {activeVersion && (
                 <span className="text-xs text-white/35 font-mono">
-                  Versión {latestVersion.version_num}
+                  Version {activeVersion.version_num}
                 </span>
               )}
             </div>
@@ -430,13 +523,13 @@ export default async function DetalleCotizacionPage({
             )}
 
             {/* Admin: approve/reject form */}
-            {isAdmin && latestVersion && (pendingApproval || aprobaciones.length === 0) && (
+            {isAdmin && activeVersion && (pendingApproval || aprobaciones.length === 0) && (
               <form
                 action="/api/admin/cotizaciones/aprobar"
                 method="POST"
                 className="mt-4 rounded-lg border border-white/10 bg-white/5 p-4"
               >
-                <input type="hidden" name="cotizacion_version_id" value={latestVersion.id} />
+                <input type="hidden" name="cotizacion_version_id" value={activeVersion.id} />
                 <input type="hidden" name="nivel" value={pendingApproval?.nivel ?? 1} />
                 <input type="hidden" name="cotizacion_id" value={cotizacion.id} />
                 <p className="mb-3 text-xs font-semibold text-white/60">Decisión de aprobación</p>
@@ -453,7 +546,7 @@ export default async function DetalleCotizacionPage({
                     type="submit"
                     className="rounded-lg bg-green-600 px-5 py-2 text-sm font-bold text-white hover:bg-green-500 transition"
                   >
-                    ✓ Aprobar
+                    Aprobar
                   </button>
                   <button
                     name="decision"
@@ -461,13 +554,13 @@ export default async function DetalleCotizacionPage({
                     type="submit"
                     className="rounded-lg bg-red-700 px-5 py-2 text-sm font-bold text-white hover:bg-red-600 transition"
                   >
-                    ✗ Rechazar
+                    Rechazar
                   </button>
                 </div>
               </form>
             )}
 
-            {!latestVersion && (
+            {!activeVersion && (
               <p className="mt-3 text-xs text-white/30">
                 Crea una versión de cotización para activar el flujo de aprobación.
               </p>
@@ -477,32 +570,81 @@ export default async function DetalleCotizacionPage({
 
         <CotizacionAdjuntosForm cotizacionId={cotizacion.id} />
 
-        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
+        {/* Archivos del cliente */}
+        <section className="mt-6 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-white/80">Documentos asociados</h2>
+              <h2 className="text-sm font-semibold text-cyan-300">Archivos del cliente</h2>
               <p className="mt-1 text-xs text-white/35">
-                Contratos, propuestas, anexos, informes, imágenes o respaldos internos.
+                Documentos adjuntados por el cliente al enviar la solicitud.
               </p>
             </div>
           </div>
 
           <div className="mt-4 space-y-3">
-            {attachments.length === 0 && (
+            {adjuntosCliente.length === 0 && (
               <p className="text-sm text-white/35">
-                Todavía no hay adjuntos o la extensión de backoffice aún no se ejecuta en la base.
+                El cliente no adjuntó archivos.
               </p>
             )}
-            {attachments.map((attachment) => (
+            {adjuntosCliente.map((attachment) => (
+              <div
+                key={attachment.id}
+                className="flex items-center justify-between rounded-lg border border-cyan-500/15 bg-white/5 px-4 py-3"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex rounded border border-cyan-500/30 bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-medium text-cyan-300">
+                    Cliente
+                  </span>
+                  <div>
+                    <p className="font-medium text-white/85">{attachment.nombre_archivo}</p>
+                    <p className="text-xs text-white/35">
+                      {new Date(attachment.created_at).toLocaleString("es-CL")}
+                    </p>
+                  </div>
+                </div>
+                <CotizacionAdjuntoActions
+                  adjuntoId={attachment.id}
+                  openHref={`/api/admin/cotizaciones/adjuntos/${attachment.id}`}
+                  canDelete={canDeleteAttachments}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Documentos internos */}
+        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold text-white/80">Documentos internos</h2>
+              <p className="mt-1 text-xs text-white/35">
+                Contratos, propuestas, anexos, informes y respaldos subidos por el equipo.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {adjuntosInternos.length === 0 && (
+              <p className="text-sm text-white/35">
+                Sin documentos internos adjuntos.
+              </p>
+            )}
+            {adjuntosInternos.map((attachment) => (
               <div
                 key={attachment.id}
                 className="flex items-center justify-between rounded-lg border border-white/10 px-4 py-3"
               >
-                <div>
-                  <p className="font-medium text-white/85">{attachment.nombre_archivo}</p>
-                  <p className="text-xs text-white/35">
-                    {new Date(attachment.created_at).toLocaleString("es-CL")}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-white/40">
+                    Interno
+                  </span>
+                  <div>
+                    <p className="font-medium text-white/85">{attachment.nombre_archivo}</p>
+                    <p className="text-xs text-white/35">
+                      {new Date(attachment.created_at).toLocaleString("es-CL")}
+                    </p>
+                  </div>
                 </div>
                 <CotizacionAdjuntoActions
                   adjuntoId={attachment.id}

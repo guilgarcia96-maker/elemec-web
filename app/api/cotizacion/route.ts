@@ -61,16 +61,6 @@ function sanitizeFileName(fileName: string) {
 
 function buildInsertData(data: Record<string, string>) {
   const alcances = parseAlcances(data.alcances);
-  const comentariosConAlcance = [
-    data.comentarios,
-    data.modalidad ? `Modalidad: ${data.modalidad}` : "",
-    data.prioridad ? `Prioridad: ${data.prioridad}` : "",
-    data.presupuestoEstimado ? `Presupuesto estimado: ${data.presupuestoEstimado}` : "",
-    data.plazoDeseado ? `Plazo deseado: ${data.plazoDeseado}` : "",
-    alcances.length > 0 ? `Alcances seleccionados: ${alcances.join(" | ")}` : "",
-  ]
-    .filter(Boolean)
-    .join("\n\n");
 
   return {
     nombre: data.nombre ?? null,
@@ -87,9 +77,18 @@ function buildInsertData(data: Record<string, string>) {
     region: data.region ?? null,
     tipo_obra: data.tipoObra ?? null,
     tipo_servicio: data.servicioPrincipal ?? data.tipoServicio ?? null,
-    comentarios: comentariosConAlcance || null,
+    // Campos estructurados — columnas propias en vez de concatenar en comentarios
+    modalidad: data.modalidad || null,
+    prioridad: data.prioridad || null,
+    presupuesto_estimado: data.presupuestoEstimado || null,
+    plazo_deseado: data.plazoDeseado || null,
+    servicio_principal: data.servicioPrincipal || null,
+    alcances: alcances.length > 0 ? alcances : [],
+    // Solo el texto libre del cliente
+    comentarios: data.comentarios || null,
     estado: "proceso",
     tipo_registro: "solicitud_cliente",
+    // tracking_token se genera automáticamente en la DB (DEFAULT gen_random_uuid())
   };
 }
 

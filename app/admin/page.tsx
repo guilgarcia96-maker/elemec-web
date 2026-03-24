@@ -15,7 +15,7 @@ async function getDashboardData() {
   );
 
   const [cotizaciones, postulaciones, aging, conciliacion] = await Promise.all([
-    supabase.from("cotizaciones").select("id, estado, created_at").order("created_at", { ascending: false }),
+    supabase.from("cotizaciones").select("id, codigo, estado, created_at, total, monto_estimado, nombre, apellidos, compania, fecha_validez").order("created_at", { ascending: false }),
     supabase.from("postulaciones").select("id, estado, nombre, cargo, created_at").order("created_at", { ascending: false }),
     supabase.from("v_cxc_aging").select("saldo, tramo_mora, razon_social, dias_mora").order("dias_mora", { ascending: false }),
     supabase.from("conciliacion_movimientos").select("id, estado, monto, tipo, fecha, descripcion").order("fecha", { ascending: false }),
@@ -85,6 +85,28 @@ export default async function AdminDashboardPage() {
 
   // KPI: movimientos pendientes de conciliacion
   const concPendientes = conciliacion.filter((m) => m.estado === "pendiente").length;
+
+  // KPI: Monto total en pipeline
+  const montoPipeline = cotizaciones
+    .filter((c) => ["nueva", "en_revision", "cotizada"].includes(c.estado))
+    .reduce((sum, c) => sum + (c.total ?? c.monto_estimado ?? 0), 0);
+
+  // KPI: Tasa de conversión
+  const cotGanadas = cotizaciones.filter((c) => c.estado === "ganada").length;
+  const cotPerdidas = cotizaciones.filter((c) => c.estado === "perdida").length;
+  const totalCerradas = cotGanadas + cotPerdidas;
+  const tasaConversion = totalCerradas > 0 ? (cotGanadas / totalCerradas) * 100 : 0;
+
+  // KPI: Cotizaciones por vencer (fecha_validez < hoy + 7 días)
+  const hoy = new Date();
+  const en7dias = new Date(hoy);
+  en7dias.setDate(en7dias.getDate() + 7);
+  const cotPorVencer = cotizaciones.filter((c) => {
+    if (!c.fecha_validez) return false;
+    if (["ganada", "perdida"].includes(c.estado)) return false;
+    const fv = new Date(c.fecha_validez);
+    return fv <= en7dias && fv >= hoy;
+  });
 
   // Pipeline cotizaciones
   const cotByEstado = COT_ESTADOS.map((e) => ({
@@ -169,6 +191,54 @@ export default async function AdminDashboardPage() {
               <div className="mt-4 flex items-center gap-1 text-xs text-[#e2b44b]/60 group-hover:text-[#e2b44b] transition">
                 Ver conciliación →
               </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* KPI Cards — Row 2: Pipeline, Conversión, Por vencer */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Monto en pipeline */}
+          <Link href="/admin/cotizaciones" className="group block">
+            <div className="rounded-xl border border-purple-500/25 bg-purple-500/8 hover:bg-purple-500/12 transition p-5">
+              <p className="text-xs text-purple-300/70 uppercase tracking-widest font-semibold">Pipeline Activo</p>
+              <p className="text-2xl font-bold text-purple-200 mt-2 tabular-nums leading-tight">{CLP(montoPipeline)}</p>
+              <p className="text-xs text-purple-300/50 mt-2">monto total en nueva + revisión + cotizada</p>
+              <div className="mt-4 flex items-center gap-1 text-xs text-purple-300/60 group-hover:text-purple-200 transition">
+                Ver pipeline →
+              </div>
+            </div>
+          </Link>
+
+          {/* Tasa de conversión */}
+          <div className="rounded-xl border border-green-500/25 bg-green-500/8 p-5">
+            <p className="text-xs text-green-300/70 uppercase tracking-widest font-semibold">Tasa de Conversión</p>
+            <p className="text-4xl font-bold text-green-200 mt-2 tabular-nums">{tasaConversion.toFixed(1)}%</p>
+            <p className="text-xs text-green-300/50 mt-2">
+              {cotGanadas} ganadas de {totalCerradas} cerradas
+            </p>
+          </div>
+
+          {/* Cotizaciones por vencer */}
+          <Link href="/admin/cotizaciones" className="group block">
+            <div className={`rounded-xl border transition p-5 ${
+              cotPorVencer.length > 0
+                ? "border-orange-500/25 bg-orange-500/8 hover:bg-orange-500/12"
+                : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]"
+            }`}>
+              <p className={`text-xs uppercase tracking-widest font-semibold ${
+                cotPorVencer.length > 0 ? "text-orange-300/70" : "text-white/40"
+              }`}>Por Vencer (7 días)</p>
+              <p className={`text-4xl font-bold mt-2 tabular-nums ${
+                cotPorVencer.length > 0 ? "text-orange-200" : "text-white/50"
+              }`}>{cotPorVencer.length}</p>
+              <p className={`text-xs mt-2 ${
+                cotPorVencer.length > 0 ? "text-orange-300/50" : "text-white/30"
+              }`}>cotizaciones con validez próxima a expirar</p>
+              {cotPorVencer.length > 0 && (
+                <div className="mt-4 flex items-center gap-1 text-xs text-orange-300/60 group-hover:text-orange-200 transition">
+                  Revisar →
+                </div>
+              )}
             </div>
           </Link>
         </div>
@@ -258,13 +328,20 @@ export default async function AdminDashboardPage() {
               <p className="text-xs text-white/30 py-4 text-center">Sin cotizaciones registradas</p>
             ) : (
               <div className="divide-y divide-white/5">
-                {recientesCot.map((c: { id: string; estado: string; created_at: string }) => (
+                {recientesCot.map((c: { id: string; estado: string; created_at: string; codigo?: string; nombre?: string; apellidos?: string; compania?: string }) => (
                   <Link
                     key={c.id}
                     href={`/admin/cotizaciones/${c.id}`}
                     className="flex items-center justify-between py-2.5 hover:bg-white/[0.03] -mx-2 px-2 rounded transition"
                   >
-                    <span className="text-xs text-white/60 font-mono truncate max-w-[140px]">{c.id.slice(0, 8)}…</span>
+                    <div className="truncate max-w-[180px]">
+                      <span className="text-xs text-white/70">
+                        {[c.nombre, c.apellidos].filter(Boolean).join(" ") || "Sin nombre"}
+                      </span>
+                      {c.compania && (
+                        <span className="text-[10px] text-white/35 ml-1.5">{c.compania}</span>
+                      )}
+                    </div>
                     <span className={`text-[10px] border rounded-full px-2 py-0.5 ${
                       c.estado === "nueva" ? "bg-blue-500/20 text-blue-300 border-blue-500/40" :
                       c.estado === "ganada" ? "bg-green-500/20 text-green-300 border-green-500/40" :

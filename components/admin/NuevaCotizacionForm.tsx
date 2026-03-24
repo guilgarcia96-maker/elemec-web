@@ -130,6 +130,12 @@ interface InitialData {
   tipoServicio?:   string;
   contactoNombre?: string;
   direccion?:      string;
+  telefono?:       string;
+  movil?:          string;
+  rutEmpresa?:     string;
+  cargo?:          string;
+  prioridad?:      string;
+  fromFolio?:      string;
 }
 
 /* ─── Component ──────────────────────────────────────────────────────── */
@@ -157,11 +163,11 @@ export default function NuevaCotizacionForm({
   const [ciudad,         setCiudad]         = useState('');
   const [contactoNombre, setContactoNombre] = useState(initialData?.contactoNombre ?? '');
   const [nombreDir,      setNombreDir]      = useState('');
-  const [telefono,       setTelefono]       = useState('');
+  const [telefono,       setTelefono]       = useState(initialData?.telefono ?? '');
   const [email,          setEmail]          = useState(initialData?.email ?? '');
-  const [rutEmpresa,     setRutEmpresa]     = useState('');
-  const [movil,          setMovil]          = useState('');
-  const [cargo,          setCargo]          = useState('');
+  const [rutEmpresa,     setRutEmpresa]     = useState(initialData?.rutEmpresa ?? '');
+  const [movil,          setMovil]          = useState(initialData?.movil ?? '');
+  const [cargo,          setCargo]          = useState(initialData?.cargo ?? '');
   const [glosa,          setGlosa]          = useState('');
   const [vendedor,       setVendedor]       = useState('');
   const [comision,       setComision]       = useState('');
@@ -171,7 +177,7 @@ export default function NuevaCotizacionForm({
   /* ── Extra commercial fields ── */
   const [region,         setRegion]         = useState(initialData?.region ?? '');
   const [tipoServicio,   setTipoServicio]   = useState(initialData?.tipoServicio ?? '');
-  const [prioridad,      setPrioridad]      = useState('');
+  const [prioridad,      setPrioridad]      = useState(initialData?.prioridad ?? '');
   const [origen,         setOrigen]         = useState('');
   const [nombreObra,     setNombreObra]     = useState(initialData?.nombreObra ?? '');
 
@@ -350,8 +356,10 @@ export default function NuevaCotizacionForm({
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
           <span>
-            Desarrollando solicitud{' '}
-            <Link href={`/admin/cotizaciones/${fromSolicitudId}`} className="font-semibold underline hover:text-orange-200">#{fromSolicitudId.slice(0, 8)}…</Link>
+            Desarrollando cotización desde solicitud{' '}
+            <Link href={`/admin/cotizaciones/${fromSolicitudId}`} className="font-semibold underline hover:text-orange-200">
+              {initialData?.fromFolio ?? `#${fromSolicitudId.slice(0, 8)}…`}
+            </Link>
             {' '}— al registrar se envía la cotización al cliente y queda vinculada con la solicitud original.
           </span>
         </div>
