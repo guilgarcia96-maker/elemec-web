@@ -11,7 +11,7 @@ export default async function GastosCategoriasPage() {
 
   return (
     <AdminShell session={session} active="gastos">
-      <main className="px-6 py-10">
+      <main className="px-3 py-4 md:px-6 md:py-10">
         <GastosCategoriasClient />
       </main>
     </AdminShell>

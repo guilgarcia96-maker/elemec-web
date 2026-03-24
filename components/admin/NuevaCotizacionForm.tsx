@@ -330,7 +330,7 @@ export default function NuevaCotizacionForm({
 
   /* ── Render ──────────────────── */
   return (
-    <div className="mx-auto max-w-6xl space-y-4 pb-10">
+    <div className="mx-auto max-w-6xl space-y-4 px-3 py-4 md:px-6 md:py-10">
 
       {/* ── Page title ─────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-3">

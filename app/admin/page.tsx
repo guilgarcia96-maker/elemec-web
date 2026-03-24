@@ -143,7 +143,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <AdminShell session={session} active="dashboard">
-      <div className="p-6 space-y-8">
+      <div className="p-3 md:p-6 space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

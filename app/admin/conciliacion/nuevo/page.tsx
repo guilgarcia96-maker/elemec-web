@@ -75,7 +75,7 @@ export default function NuevoMovimientoPage() {
         </nav>
       </aside>
 
-      <div className="flex-1 px-6 py-10">
+      <div className="flex-1 px-3 py-4 md:px-6 md:py-10">
         <div className="mb-6">
           <a href="/admin/conciliacion" className="text-xs text-white/40 hover:text-white transition">
             ← Conciliación

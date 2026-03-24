@@ -78,7 +78,7 @@ export default async function AdminConciliacionPage({
 
   return (
     <AdminShell session={session} active="conciliacion">
-      <main className="px-6 py-10">
+      <main className="px-3 py-4 md:px-6 md:py-10">
         {/* Título */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -100,7 +100,7 @@ export default async function AdminConciliacionPage({
         </div>
 
         {/* Resumen tarjetas */}
-        <div className="mt-6 grid grid-cols-3 gap-4">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             { label: "Pendiente", value: totalPendiente,  color: "text-yellow-400" },
             { label: "Conciliado", value: totalConciliado, color: "text-green-400" },
@@ -161,9 +161,9 @@ export default async function AdminConciliacionPage({
               <tr className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-widest text-white/40">
                 <th className="px-4 py-3">Fecha</th>
                 <th className="px-4 py-3">Tipo</th>
-                <th className="px-4 py-3">Categoría</th>
-                <th className="px-4 py-3">Descripción</th>
-                <th className="px-4 py-3">Referencia</th>
+                <th className="px-4 py-3 hidden md:table-cell">Categoría</th>
+                <th className="px-4 py-3 hidden md:table-cell">Descripción</th>
+                <th className="px-4 py-3 hidden md:table-cell">Referencia</th>
                 <th className="px-4 py-3 text-right">Monto</th>
                 <th className="px-4 py-3">Estado</th>
                 {canEdit && <th className="px-4 py-3">Acción</th>}
@@ -191,11 +191,11 @@ export default async function AdminConciliacionPage({
                       {m.tipo}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-white/70">{m.categoria}</td>
-                  <td className="px-4 py-3 text-white/70 max-w-xs truncate">
+                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{m.categoria}</td>
+                  <td className="px-4 py-3 text-white/70 max-w-xs truncate hidden md:table-cell">
                     {m.descripcion || "—"}
                   </td>
-                  <td className="px-4 py-3 text-white/50 font-mono text-xs">
+                  <td className="px-4 py-3 text-white/50 font-mono text-xs hidden md:table-cell">
                     {m.referencia || "—"}
                   </td>
                   <td className="px-4 py-3 text-right font-mono font-semibold text-white">

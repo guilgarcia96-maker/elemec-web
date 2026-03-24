@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import { AdminSession } from "@/lib/admin-auth";
 
 const NAV = [
@@ -48,10 +52,53 @@ export default function AdminShell({
   children: React.ReactNode;
   active?: "dashboard" | "cotizaciones" | "postulaciones" | "conciliacion" | "gastos" | "cobranza" | "configuracion";
 }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Cerrar sidebar al navegar
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
   return (
     <div className="flex min-h-screen bg-[#0f0f1a] text-white">
+      {/* Barra superior móvil */}
+      <div className="fixed top-0 left-0 right-0 h-14 bg-[#13131f] border-b border-white/10 flex items-center px-4 z-40 md:hidden">
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="p-1.5 rounded-lg hover:bg-white/10 transition"
+          aria-label="Menú"
+        >
+          <svg className="h-6 w-6 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            {sidebarOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
+        <span className="ml-3 font-bold text-lg text-[#e2b44b] tracking-wide">ELEMEC</span>
+        <span className="ml-1.5 text-[10px] text-white/35 uppercase tracking-widest self-end mb-1">Backoffice</span>
+      </div>
+
+      {/* Overlay backdrop (solo móvil) */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-56 shrink-0 border-r border-white/10 bg-[#13131f] flex flex-col sticky top-0 h-screen overflow-y-auto">
+      <aside
+        className={`
+          fixed top-0 left-0 h-screen w-56 bg-[#13131f] border-r border-white/10 z-50
+          flex flex-col overflow-y-auto
+          transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          md:relative md:translate-x-0 md:shrink-0 md:sticky
+        `}
+      >
         <div className="px-5 py-5 border-b border-white/10">
           <p className="text-base font-bold text-[#e2b44b] tracking-wide">ELEMEC</p>
           <p className="text-[10px] text-white/35 mt-0.5 uppercase tracking-widest">
@@ -69,6 +116,7 @@ export default function AdminShell({
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => setSidebarOpen(false)}
                 className={`flex flex-col px-3 py-2.5 rounded-lg text-sm transition ${
                   isActive
                     ? "bg-[#e2b44b]/10 text-[#e2b44b] border border-[#e2b44b]/30"
@@ -104,8 +152,8 @@ export default function AdminShell({
         </div>
       </aside>
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">{children}</div>
+      {/* Contenido */}
+      <div className="flex-1 min-w-0 pt-14 md:pt-0">{children}</div>
     </div>
   );
 }

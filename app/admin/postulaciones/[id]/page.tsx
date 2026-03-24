@@ -81,7 +81,7 @@ export default async function DetallePostulacionPage({
 
   return (
     <AdminShell session={session} active="postulaciones">
-      <main className="mx-auto max-w-4xl px-6 py-10">
+      <main className="mx-auto max-w-4xl px-3 py-4 md:px-6 md:py-10">
         <div className="mb-6">
           <Link href="/admin/postulaciones" className="text-xs text-white/40 hover:text-white transition">
             ← Postulaciones

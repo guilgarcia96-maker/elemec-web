@@ -162,7 +162,7 @@ export default function EscanearClient() {
     "w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30";
 
   return (
-    <div className="flex-1 px-6 py-10">
+    <div className="flex-1 px-3 py-4 md:px-6 md:py-10">
       {/* Breadcrumb */}
       <div className="mb-6">
         <Link href="/admin/conciliacion" className="text-xs text-white/40 hover:text-white transition">

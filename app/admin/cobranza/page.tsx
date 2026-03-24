@@ -62,7 +62,7 @@ export default async function CobranzaPage() {
 
   return (
     <AdminShell session={session} active="cobranza">
-      <main className="px-6 py-10">
+      <main className="px-3 py-4 md:px-6 md:py-10">
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Cobranza · Aging CxC</h1>
           <p className="mt-1 text-sm text-white/40">
@@ -109,12 +109,12 @@ export default async function CobranzaPage() {
                 <tr className="border-b border-white/10 bg-white/5 text-left text-xs text-white/40 uppercase tracking-wider">
                   <th className="px-4 py-3">Nº Factura</th>
                   <th className="px-4 py-3">Cliente</th>
-                  <th className="px-4 py-3">Emisión</th>
-                  <th className="px-4 py-3">Vencimiento</th>
-                  <th className="px-4 py-3 text-right">Total</th>
+                  <th className="px-4 py-3 hidden md:table-cell">Emisión</th>
+                  <th className="px-4 py-3 hidden md:table-cell">Vencimiento</th>
+                  <th className="px-4 py-3 text-right hidden md:table-cell">Total</th>
                   <th className="px-4 py-3 text-right">Saldo</th>
                   <th className="px-4 py-3 text-center">Días mora</th>
-                  <th className="px-4 py-3">Tramo</th>
+                  <th className="px-4 py-3 hidden md:table-cell">Tramo</th>
                 </tr>
               </thead>
               <tbody>
@@ -128,17 +128,17 @@ export default async function CobranzaPage() {
                       <td className="px-4 py-3 text-white/80 max-w-[200px] truncate">
                         {r.razon_social ?? "—"}
                       </td>
-                      <td className="px-4 py-3 text-white/50">
+                      <td className="px-4 py-3 text-white/50 hidden md:table-cell">
                         {r.fecha_emision
                           ? new Date(r.fecha_emision).toLocaleDateString("es-CL")
                           : "—"}
                       </td>
-                      <td className="px-4 py-3 text-white/50">
+                      <td className="px-4 py-3 text-white/50 hidden md:table-cell">
                         {r.fecha_vencimiento
                           ? new Date(r.fecha_vencimiento).toLocaleDateString("es-CL")
                           : "—"}
                       </td>
-                      <td className="px-4 py-3 text-right text-white/70">{CLP(r.total)}</td>
+                      <td className="px-4 py-3 text-right text-white/70 hidden md:table-cell">{CLP(r.total)}</td>
                       <td className="px-4 py-3 text-right font-semibold text-white">{CLP(r.saldo)}</td>
                       <td className="px-4 py-3 text-center">
                         <span
@@ -155,7 +155,7 @@ export default async function CobranzaPage() {
                           {r.dias_mora}d
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 hidden md:table-cell">
                         <span
                           className={`inline-block rounded-full border px-2 py-0.5 text-xs font-semibold ${
                             tramo?.color ?? ""

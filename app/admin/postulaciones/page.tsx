@@ -80,7 +80,7 @@ export default async function AdminPostulacionesPage({
 
   return (
     <AdminShell session={session} active="postulaciones">
-      <main className="px-6 py-10">
+      <main className="px-3 py-4 md:px-6 md:py-10">
         {/* Título */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -146,11 +146,11 @@ export default async function AdminPostulacionesPage({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-widest text-white/40">
-                <th className="px-4 py-3">Fecha</th>
+                <th className="px-4 py-3 hidden md:table-cell">Fecha</th>
                 <th className="px-4 py-3">Candidato</th>
-                <th className="px-4 py-3">Cargo postulado</th>
-                <th className="px-4 py-3">Área</th>
-                <th className="px-4 py-3">Región</th>
+                <th className="px-4 py-3 hidden md:table-cell">Cargo postulado</th>
+                <th className="px-4 py-3 hidden md:table-cell">Área</th>
+                <th className="px-4 py-3 hidden md:table-cell">Región</th>
                 <th className="px-4 py-3">Estado</th>
                 <th className="px-4 py-3">Acciones</th>
               </tr>
@@ -165,7 +165,7 @@ export default async function AdminPostulacionesPage({
               )}
               {postulaciones.map((p: Record<string, string>) => (
                 <tr key={p.id} className="border-b border-white/5 hover:bg-white/5 transition">
-                  <td className="px-4 py-3 text-white/50 whitespace-nowrap">
+                  <td className="px-4 py-3 text-white/50 whitespace-nowrap hidden md:table-cell">
                     {new Date(p.created_at).toLocaleDateString("es-CL")}
                   </td>
                   <td className="px-4 py-3">
@@ -174,9 +174,9 @@ export default async function AdminPostulacionesPage({
                     </p>
                     <p className="text-xs text-white/40">{p.email}</p>
                   </td>
-                  <td className="px-4 py-3 text-white/70">{p.cargo_postulado || "—"}</td>
-                  <td className="px-4 py-3 text-white/70">{p.area || "—"}</td>
-                  <td className="px-4 py-3 text-white/70">{p.region || "—"}</td>
+                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{p.cargo_postulado || "—"}</td>
+                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{p.area || "—"}</td>
+                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{p.region || "—"}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${

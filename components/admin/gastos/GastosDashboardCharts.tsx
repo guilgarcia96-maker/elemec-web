@@ -71,7 +71,7 @@ export default function GastosDashboardCharts() {
     return (
       <div className="space-y-4 animate-pulse">
         <div className="h-8 w-48 rounded-lg bg-white/5" />
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-36 rounded-xl bg-white/5" />
           ))}

@@ -72,7 +72,7 @@ export default async function ConfiguracionPage() {
 
   return (
     <AdminShell session={session} active="configuracion">
-      <main className="px-6 py-10 max-w-4xl">
+      <main className="px-3 py-4 md:px-6 md:py-10 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-2xl font-bold">Configuración</h1>
           <p className="mt-1 text-sm text-white/40">
