@@ -37,8 +37,41 @@ interface Movimiento {
   monto: number;
   estado: string;
   centro_costo?: string | null;
+  rut_emisor?: string | null;
+  razon_social_emisor?: string | null;
+  tipo_documento?: string | null;
+  monto_neto?: number | null;
+  monto_iva?: number | null;
+  monto_total?: number | null;
+  forma_pago?: string | null;
+  rut_receptor?: string | null;
   conciliacion_adjuntos?: Adjunto[];
 }
+
+const BADGE_TIPO_DOC: Record<string, string> = {
+  boleta: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+  factura: "bg-violet-500/20 text-violet-300 border-violet-500/40",
+  factura_exenta: "bg-teal-500/20 text-teal-300 border-teal-500/40",
+  nota_credito: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+  guia_despacho: "bg-pink-500/20 text-pink-300 border-pink-500/40",
+};
+
+const TIPO_DOC_LABELS: Record<string, string> = {
+  boleta: "Boleta",
+  factura: "Factura",
+  factura_exenta: "Factura Exenta",
+  nota_credito: "Nota de Crédito",
+  guia_despacho: "Guía de Despacho",
+};
+
+const FORMA_PAGO_LABELS: Record<string, string> = {
+  efectivo: "Efectivo",
+  transferencia: "Transferencia",
+  tarjeta_debito: "Tarjeta Débito",
+  tarjeta_credito: "Tarjeta Crédito",
+  cheque: "Cheque",
+  otro: "Otro",
+};
 
 interface Props {
   movimientos: Movimiento[];
@@ -113,8 +146,18 @@ export default function ConciliacionTableClient({ movimientos, canEdit }: Props)
                   </span>
                 </td>
                 <td className="px-4 py-3 text-white/70 hidden md:table-cell">{m.categoria}</td>
-                <td className="px-4 py-3 text-white/70 max-w-xs truncate hidden md:table-cell">
-                  {m.descripcion || "\u2014"}
+                <td className="px-4 py-3 max-w-xs hidden md:table-cell">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white/70 truncate">{m.descripcion || "\u2014"}</span>
+                    {m.tipo_documento && (
+                      <span className={`inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${BADGE_TIPO_DOC[m.tipo_documento] ?? "bg-white/10 text-white/50 border-white/20"}`}>
+                        {TIPO_DOC_LABELS[m.tipo_documento] ?? m.tipo_documento}
+                      </span>
+                    )}
+                  </div>
+                  {m.rut_emisor && (
+                    <div className="text-xs text-white/40 mt-0.5">{m.rut_emisor}</div>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-white/50 font-mono text-xs hidden md:table-cell">
                   {m.referencia || "\u2014"}
@@ -185,6 +228,14 @@ export default function ConciliacionTableClient({ movimientos, canEdit }: Props)
           { label: "Referencia", valor: selected.referencia },
           { label: "Centro de costo", valor: selected.centro_costo ?? null },
           { label: "Estado", valor: selected.estado },
+          { label: "Tipo Documento", valor: selected.tipo_documento ? (TIPO_DOC_LABELS[selected.tipo_documento] ?? null) : null },
+          { label: "RUT Emisor", valor: selected.rut_emisor ?? null },
+          { label: "Razón Social", valor: selected.razon_social_emisor ?? null },
+          { label: "Monto Neto", valor: selected.monto_neto != null ? fmtCLP(Number(selected.monto_neto)) : null },
+          { label: "IVA", valor: selected.monto_iva != null ? fmtCLP(Number(selected.monto_iva)) : null },
+          { label: "Monto Total", valor: selected.monto_total != null ? fmtCLP(Number(selected.monto_total)) : null },
+          { label: "Forma de Pago", valor: selected.forma_pago ? (FORMA_PAGO_LABELS[selected.forma_pago] ?? null) : null },
+          { label: "RUT Receptor", valor: selected.rut_receptor ?? null },
         ] : []}
       />
     </>

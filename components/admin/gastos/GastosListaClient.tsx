@@ -28,7 +28,44 @@ interface Gasto {
   referencia: string | null;
   centro_costo: string | null;
   estado: string;
+  rut_emisor: string | null;
+  razon_social_emisor: string | null;
+  tipo_documento: string | null;
+  monto_neto: number | null;
+  monto_iva: number | null;
+  monto_total: number | null;
+  forma_pago: string | null;
+  rut_receptor: string | null;
   conciliacion_adjuntos?: Adjunto[];
+}
+
+const TIPOS_DOCUMENTO = [
+  { value: "boleta", label: "Boleta" },
+  { value: "factura", label: "Factura" },
+  { value: "factura_exenta", label: "Factura Exenta" },
+  { value: "nota_credito", label: "Nota de Crédito" },
+  { value: "guia_despacho", label: "Guía de Despacho" },
+];
+
+const FORMAS_PAGO = [
+  { value: "efectivo", label: "Efectivo" },
+  { value: "transferencia", label: "Transferencia" },
+  { value: "tarjeta_debito", label: "Tarjeta Débito" },
+  { value: "tarjeta_credito", label: "Tarjeta Crédito" },
+  { value: "cheque", label: "Cheque" },
+  { value: "otro", label: "Otro" },
+];
+
+const BADGE_TIPO_DOC: Record<string, string> = {
+  boleta: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+  factura: "bg-violet-500/20 text-violet-300 border-violet-500/40",
+  factura_exenta: "bg-teal-500/20 text-teal-300 border-teal-500/40",
+  nota_credito: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+  guia_despacho: "bg-pink-500/20 text-pink-300 border-pink-500/40",
+};
+
+function tipoDocLabel(val: string | null): string {
+  return TIPOS_DOCUMENTO.find(t => t.value === val)?.label ?? "";
 }
 
 const CLP = (n: number) =>
@@ -64,6 +101,14 @@ export default function GastosListaClient() {
     monto: "",
     referencia: "",
     centro_costo: "",
+    rut_emisor: "",
+    razon_social_emisor: "",
+    tipo_documento: "",
+    monto_neto: "",
+    monto_iva: "",
+    monto_total: "",
+    forma_pago: "",
+    rut_receptor: "",
   });
 
   const loadCategorias = useCallback(async () => {
@@ -110,6 +155,14 @@ export default function GastosListaClient() {
       monto: Number(form.monto),
       referencia: form.referencia || null,
       centro_costo: form.centro_costo || null,
+      rut_emisor: form.rut_emisor || null,
+      razon_social_emisor: form.razon_social_emisor || null,
+      tipo_documento: form.tipo_documento || null,
+      monto_neto: form.monto_neto ? Number(form.monto_neto) : null,
+      monto_iva: form.monto_iva ? Number(form.monto_iva) : null,
+      monto_total: form.monto_total ? Number(form.monto_total) : null,
+      forma_pago: form.forma_pago || null,
+      rut_receptor: form.rut_receptor || null,
     };
 
     try {
@@ -154,6 +207,14 @@ export default function GastosListaClient() {
       monto: "",
       referencia: "",
       centro_costo: "",
+      rut_emisor: "",
+      razon_social_emisor: "",
+      tipo_documento: "",
+      monto_neto: "",
+      monto_iva: "",
+      monto_total: "",
+      forma_pago: "",
+      rut_receptor: "",
     });
     setShowForm(false);
     setEditId(null);
@@ -172,6 +233,14 @@ export default function GastosListaClient() {
       monto: String(g.monto),
       referencia: g.referencia ?? "",
       centro_costo: g.centro_costo ?? "",
+      rut_emisor: g.rut_emisor ?? "",
+      razon_social_emisor: g.razon_social_emisor ?? "",
+      tipo_documento: g.tipo_documento ?? "",
+      monto_neto: g.monto_neto != null ? String(g.monto_neto) : "",
+      monto_iva: g.monto_iva != null ? String(g.monto_iva) : "",
+      monto_total: g.monto_total != null ? String(g.monto_total) : "",
+      forma_pago: g.forma_pago ?? "",
+      rut_receptor: g.rut_receptor ?? "",
     });
   }
 
@@ -343,6 +412,126 @@ export default function GastosListaClient() {
               />
             </div>
           </div>
+          {/* Datos tributarios */}
+          <div className="border-t border-white/10 pt-3 mt-1">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-3">Datos Tributarios</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="mb-1 block text-xs text-white/50">Tipo Documento</label>
+              <select
+                value={form.tipo_documento}
+                onChange={(e) => setForm({ ...form, tipo_documento: e.target.value })}
+                className="w-full rounded-lg border border-white/15 bg-[#0f0f1a] px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-orange-500"
+              >
+                <option value="">Sin especificar</option>
+                {TIPOS_DOCUMENTO.map((t) => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/50">Forma de Pago</label>
+              <select
+                value={form.forma_pago}
+                onChange={(e) => setForm({ ...form, forma_pago: e.target.value })}
+                className="w-full rounded-lg border border-white/15 bg-[#0f0f1a] px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-orange-500"
+              >
+                <option value="">Sin especificar</option>
+                {FORMAS_PAGO.map((f) => (
+                  <option key={f.value} value={f.value}>{f.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/50">RUT Emisor</label>
+              <input
+                type="text"
+                placeholder="76.123.456-7"
+                value={form.rut_emisor}
+                onChange={(e) => setForm({ ...form, rut_emisor: e.target.value })}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/50">Razón Social Emisor</label>
+              <input
+                type="text"
+                placeholder="Nombre legal"
+                value={form.razon_social_emisor}
+                onChange={(e) => setForm({ ...form, razon_social_emisor: e.target.value })}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="mb-1 block text-xs text-white/50">Monto Neto</label>
+              <input
+                type="number"
+                step="1"
+                min={0}
+                placeholder="Sin IVA"
+                value={form.monto_neto}
+                onChange={(e) => {
+                  const neto = Number(e.target.value);
+                  const iva = Math.round(neto * 0.19);
+                  const total = neto + iva;
+                  setForm({
+                    ...form,
+                    monto_neto: e.target.value,
+                    monto_iva: e.target.value ? String(iva) : "",
+                    monto_total: e.target.value ? String(total) : "",
+                  });
+                }}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/50">IVA (19%)</label>
+              <input
+                type="number"
+                step="1"
+                min={0}
+                placeholder="IVA"
+                value={form.monto_iva}
+                onChange={(e) => setForm({ ...form, monto_iva: e.target.value })}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/50">Monto Total</label>
+              <input
+                type="number"
+                step="1"
+                min={0}
+                placeholder="Con IVA"
+                value={form.monto_total}
+                onChange={(e) => {
+                  const total = Number(e.target.value);
+                  const neto = Math.round(total / 1.19);
+                  const iva = total - neto;
+                  setForm({
+                    ...form,
+                    monto_total: e.target.value,
+                    monto_neto: e.target.value ? String(neto) : "",
+                    monto_iva: e.target.value ? String(iva) : "",
+                  });
+                }}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-white/50">RUT Receptor</label>
+              <input
+                type="text"
+                placeholder="RUT ELEMEC"
+                value={form.rut_receptor}
+                onChange={(e) => setForm({ ...form, rut_receptor: e.target.value })}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              />
+            </div>
+          </div>
           <div className="flex items-center gap-3">
             <button
               type="submit"
@@ -473,8 +662,18 @@ export default function GastosListaClient() {
                     <td className="px-4 py-3 text-white/50 whitespace-nowrap">
                       {new Date(g.fecha).toLocaleDateString("es-CL")}
                     </td>
-                    <td className="px-4 py-3 text-white/70 max-w-xs truncate">
-                      {g.descripcion || "Sin descripcion"}
+                    <td className="px-4 py-3 max-w-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-white/70 truncate">{g.descripcion || "Sin descripcion"}</span>
+                        {g.tipo_documento && (
+                          <span className={`inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${BADGE_TIPO_DOC[g.tipo_documento] ?? "bg-white/10 text-white/50 border-white/20"}`}>
+                            {tipoDocLabel(g.tipo_documento)}
+                          </span>
+                        )}
+                      </div>
+                      {g.rut_emisor && (
+                        <div className="text-xs text-white/40 mt-0.5">{g.rut_emisor}</div>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -542,6 +741,14 @@ export default function GastosListaClient() {
           { label: "Referencia", valor: selectedGasto.referencia },
           { label: "Centro de costo", valor: selectedGasto.centro_costo },
           { label: "Estado", valor: selectedGasto.estado },
+          { label: "Tipo Documento", valor: tipoDocLabel(selectedGasto.tipo_documento) || null },
+          { label: "RUT Emisor", valor: selectedGasto.rut_emisor },
+          { label: "Razón Social", valor: selectedGasto.razon_social_emisor },
+          { label: "Monto Neto", valor: selectedGasto.monto_neto != null ? CLP(Number(selectedGasto.monto_neto)) : null },
+          { label: "IVA", valor: selectedGasto.monto_iva != null ? CLP(Number(selectedGasto.monto_iva)) : null },
+          { label: "Monto Total", valor: selectedGasto.monto_total != null ? CLP(Number(selectedGasto.monto_total)) : null },
+          { label: "Forma de Pago", valor: FORMAS_PAGO.find(f => f.value === selectedGasto.forma_pago)?.label ?? null },
+          { label: "RUT Receptor", valor: selectedGasto.rut_receptor },
         ] : []}
       />
     </div>

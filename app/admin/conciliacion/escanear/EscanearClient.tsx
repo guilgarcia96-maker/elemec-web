@@ -24,9 +24,34 @@ interface OcrResult {
   categoria: string | null;
   tipo: "ingreso" | "egreso";
   referencia: string | null;
+  rut_emisor: string | null;
+  razon_social_emisor: string | null;
+  tipo_documento: string | null;
+  monto_neto: number | null;
+  monto_iva: number | null;
+  monto_total: number | null;
+  forma_pago: string | null;
+  rut_receptor: string | null;
   storagePath: string;
   categorias: string[];
 }
+
+const TIPOS_DOCUMENTO = [
+  { value: "boleta", label: "Boleta" },
+  { value: "factura", label: "Factura" },
+  { value: "factura_exenta", label: "Factura Exenta" },
+  { value: "nota_credito", label: "Nota de Crédito" },
+  { value: "guia_despacho", label: "Guía de Despacho" },
+];
+
+const FORMAS_PAGO = [
+  { value: "efectivo", label: "Efectivo" },
+  { value: "transferencia", label: "Transferencia" },
+  { value: "tarjeta_debito", label: "Tarjeta Débito" },
+  { value: "tarjeta_credito", label: "Tarjeta Crédito" },
+  { value: "cheque", label: "Cheque" },
+  { value: "otro", label: "Otro" },
+];
 
 export default function EscanearClient() {
   const [processing, setProcessing] = useState(false);
@@ -48,6 +73,14 @@ export default function EscanearClient() {
     categoria: "",
     referencia: "",
     centro_costo: "",
+    rut_emisor: "",
+    razon_social_emisor: "",
+    tipo_documento: "",
+    monto_neto: "",
+    monto_iva: "",
+    monto_total: "",
+    forma_pago: "",
+    rut_receptor: "",
   });
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -91,6 +124,14 @@ export default function EscanearClient() {
         categoria: data.categoria || "",
         referencia: data.referencia || "",
         centro_costo: "",
+        rut_emisor: data.rut_emisor || "",
+        razon_social_emisor: data.razon_social_emisor || "",
+        tipo_documento: data.tipo_documento || "",
+        monto_neto: data.monto_neto != null ? String(data.monto_neto) : "",
+        monto_iva: data.monto_iva != null ? String(data.monto_iva) : "",
+        monto_total: data.monto_total != null ? String(data.monto_total) : "",
+        forma_pago: data.forma_pago || "",
+        rut_receptor: data.rut_receptor || "",
       });
     } catch {
       setError("Error al conectar con el servidor");
@@ -124,6 +165,14 @@ export default function EscanearClient() {
         body: JSON.stringify({
           ...form,
           monto: Number(form.monto),
+          monto_neto: form.monto_neto ? Number(form.monto_neto) : null,
+          monto_iva: form.monto_iva ? Number(form.monto_iva) : null,
+          monto_total: form.monto_total ? Number(form.monto_total) : null,
+          tipo_documento: form.tipo_documento || null,
+          forma_pago: form.forma_pago || null,
+          rut_emisor: form.rut_emisor || null,
+          razon_social_emisor: form.razon_social_emisor || null,
+          rut_receptor: form.rut_receptor || null,
           storagePath,
         }),
       });
@@ -154,6 +203,14 @@ export default function EscanearClient() {
       categoria: "",
       referencia: "",
       centro_costo: "",
+      rut_emisor: "",
+      razon_social_emisor: "",
+      tipo_documento: "",
+      monto_neto: "",
+      monto_iva: "",
+      monto_total: "",
+      forma_pago: "",
+      rut_receptor: "",
     });
     if (fileRef.current) fileRef.current.value = "";
   }
@@ -335,6 +392,140 @@ export default function EscanearClient() {
                     placeholder="Ej: Operaciones Sur"
                   />
                 </div>
+              </div>
+
+              {/* Separador: Datos tributarios */}
+              <div className="border-t border-white/10 pt-4 mt-2">
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40 mb-3">Datos Tributarios</h3>
+              </div>
+
+              {/* Tipo documento y forma de pago */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-sm text-white/70">Tipo Documento</label>
+                  <select
+                    value={form.tipo_documento}
+                    onChange={(e) => setForm({ ...form, tipo_documento: e.target.value })}
+                    className={inputClass}
+                  >
+                    <option value="">Sin especificar</option>
+                    {TIPOS_DOCUMENTO.map((t) => (
+                      <option key={t.value} value={t.value}>{t.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm text-white/70">Forma de Pago</label>
+                  <select
+                    value={form.forma_pago}
+                    onChange={(e) => setForm({ ...form, forma_pago: e.target.value })}
+                    className={inputClass}
+                  >
+                    <option value="">Sin especificar</option>
+                    {FORMAS_PAGO.map((f) => (
+                      <option key={f.value} value={f.value}>{f.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* RUT emisor y razón social */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-sm text-white/70">RUT Emisor</label>
+                  <input
+                    type="text"
+                    value={form.rut_emisor}
+                    onChange={(e) => setForm({ ...form, rut_emisor: e.target.value })}
+                    maxLength={20}
+                    className={inputClass}
+                    placeholder="Ej: 76.123.456-7"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm text-white/70">Razón Social Emisor</label>
+                  <input
+                    type="text"
+                    value={form.razon_social_emisor}
+                    onChange={(e) => setForm({ ...form, razon_social_emisor: e.target.value })}
+                    maxLength={200}
+                    className={inputClass}
+                    placeholder="Nombre legal del emisor"
+                  />
+                </div>
+              </div>
+
+              {/* Montos neto, IVA, total */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="mb-1 block text-sm text-white/70">Monto Neto</label>
+                  <input
+                    type="number"
+                    step="1"
+                    min={0}
+                    value={form.monto_neto}
+                    onChange={(e) => {
+                      const neto = Number(e.target.value);
+                      const iva = Math.round(neto * 0.19);
+                      const total = neto + iva;
+                      setForm({
+                        ...form,
+                        monto_neto: e.target.value,
+                        monto_iva: e.target.value ? String(iva) : "",
+                        monto_total: e.target.value ? String(total) : "",
+                      });
+                    }}
+                    className={inputClass}
+                    placeholder="Sin IVA"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm text-white/70">IVA (19%)</label>
+                  <input
+                    type="number"
+                    step="1"
+                    min={0}
+                    value={form.monto_iva}
+                    onChange={(e) => setForm({ ...form, monto_iva: e.target.value })}
+                    className={inputClass}
+                    placeholder="IVA"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm text-white/70">Monto Total</label>
+                  <input
+                    type="number"
+                    step="1"
+                    min={0}
+                    value={form.monto_total}
+                    onChange={(e) => {
+                      const total = Number(e.target.value);
+                      const neto = Math.round(total / 1.19);
+                      const iva = total - neto;
+                      setForm({
+                        ...form,
+                        monto_total: e.target.value,
+                        monto_neto: e.target.value ? String(neto) : "",
+                        monto_iva: e.target.value ? String(iva) : "",
+                      });
+                    }}
+                    className={inputClass}
+                    placeholder="Con IVA"
+                  />
+                </div>
+              </div>
+
+              {/* RUT receptor */}
+              <div>
+                <label className="mb-1 block text-sm text-white/70">RUT Receptor</label>
+                <input
+                  type="text"
+                  value={form.rut_receptor}
+                  onChange={(e) => setForm({ ...form, rut_receptor: e.target.value })}
+                  maxLength={20}
+                  className={inputClass}
+                  placeholder="RUT de ELEMEC"
+                />
               </div>
 
               {error && (

@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   const supabase = getSupabase();
   let query = supabase
     .from("conciliacion_movimientos")
-    .select("id, fecha, descripcion, categoria, categoria_id, subcategoria, monto, referencia, centro_costo, estado, conciliacion_adjuntos(id, storage_path)")
+    .select("id, fecha, descripcion, categoria, categoria_id, subcategoria, monto, referencia, centro_costo, estado, rut_emisor, razon_social_emisor, tipo_documento, monto_neto, monto_iva, monto_total, forma_pago, rut_receptor, conciliacion_adjuntos(id, storage_path)")
     .eq("tipo", "egreso")
     .order("fecha", { ascending: false })
     .limit(500);
@@ -50,6 +50,9 @@ export async function PUT(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body?.id) return NextResponse.json({ error: "ID requerido" }, { status: 400 });
 
+  const TIPOS_DOC_VALIDOS = ["boleta", "factura", "factura_exenta", "nota_credito", "guia_despacho"];
+  const FORMAS_PAGO_VALIDAS = ["efectivo", "transferencia", "tarjeta_debito", "tarjeta_credito", "cheque", "otro"];
+
   const updates: Record<string, unknown> = {};
   if (body.fecha) updates.fecha = body.fecha;
   if (body.descripcion !== undefined) updates.descripcion = body.descripcion || null;
@@ -59,6 +62,14 @@ export async function PUT(req: NextRequest) {
   if (body.monto !== undefined) updates.monto = Number(body.monto);
   if (body.referencia !== undefined) updates.referencia = body.referencia || null;
   if (body.centro_costo !== undefined) updates.centro_costo = body.centro_costo || null;
+  if (body.rut_emisor !== undefined) updates.rut_emisor = body.rut_emisor || null;
+  if (body.razon_social_emisor !== undefined) updates.razon_social_emisor = body.razon_social_emisor || null;
+  if (body.tipo_documento !== undefined) updates.tipo_documento = TIPOS_DOC_VALIDOS.includes(body.tipo_documento) ? body.tipo_documento : null;
+  if (body.monto_neto !== undefined) updates.monto_neto = body.monto_neto != null && !isNaN(Number(body.monto_neto)) ? Number(body.monto_neto) : null;
+  if (body.monto_iva !== undefined) updates.monto_iva = body.monto_iva != null && !isNaN(Number(body.monto_iva)) ? Number(body.monto_iva) : null;
+  if (body.monto_total !== undefined) updates.monto_total = body.monto_total != null && !isNaN(Number(body.monto_total)) ? Number(body.monto_total) : null;
+  if (body.forma_pago !== undefined) updates.forma_pago = FORMAS_PAGO_VALIDAS.includes(body.forma_pago) ? body.forma_pago : null;
+  if (body.rut_receptor !== undefined) updates.rut_receptor = body.rut_receptor || null;
 
   const supabase = getSupabase();
   const { error } = await supabase

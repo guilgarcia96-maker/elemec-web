@@ -24,6 +24,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Datos obligatorios faltantes o inválidos." }, { status: 400 });
   }
 
+  const TIPOS_DOC_VALIDOS = ["boleta", "factura", "factura_exenta", "nota_credito", "guia_despacho"];
+  const FORMAS_PAGO_VALIDAS = ["efectivo", "transferencia", "tarjeta_debito", "tarjeta_credito", "cheque", "otro"];
+
+  const tipoDoc = String(body.tipo_documento ?? "").trim();
+  const formaPago = String(body.forma_pago ?? "").trim();
+
   const insert = {
     tipo,
     fecha,
@@ -37,6 +43,14 @@ export async function POST(req: NextRequest) {
     estado:  "pendiente",
     notas:   String(body.notas ?? "").slice(0, 2000) || null,
     creado_por: session.userId === "legacy-admin" ? null : session.userId,
+    rut_emisor:          String(body.rut_emisor ?? "").slice(0, 20) || null,
+    razon_social_emisor: String(body.razon_social_emisor ?? "").slice(0, 200) || null,
+    tipo_documento:      TIPOS_DOC_VALIDOS.includes(tipoDoc) ? tipoDoc : null,
+    monto_neto:          body.monto_neto != null && !isNaN(Number(body.monto_neto)) ? Number(body.monto_neto) : null,
+    monto_iva:           body.monto_iva != null && !isNaN(Number(body.monto_iva)) ? Number(body.monto_iva) : null,
+    monto_total:         body.monto_total != null && !isNaN(Number(body.monto_total)) ? Number(body.monto_total) : null,
+    forma_pago:          FORMAS_PAGO_VALIDAS.includes(formaPago) ? formaPago : null,
+    rut_receptor:        String(body.rut_receptor ?? "").slice(0, 20) || null,
   };
 
   const supabase = createClient(

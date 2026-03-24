@@ -185,6 +185,117 @@ export default function NuevoMovimientoPage() {
             />
           </div>
 
+          {/* Datos tributarios */}
+          <div className="border-t border-white/10 pt-4 mt-2">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40 mb-4">Datos Tributarios</h3>
+          </div>
+
+          {/* Tipo documento y forma de pago */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1 block text-sm text-white/70">Tipo Documento</label>
+              <select
+                name="tipo_documento"
+                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b]"
+              >
+                <option value="">Sin especificar</option>
+                <option value="boleta">Boleta</option>
+                <option value="factura">Factura</option>
+                <option value="factura_exenta">Factura Exenta</option>
+                <option value="nota_credito">Nota de Crédito</option>
+                <option value="guia_despacho">Guía de Despacho</option>
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-white/70">Forma de Pago</label>
+              <select
+                name="forma_pago"
+                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b]"
+              >
+                <option value="">Sin especificar</option>
+                <option value="efectivo">Efectivo</option>
+                <option value="transferencia">Transferencia</option>
+                <option value="tarjeta_debito">Tarjeta Débito</option>
+                <option value="tarjeta_credito">Tarjeta Crédito</option>
+                <option value="cheque">Cheque</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+          </div>
+
+          {/* RUT emisor y razón social */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-1 block text-sm text-white/70">RUT Emisor</label>
+              <input
+                type="text"
+                name="rut_emisor"
+                maxLength={20}
+                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                placeholder="Ej: 76.123.456-7"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-white/70">Razón Social Emisor</label>
+              <input
+                type="text"
+                name="razon_social_emisor"
+                maxLength={200}
+                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                placeholder="Nombre legal del emisor"
+              />
+            </div>
+          </div>
+
+          {/* Montos neto, IVA, total */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="mb-1 block text-sm text-white/70">Monto Neto</label>
+              <input
+                type="number"
+                name="monto_neto"
+                step="1"
+                min={0}
+                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                placeholder="Sin IVA"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-white/70">IVA (19%)</label>
+              <input
+                type="number"
+                name="monto_iva"
+                step="1"
+                min={0}
+                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                placeholder="IVA"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-white/70">Monto Total</label>
+              <input
+                type="number"
+                name="monto_total"
+                step="1"
+                min={0}
+                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                placeholder="Con IVA"
+              />
+            </div>
+          </div>
+
+          {/* RUT receptor */}
+          <div>
+            <label className="mb-1 block text-sm text-white/70">RUT Receptor</label>
+            <input
+              type="text"
+              name="rut_receptor"
+              maxLength={20}
+              className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+              placeholder="RUT de ELEMEC"
+            />
+          </div>
+
           {/* Notas */}
           <div>
             <label className="mb-1 block text-sm text-white/70">Notas internas</label>
