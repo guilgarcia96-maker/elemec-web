@@ -15,8 +15,10 @@
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.1",
     "next": "16.1.6",
+    "openai": "^6.32.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "recharts": "^3.8.0",
     "resend": "^6.9.3"
   },
   "devDependencies": {

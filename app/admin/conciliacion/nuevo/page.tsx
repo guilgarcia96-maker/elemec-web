@@ -82,7 +82,15 @@ export default function NuevoMovimientoPage() {
           </a>
         </div>
 
-        <h1 className="text-2xl font-bold text-white mb-1">Nuevo Movimiento</h1>
+        <div className="flex items-center justify-between mb-1">
+          <h1 className="text-2xl font-bold text-white">Nuevo Movimiento</h1>
+          <a
+            href="/admin/conciliacion/escanear"
+            className="flex items-center gap-2 rounded-lg border border-[#e2b44b]/40 bg-[#e2b44b]/10 px-4 py-2 text-sm font-semibold text-[#e2b44b] hover:bg-[#e2b44b]/20 transition"
+          >
+            <span>&#128196;</span> Escanear recibo con IA
+          </a>
+        </div>
         <p className="text-sm text-white/50 mb-8">Registra un ingreso o egreso para conciliación contable.</p>
 
         <form onSubmit={handleSubmit} className="space-y-5 max-w-2xl">

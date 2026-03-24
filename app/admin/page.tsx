@@ -60,6 +60,7 @@ const QUICK_LINKS = [
   { href: "/admin/cotizaciones", label: "Cotizaciones", icon: "📋", desc: "Solicitudes recibidas" },
   { href: "/admin/postulaciones", label: "Postulaciones", icon: "👤", desc: "Pipeline de RRHH" },
   { href: "/admin/conciliacion", label: "Conciliación", icon: "🏦", desc: "Movimientos contables" },
+  { href: "/admin/gastos", label: "Gastos", icon: "📊", desc: "Control de gastos y OCR" },
   { href: "/admin/cobranza", label: "Cobranza", icon: "💰", desc: "Aging CxC y mora" },
   { href: "/admin/configuracion", label: "Configuración", icon: "⚙️", desc: "Reglas y motor" },
 ];
@@ -85,6 +86,18 @@ export default async function AdminDashboardPage() {
 
   // KPI: movimientos pendientes de conciliacion
   const concPendientes = conciliacion.filter((m) => m.estado === "pendiente").length;
+
+  // KPI: gastos del mes actual
+  const _now = new Date();
+  const mesActual = _now.getMonth(); // 0-indexed
+  const anioActual = _now.getFullYear();
+  const gastosDelMes = conciliacion
+    .filter((m) => {
+      if (m.tipo !== "egreso") return false;
+      const f = new Date(m.fecha);
+      return f.getMonth() === mesActual && f.getFullYear() === anioActual;
+    })
+    .reduce((sum, m) => sum + (m.monto ?? 0), 0);
 
   // KPI: Monto total en pipeline
   const montoPipeline = cotizaciones
@@ -195,8 +208,20 @@ export default async function AdminDashboardPage() {
           </Link>
         </div>
 
-        {/* KPI Cards — Row 2: Pipeline, Conversión, Por vencer */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* KPI Cards — Row 2: Pipeline, Conversión, Por vencer, Gastos */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          {/* Gastos del mes */}
+          <Link href="/admin/gastos" className="group block">
+            <div className="rounded-xl border border-orange-500/25 bg-orange-500/8 hover:bg-orange-500/12 transition p-5">
+              <p className="text-xs text-orange-300/70 uppercase tracking-widest font-semibold">Gastos del Mes</p>
+              <p className="text-2xl font-bold text-orange-200 mt-2 tabular-nums leading-tight">{CLP(gastosDelMes)}</p>
+              <p className="text-xs text-orange-300/50 mt-2">egresos registrados</p>
+              <div className="mt-4 flex items-center gap-1 text-xs text-orange-300/60 group-hover:text-orange-200 transition">
+                Ver gastos →
+              </div>
+            </div>
+          </Link>
+
           {/* Monto en pipeline */}
           <Link href="/admin/cotizaciones" className="group block">
             <div className="rounded-xl border border-purple-500/25 bg-purple-500/8 hover:bg-purple-500/12 transition p-5">
@@ -404,7 +429,7 @@ export default async function AdminDashboardPage() {
         {/* Quick Access — inspired by KAME informes/maestros buttons */}
         <div>
           <h2 className="text-xs text-white/30 uppercase tracking-widest font-semibold mb-3">Acceso Rápido</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {QUICK_LINKS.map((link) => (
               <Link
                 key={link.href}

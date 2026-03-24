@@ -23,6 +23,11 @@ const NAV = [
     sub: "Movimientos contables",
   },
   {
+    href: "/admin/gastos",
+    label: "Gastos",
+    sub: "Control de gastos y OCR",
+  },
+  {
     href: "/admin/cobranza",
     label: "Cobranza",
     sub: "Aging CxC y mora",
@@ -41,7 +46,7 @@ export default function AdminShell({
 }: {
   session: AdminSession;
   children: React.ReactNode;
-  active?: "dashboard" | "cotizaciones" | "postulaciones" | "conciliacion" | "cobranza" | "configuracion";
+  active?: "dashboard" | "cotizaciones" | "postulaciones" | "conciliacion" | "gastos" | "cobranza" | "configuracion";
 }) {
   return (
     <div className="flex min-h-screen bg-[#0f0f1a] text-white">
