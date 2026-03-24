@@ -44,11 +44,35 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const { error } = await supabase.from("conciliacion_movimientos").insert([insert]);
-  if (error) {
-    console.error("conciliacion insert error:", error.message);
+  const { data: inserted, error } = await supabase
+    .from("conciliacion_movimientos")
+    .insert([insert])
+    .select("id")
+    .single();
+
+  if (error || !inserted) {
+    console.error("conciliacion insert error:", error?.message);
     return NextResponse.json({ error: "Error al guardar el movimiento." }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true });
+  // Vincular adjunto si viene un storage_path (flujo OCR)
+  const rawStoragePath = String(body.storagePath ?? "").trim();
+  if (rawStoragePath) {
+    const fileName = rawStoragePath.split("/").pop() ?? rawStoragePath;
+    const { error: adjError } = await supabase.from("conciliacion_adjuntos").insert([{
+      movimiento_id: inserted.id,
+      nombre_archivo: fileName,
+      mime_type: "image/jpeg",
+      storage_bucket: "backoffice-docs",
+      storage_path: rawStoragePath,
+      tipo: "respaldo",
+      subido_por: session.userId === "legacy-admin" ? null : session.userId,
+    }]);
+    if (adjError) {
+      console.error("conciliacion_adjuntos insert error:", adjError.message);
+      // No fallo la respuesta: el movimiento ya se guardó
+    }
+  }
+
+  return NextResponse.json({ ok: true, id: inserted.id });
 }

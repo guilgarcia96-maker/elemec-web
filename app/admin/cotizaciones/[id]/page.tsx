@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/admin-auth";
 import CotizacionAdjuntosForm from "@/components/admin/CotizacionAdjuntosForm";
 import CotizacionAdjuntoActions from "@/components/admin/CotizacionAdjuntoActions";
+import CotizacionAdjuntoPreview from "@/components/admin/CotizacionAdjuntoPreview";
 import AdminShell from "@/components/admin/AdminShell";
 import EstadoConfirmDialog from "@/components/admin/EstadoConfirmDialog";
 
@@ -108,7 +109,7 @@ export default async function DetalleCotizacionPage({
 
   const { data: attachmentRows, error: attachmentError } = await supabase
     .from("cotizacion_adjuntos")
-    .select("id, nombre_archivo, created_at, subido_por")
+    .select("id, nombre_archivo, storage_path, created_at, subido_por")
     .eq("cotizacion_id", id)
     .order("created_at", { ascending: false });
 
@@ -593,6 +594,11 @@ export default async function DetalleCotizacionPage({
                 className="flex items-center justify-between rounded-lg border border-cyan-500/15 bg-white/5 px-4 py-3"
               >
                 <div className="flex items-center gap-3">
+                  <CotizacionAdjuntoPreview
+                    adjunto={attachment}
+                    openHref={`/api/admin/cotizaciones/adjuntos/${attachment.id}`}
+                    storagePath={attachment.storage_path ?? null}
+                  />
                   <span className="inline-flex rounded border border-cyan-500/30 bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-medium text-cyan-300">
                     Cliente
                   </span>
@@ -636,6 +642,11 @@ export default async function DetalleCotizacionPage({
                 className="flex items-center justify-between rounded-lg border border-white/10 px-4 py-3"
               >
                 <div className="flex items-center gap-3">
+                  <CotizacionAdjuntoPreview
+                    adjunto={attachment}
+                    openHref={`/api/admin/cotizaciones/adjuntos/${attachment.id}`}
+                    storagePath={attachment.storage_path ?? null}
+                  />
                   <span className="inline-flex rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-white/40">
                     Interno
                   </span>

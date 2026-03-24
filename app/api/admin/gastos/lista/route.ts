@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   const supabase = getSupabase();
   let query = supabase
     .from("conciliacion_movimientos")
-    .select("id, fecha, descripcion, categoria, categoria_id, subcategoria, monto, referencia, centro_costo, estado")
+    .select("id, fecha, descripcion, categoria, categoria_id, subcategoria, monto, referencia, centro_costo, estado, conciliacion_adjuntos(id, storage_path)")
     .eq("tipo", "egreso")
     .order("fecha", { ascending: false })
     .limit(500);

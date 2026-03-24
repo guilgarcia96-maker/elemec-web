@@ -2,12 +2,19 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import AdjuntoPreviewPanel from "@/components/admin/AdjuntoPreviewPanel";
+import AdjuntoThumbnail from "@/components/admin/AdjuntoThumbnail";
 
 interface Categoria {
   id: string;
   nombre: string;
   color: string;
   icono: string;
+}
+
+interface Adjunto {
+  id: string;
+  storage_path: string;
 }
 
 interface Gasto {
@@ -21,6 +28,7 @@ interface Gasto {
   referencia: string | null;
   centro_costo: string | null;
   estado: string;
+  conciliacion_adjuntos?: Adjunto[];
 }
 
 const CLP = (n: number) =>
@@ -39,6 +47,10 @@ export default function GastosListaClient() {
   const [filterSearch, setFilterSearch] = useState("");
   const [filterDesde, setFilterDesde] = useState("");
   const [filterHasta, setFilterHasta] = useState("");
+
+  // Preview panel
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [selectedGasto, setSelectedGasto] = useState<Gasto | null>(null);
 
   // Formulario
   const [showForm, setShowForm] = useState(false);
@@ -188,6 +200,22 @@ export default function GastosListaClient() {
     } finally {
       setCategorizing(false);
     }
+  }
+
+  function openPreview(g: Gasto) {
+    setSelectedGasto(g);
+    setPanelOpen(true);
+  }
+
+  function getStoragePath(g: Gasto): string | null {
+    return g.conciliacion_adjuntos?.[0]?.storage_path ?? null;
+  }
+
+  function getImageUrl(path: string | null): string | null {
+    if (!path) return null;
+    const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!base) return null;
+    return `${base}/storage/v1/object/public/backoffice-docs/${path}`;
   }
 
   const catMap = new Map(categorias.map(c => [c.id, c]));
@@ -406,6 +434,7 @@ export default function GastosListaClient() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-widest text-white/40">
+              <th className="px-4 py-3 w-10"></th>
               <th className="px-4 py-3">Fecha</th>
               <th className="px-4 py-3">Descripcion</th>
               <th className="px-4 py-3">Categoria</th>
@@ -418,13 +447,13 @@ export default function GastosListaClient() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-white/30">
+                <td colSpan={8} className="px-4 py-10 text-center text-white/30">
                   Cargando...
                 </td>
               </tr>
             ) : gastos.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-white/30">
+                <td colSpan={8} className="px-4 py-10 text-center text-white/30">
                   No hay gastos registrados
                 </td>
               </tr>
@@ -433,6 +462,14 @@ export default function GastosListaClient() {
                 const cat = g.categoria_id ? catMap.get(g.categoria_id) : null;
                 return (
                   <tr key={g.id} className="border-b border-white/5 hover:bg-white/5 transition">
+                    <td className="px-4 py-3">
+                      <AdjuntoThumbnail
+                        storagePath={getStoragePath(g)}
+                        alt="Adjunto"
+                        onClick={() => openPreview(g)}
+                        size="sm"
+                      />
+                    </td>
                     <td className="px-4 py-3 text-white/50 whitespace-nowrap">
                       {new Date(g.fecha).toLocaleDateString("es-CL")}
                     </td>
@@ -490,6 +527,23 @@ export default function GastosListaClient() {
           </tbody>
         </table>
       </div>
+
+      {/* Panel de vista previa */}
+      <AdjuntoPreviewPanel
+        open={panelOpen}
+        onClose={() => { setPanelOpen(false); setSelectedGasto(null); }}
+        imageUrl={selectedGasto ? getImageUrl(getStoragePath(selectedGasto)) : null}
+        titulo="Recibo de gasto"
+        datos={selectedGasto ? [
+          { label: "Monto", valor: CLP(Number(selectedGasto.monto)) },
+          { label: "Descripcion", valor: selectedGasto.descripcion },
+          { label: "Fecha", valor: selectedGasto.fecha },
+          { label: "Categoria", valor: selectedGasto.categoria },
+          { label: "Referencia", valor: selectedGasto.referencia },
+          { label: "Centro de costo", valor: selectedGasto.centro_costo },
+          { label: "Estado", valor: selectedGasto.estado },
+        ] : []}
+      />
     </div>
   );
 }
