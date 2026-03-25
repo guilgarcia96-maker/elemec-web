@@ -19,6 +19,8 @@ const COTIZACION_FIELDS = new Set([
   "moneda","subtotal","descuentos","impuestos","total",
   // condiciones comerciales
   "condicion_venta","fecha_vencimiento","fecha_validez",
+  // campos financieros
+  "comision_pct","tipo_cambio","vigencia_dias",
   // v2 extended
   "canal","margen_estimado","probabilidad_cierre","motivo_perdida",
   // workflow
