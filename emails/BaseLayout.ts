@@ -46,7 +46,7 @@ export function baseLayout({ content, subtitle }: BaseLayoutOptions): string {
               <p style="margin:0 0 4px;font-size:11px;color:#999">ELEMEC SPA. &nbsp;·&nbsp; RUT 76.715.440-2</p>
               <p style="margin:0 0 4px;font-size:11px;color:#999">Arturo Prat 1602, Punta Arenas &nbsp;·&nbsp; Región de Magallanes</p>
               <p style="margin:0;font-size:11px;color:#999">
-                <a href="mailto:contacto@elemec.cl" style="color:${BRAND_ORANGE};text-decoration:none">contacto@elemec.cl</a>
+                <a href="mailto:elemec.magallanes@gmail.com" style="color:${BRAND_ORANGE};text-decoration:none">elemec.magallanes@gmail.com</a>
                 &nbsp;·&nbsp;
                 <a href="tel:+56996492917" style="color:${BRAND_ORANGE};text-decoration:none">+56 9 9649 2917</a>
                 &nbsp;·&nbsp;

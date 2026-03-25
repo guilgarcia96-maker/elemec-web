@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabase } from "@/lib/supabase";
 
-const DEST_EMAIL = (process.env.COTIZACION_DEST_EMAIL ?? "contacto@elemec.cl")
+const DEST_EMAIL = (process.env.COTIZACION_DEST_EMAIL ?? "elemec.magallanes@gmail.com")
   .split(",")
   .map((e) => e.trim())
   .filter(Boolean);

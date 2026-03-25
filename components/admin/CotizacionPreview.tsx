@@ -70,7 +70,7 @@ const EMISOR = {
   ciudad:      'Punta Arenas',
   region:      'Región de Magallanes',
   telefono:    '+56 9 9649 2917',
-  email:       'contacto@elemec.cl',
+  email:       'elemec.magallanes@gmail.com',
   web:         'www.elemec.cl',
 };
 

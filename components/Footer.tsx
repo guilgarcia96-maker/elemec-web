@@ -19,18 +19,26 @@ export default function Footer() {
           </p>
           <p className="mt-3 text-sm">
             <a
-              href="tel:+5690000000"
+              href="tel:+56996492917"
               className="hover:text-[var(--accent)] transition"
             >
-              +56 9 0000 0000
+              +56 9 9649 2917
             </a>
           </p>
           <p className="text-sm">
             <a
-              href="mailto:contacto@elemec.cl"
+              href="tel:+56932202001"
               className="hover:text-[var(--accent)] transition"
             >
-              contacto@elemec.cl
+              +56 9 3220 2001
+            </a>
+          </p>
+          <p className="text-sm">
+            <a
+              href="mailto:elemec.magallanes@gmail.com"
+              className="hover:text-[var(--accent)] transition"
+            >
+              elemec.magallanes@gmail.com
             </a>
           </p>
         </div>

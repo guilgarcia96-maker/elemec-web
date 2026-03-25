@@ -246,11 +246,11 @@ export default function CotizaAquiPage() {
           <div className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
             <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3">
               <p className="text-[var(--text-soft)]">Teléfono</p>
-              <p className="mt-1 font-semibold">+56 9 0000 0000</p>
+              <p className="mt-1 font-semibold">+56 9 9649 2917</p>
             </div>
             <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3">
               <p className="text-[var(--text-soft)]">Email</p>
-              <p className="mt-1 font-semibold">contacto@elemec.cl</p>
+              <p className="mt-1 font-semibold">elemec.magallanes@gmail.com</p>
             </div>
             <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3">
               <p className="text-[var(--text-soft)]">Horario</p>
@@ -627,11 +627,11 @@ export default function CotizaAquiPage() {
           </h2>
           <div className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
             <a
-              href="https://wa.me/56900000000"
+              href="https://wa.me/56996492917"
               className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3 transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
               <p className="font-semibold">WhatsApp</p>
-              <p className="mt-1 text-[var(--text-soft)]">+56 9 0000 0000</p>
+              <p className="mt-1 text-[var(--text-soft)]">+56 9 9649 2917</p>
             </a>
             <a
               href="https://maps.google.com/?q=Punta+Arenas+ELEMEC"

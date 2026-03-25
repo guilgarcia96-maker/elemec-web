@@ -55,7 +55,7 @@ export default async function CotizacionTrackingPage({
             Verifica que el enlace sea correcto o contacta a nuestro equipo.
           </p>
           <a
-            href="mailto:contacto@elemec.cl"
+            href="mailto:elemec.magallanes@gmail.com"
             className="mt-6 inline-block rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
           >
             Contactar a ELEMEC
@@ -206,7 +206,7 @@ export default async function CotizacionTrackingPage({
 
       {/* Pie */}
       <div className="mt-8 text-center text-xs text-[var(--text-soft)]">
-        <p>Si tiene consultas, escribanos a <a href="mailto:contacto@elemec.cl" className="text-orange-500 underline">contacto@elemec.cl</a></p>
+        <p>Si tiene consultas, escribanos a <a href="mailto:elemec.magallanes@gmail.com" className="text-orange-500 underline">elemec.magallanes@gmail.com</a></p>
       </div>
     </div>
   );

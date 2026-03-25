@@ -75,7 +75,7 @@ export function informeEmitido(data: InformeEmitidoData): string {
     ${trackingBlock}
     <p style="color:#444;font-size:13px;margin:24px 0 4px">Para consultas o más información:</p>
     <p style="margin:0 0 0">
-      <a href="mailto:contacto@elemec.cl" style="color:${BRAND_ORANGE};text-decoration:none">contacto@elemec.cl</a>
+      <a href="mailto:elemec.magallanes@gmail.com" style="color:${BRAND_ORANGE};text-decoration:none">elemec.magallanes@gmail.com</a>
       &nbsp;·&nbsp;
       <a href="tel:+56996492917" style="color:${BRAND_ORANGE};text-decoration:none">+56 9 9649 2917</a>
     </p>

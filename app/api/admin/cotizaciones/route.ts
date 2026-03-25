@@ -194,7 +194,7 @@ export async function POST(req: NextRequest) {
               <tr><td style="padding:8px 12px;font-size:12px;color:#888;font-weight:600">Total</td><td style="padding:8px 12px;font-size:16px;color:#ea580c;font-weight:700">$${totalFmt} CLP</td></tr>
             </table>
             <p style="color:#444;font-size:13px;margin:0 0 4px">Para consultas o más información:</p>
-            <p style="margin:0 0 20px"><a href="mailto:contacto@elemec.cl" style="color:#f97316;text-decoration:none">contacto@elemec.cl</a> &nbsp;·&nbsp; <a href="tel:+56996492917" style="color:#f97316;text-decoration:none">+56 9 9649 2917</a></p>
+            <p style="margin:0 0 20px"><a href="mailto:elemec.magallanes@gmail.com" style="color:#f97316;text-decoration:none">elemec.magallanes@gmail.com</a> &nbsp;·&nbsp; <a href="tel:+56996492917" style="color:#f97316;text-decoration:none">+56 9 9649 2917</a></p>
             <hr style="border:none;border-top:1px solid #eee;margin:16px 0">
             <p style="color:#999;font-size:11px;margin:0">ELEMEC SPA. &nbsp;·&nbsp; RUT 76.715.440-2 &nbsp;·&nbsp; Arturo Prat 1602, Punta Arenas</p>
           </div>

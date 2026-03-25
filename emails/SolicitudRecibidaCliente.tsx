@@ -69,7 +69,7 @@ export function solicitudRecibidaCliente(data: SolicitudRecibidaData): string {
     ${trackingBlock}
     <p style="color:#444;font-size:13px;margin:24px 0 0;line-height:1.6">
       Si tienes alguna consulta, no dudes en contactarnos respondiendo a este correo o escribiendo a
-      <a href="mailto:contacto@elemec.cl" style="color:${BRAND_ORANGE};text-decoration:none">contacto@elemec.cl</a>.
+      <a href="mailto:elemec.magallanes@gmail.com" style="color:${BRAND_ORANGE};text-decoration:none">elemec.magallanes@gmail.com</a>.
     </p>
   `;
 
