@@ -102,10 +102,11 @@ export default function StepFotos({ fotos, onChange, informeId }: Props) {
 
       if (!res.ok) throw new Error('Error al analizar foto');
 
-      const { descripcion } = await res.json();
+      const data = await res.json();
+      const desc = data.descripcion_ai ?? data.descripcion ?? '';
       onChange(
         fotos.map((f) =>
-          f.id === fotoId ? { ...f, descripcion, analizando: false } : f
+          f.id === fotoId ? { ...f, descripcion: desc, analizando: false } : f
         )
       );
     } catch {
