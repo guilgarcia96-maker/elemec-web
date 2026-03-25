@@ -1,6 +1,10 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+function getResend() {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
+  return _resend;
+}
 
 interface SendEmailOptions {
   to: string | string[];
@@ -29,7 +33,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
   const from = process.env.RESEND_FROM_EMAIL ?? 'ELEMEC <onboarding@resend.dev>';
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from,
       to: Array.isArray(options.to) ? options.to : [options.to],
       subject: options.subject,

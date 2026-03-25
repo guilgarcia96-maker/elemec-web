@@ -33,10 +33,10 @@ interface Props {
 
 const STEPS = [
   { label: 'Datos generales', short: 'Datos' },
-  { label: 'Fotos', short: 'Fotos' },
+  { label: 'Registro fotográfico', short: 'Fotos' },
   { label: 'Análisis IA', short: 'IA' },
   { label: 'Edición', short: 'Edición' },
-  { label: 'Preview', short: 'Preview' },
+  { label: 'Vista previa', short: 'Preview' },
 ];
 
 const DEFAULT_DATA: InformeData = {
@@ -52,14 +52,51 @@ const DEFAULT_DATA: InformeData = {
   secciones: [],
 };
 
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+/* ─── Iconos inline ───────────────────────────────────────────────── */
+
+function IconCheck() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+    </svg>
+  );
+}
+
+function IconChevronLeft() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+    </svg>
+  );
+}
+
+function IconChevronRight() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+    </svg>
+  );
+}
+
 /* ─── Componente ──────────────────────────────────────────────────── */
 
 export default function InformeWizard({ editingId, initialData }: Props) {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<InformeData>(initialData ?? DEFAULT_DATA);
-  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [saveError, setSaveError] = useState('');
+  const [toast, setToast] = useState<{ msg: string; type: 'error' | 'success' } | null>(null);
+  const [animDir, setAnimDir] = useState<'forward' | 'back'>('forward');
+  const [visible, setVisible] = useState(true);
   const prevStepRef = useRef(step);
+
+  /* ─── Toast helper ────────────────────────────────────────────── */
+  const showToast = useCallback((msg: string, type: 'error' | 'success' = 'error') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 4000);
+  }, []);
 
   /* ─── Auto-save al cambiar de paso ────────────────────────────── */
   useEffect(() => {
@@ -73,7 +110,7 @@ export default function InformeWizard({ editingId, initialData }: Props) {
   /* ─── Persistencia ────────────────────────────────────────────── */
   const autoSave = useCallback(async () => {
     if (!data.id) return;
-    setSaving(true);
+    setSaveStatus('saving');
     setSaveError('');
     try {
       const res = await fetch(`/api/admin/informes/${data.id}`, {
@@ -105,16 +142,18 @@ export default function InformeWizard({ editingId, initialData }: Props) {
         }),
       });
       if (!res.ok) throw new Error('Error al guardar');
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Error al guardar');
-    } finally {
-      setSaving(false);
+      const msg = err instanceof Error ? err.message : 'Error al guardar';
+      setSaveError(msg);
+      setSaveStatus('error');
     }
   }, [data]);
 
   /* Crear informe si no existe */
   const crearInforme = useCallback(async (): Promise<string | null> => {
-    setSaving(true);
+    setSaveStatus('saving');
     setSaveError('');
     try {
       const res = await fetch('/api/admin/informes', {
@@ -134,28 +173,40 @@ export default function InformeWizard({ editingId, initialData }: Props) {
       if (!res.ok) throw new Error('Error al crear informe');
       const { id } = await res.json();
       setData((prev) => ({ ...prev, id }));
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2500);
       return id;
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Error al crear');
+      const msg = err instanceof Error ? err.message : 'Error al crear';
+      setSaveError(msg);
+      setSaveStatus('error');
+      showToast(msg, 'error');
       return null;
-    } finally {
-      setSaving(false);
     }
-  }, [data]);
+  }, [data, showToast]);
 
-  /* ─── Navegación ──────────────────────────────────────────────── */
+  /* ─── Navegación animada ──────────────────────────────────────── */
+  const navigateTo = useCallback((target: number) => {
+    const dir = target > step ? 'forward' : 'back';
+    setAnimDir(dir);
+    setVisible(false);
+    setTimeout(() => {
+      setStep(target);
+      setVisible(true);
+    }, 150);
+  }, [step]);
+
   const goNext = useCallback(async () => {
-    // Si estamos en paso 0 y no tenemos id, crear el informe
     if (step === 0 && !data.id) {
       const id = await crearInforme();
-      if (!id) return; // error
+      if (!id) return;
     }
-    setStep((s) => Math.min(s + 1, STEPS.length - 1));
-  }, [step, data.id, crearInforme]);
+    navigateTo(Math.min(step + 1, STEPS.length - 1));
+  }, [step, data.id, crearInforme, navigateTo]);
 
   const goPrev = useCallback(() => {
-    setStep((s) => Math.max(s - 1, 0));
-  }, []);
+    navigateTo(Math.max(step - 1, 0));
+  }, [step, navigateTo]);
 
   /* ─── Handlers de datos ───────────────────────────────────────── */
   const handleDatosChange = useCallback((datos: DatosGenerales) => {
@@ -261,51 +312,80 @@ export default function InformeWizard({ editingId, initialData }: Props) {
   }, [data]);
 
   /* ─── Render ──────────────────────────────────────────────────── */
+  const isSaving = saveStatus === 'saving';
+
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Indicador de pasos */}
+    <div className="max-w-4xl mx-auto pb-24">
+
+      {/* Toast de error / éxito */}
+      {toast && (
+        <div
+          className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+            toast.type === 'error'
+              ? 'bg-red-600 text-white'
+              : 'bg-green-600 text-white'
+          }`}
+        >
+          {toast.type === 'error' ? (
+            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+          ) : (
+            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          )}
+          {toast.msg}
+        </div>
+      )}
+
+      {/* ─── Indicador de pasos ──────────────────────────────────── */}
       <div className="mb-8">
-        <div className="flex items-center justify-between relative">
+        {/* Texto de progreso */}
+        <p className="text-xs text-gray-400 font-medium mb-4 text-center tracking-wide uppercase">
+          Paso {step + 1} de {STEPS.length} — {STEPS[step].label}
+        </p>
+
+        {/* Barra de pasos */}
+        <div className="flex items-start justify-between relative">
           {/* Línea de fondo */}
-          <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200" />
+          <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 z-0" style={{ left: '5%', right: '5%' }} />
+          {/* Línea de progreso */}
           <div
-            className="absolute top-4 left-0 h-0.5 bg-orange-500 transition-all duration-300"
-            style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }}
+            className="absolute top-5 h-0.5 bg-orange-500 transition-all duration-500 z-0"
+            style={{
+              left: '5%',
+              width: `${(step / (STEPS.length - 1)) * 90}%`,
+            }}
           />
 
           {STEPS.map((s, i) => {
             const isCompleted = i < step;
             const isActive = i === step;
             return (
-              <div key={i} className="relative flex flex-col items-center z-10">
+              <div key={i} className="relative flex flex-col items-center z-10" style={{ width: '20%' }}>
                 <button
                   type="button"
                   onClick={() => {
-                    if (i < step) setStep(i); // solo retroceder
+                    if (i < step) navigateTo(i);
                   }}
                   disabled={i > step}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition border-2 ${
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200 border-2 shadow-sm ${
                     isCompleted
-                      ? 'bg-green-500 border-green-500 text-white cursor-pointer'
+                      ? 'bg-green-500 border-green-500 text-white cursor-pointer hover:bg-green-600 hover:border-green-600'
                       : isActive
-                        ? 'bg-orange-500 border-orange-500 text-white'
-                        : 'bg-white border-gray-300 text-gray-400 cursor-not-allowed'
+                        ? 'bg-orange-500 border-orange-500 text-white ring-4 ring-orange-100 animate-pulse-subtle'
+                        : 'bg-white border-gray-200 text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  {isCompleted ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                  ) : (
-                    i + 1
-                  )}
+                  {isCompleted ? <IconCheck /> : i + 1}
                 </button>
                 <span
-                  className={`mt-1.5 text-[11px] font-medium whitespace-nowrap ${
+                  className={`mt-2 text-[11px] font-medium text-center leading-tight px-1 ${
                     isActive ? 'text-orange-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
                   }`}
                 >
-                  <span className="hidden sm:inline">{s.label}</span>
+                  <span className="hidden sm:block">{s.label}</span>
                   <span className="sm:hidden">{s.short}</span>
                 </span>
               </div>
@@ -314,24 +394,26 @@ export default function InformeWizard({ editingId, initialData }: Props) {
         </div>
       </div>
 
-      {/* Indicador de guardado */}
-      {saving && (
-        <div className="mb-4 text-xs text-orange-500 flex items-center gap-1.5">
-          <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+      {/* ─── Error de guardado inline ─────────────────────────────── */}
+      {saveStatus === 'error' && saveError && (
+        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2.5 flex items-center gap-2">
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
           </svg>
-          Guardando...
-        </div>
-      )}
-      {saveError && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-3 py-2">
           {saveError}
         </div>
       )}
 
-      {/* Contenido del paso activo */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm min-h-[400px]">
+      {/* ─── Contenido del paso activo ────────────────────────────── */}
+      <div
+        className={`bg-white border border-gray-200 rounded-xl p-6 shadow-sm min-h-[420px] transition-all duration-150 ${
+          visible
+            ? 'opacity-100 translate-y-0'
+            : animDir === 'forward'
+              ? 'opacity-0 translate-y-2'
+              : 'opacity-0 -translate-y-2'
+        }`}
+      >
         {step === 0 && (
           <StepDatosGenerales
             data={{
@@ -384,27 +466,68 @@ export default function InformeWizard({ editingId, initialData }: Props) {
         )}
       </div>
 
-      {/* Navegación */}
-      <div className="flex items-center justify-between mt-6">
-        <button
-          type="button"
-          onClick={goPrev}
-          disabled={step === 0}
-          className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
-        >
-          Anterior
-        </button>
-
-        {step < STEPS.length - 1 && (
+      {/* ─── Barra de navegación sticky ───────────────────────────── */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 shadow-lg">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          {/* Botón Anterior */}
           <button
             type="button"
-            onClick={goNext}
-            disabled={saving}
-            className="px-5 py-2 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 rounded-lg transition"
+            onClick={goPrev}
+            disabled={step === 0}
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
           >
-            Siguiente
+            <IconChevronLeft />
+            Anterior
           </button>
-        )}
+
+          {/* Indicador de guardado centrado */}
+          <div className="flex items-center gap-1.5 text-xs text-gray-400 font-medium">
+            {saveStatus === 'saving' && (
+              <>
+                <svg className="animate-spin h-3.5 w-3.5 text-orange-500" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <span className="text-orange-500">Guardando...</span>
+              </>
+            )}
+            {saveStatus === 'saved' && (
+              <>
+                <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-green-600">Guardado</span>
+              </>
+            )}
+            {saveStatus === 'error' && (
+              <>
+                <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+                <span className="text-red-500">Sin guardar</span>
+              </>
+            )}
+            {saveStatus === 'idle' && data.id && (
+              <span className="text-gray-300">Guardado automático activo</span>
+            )}
+          </div>
+
+          {/* Botón Siguiente (oculto en paso final) */}
+          {step < STEPS.length - 1 ? (
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={isSaving}
+              className="inline-flex items-center gap-1.5 px-5 py-2 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 rounded-lg transition-all duration-200 shadow-sm"
+            >
+              Siguiente
+              <IconChevronRight />
+            </button>
+          ) : (
+            /* Placeholder para mantener layout balanceado en paso final */
+            <div className="w-[110px]" />
+          )}
+        </div>
       </div>
     </div>
   );

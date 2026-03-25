@@ -33,6 +33,21 @@ const SERVICIOS = [
   "Otro",
 ];
 
+async function getKPIs() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+  const { data } = await supabase
+    .from("informes")
+    .select("estado");
+  const total = data?.length ?? 0;
+  const borradores = data?.filter((r) => r.estado === "borrador").length ?? 0;
+  const emitidos   = data?.filter((r) => r.estado === "emitido").length ?? 0;
+  const aprobados  = data?.filter((r) => r.estado === "aprobado").length ?? 0;
+  return { total, borradores, emitidos, aprobados };
+}
+
 async function getInformes(opts: {
   estado?: string;
   servicio_tipo?: string;
@@ -80,11 +95,14 @@ export default async function AdminInformesPage({
   const filtroServicio = params.servicio_tipo ?? "";
   const filtroBusqueda = params.busqueda ?? "";
 
-  const informes = await getInformes({
-    estado: filtroEstado,
-    servicio_tipo: filtroServicio,
-    busqueda: filtroBusqueda,
-  });
+  const [informes, kpis] = await Promise.all([
+    getInformes({
+      estado: filtroEstado,
+      servicio_tipo: filtroServicio,
+      busqueda: filtroBusqueda,
+    }),
+    getKPIs(),
+  ]);
 
   const hayFiltros = !!(filtroEstado || filtroServicio || filtroBusqueda);
 
@@ -94,7 +112,7 @@ export default async function AdminInformesPage({
         {/* Titulo */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Informes Tecnicos</h1>
+            <h1 className="text-2xl font-bold">Informes Técnicos</h1>
             <p className="mt-1 text-sm text-gray-500">
               {informes.length} registro{informes.length !== 1 ? "s" : ""}
               {hayFiltros ? " · con filtros aplicados" : ""}
@@ -109,6 +127,23 @@ export default async function AdminInformesPage({
             </svg>
             Nuevo informe
           </Link>
+        </div>
+
+        {/* KPI cards */}
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            { label: "Total", value: kpis.total, cls: "text-gray-900" },
+            { label: "Borradores", value: kpis.borradores, cls: "text-gray-600" },
+            { label: "Emitidos",   value: kpis.emitidos,   cls: "text-blue-600" },
+            { label: "Aprobados",  value: kpis.aprobados,  cls: "text-green-600" },
+          ].map((kpi) => (
+            <div key={kpi.label} className="rounded-xl border border-gray-200 bg-white px-5 py-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+                {kpi.label}
+              </p>
+              <p className={`mt-1 text-3xl font-bold ${kpi.cls}`}>{kpi.value}</p>
+            </div>
+          ))}
         </div>
 
         {/* Panel de filtros */}

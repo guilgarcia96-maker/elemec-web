@@ -23,7 +23,7 @@ interface Props {
 /* ─── Iconos por tipo ──────────────────────────────────────────────── */
 
 function ServiceIcon({ icon, className }: { icon: string; className?: string }) {
-  const cls = className ?? 'w-8 h-8';
+  const cls = className ?? 'w-7 h-7';
   switch (icon) {
     case 'wrench':
       return (
@@ -63,9 +63,9 @@ function ServiceIcon({ icon, className }: { icon: string; className?: string }) 
 /* ─── Helpers ──────────────────────────────────────────────────────── */
 
 const inputCls =
-  'w-full rounded border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20';
+  'w-full rounded-lg border border-gray-200 bg-[#f8f9fb] px-3 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all duration-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:bg-white hover:border-gray-300';
 
-const labelCls = 'block text-sm font-medium text-gray-700 mb-1';
+const labelCls = 'block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5';
 
 /* ─── Componente ──────────────────────────────────────────────────── */
 
@@ -80,11 +80,16 @@ export default function StepDatosGenerales({ data, onChange, onTipoServicioChang
   }
 
   return (
-    <div className="space-y-6">
-      {/* Tipo de servicio */}
+    <div className="space-y-8">
+
+      {/* ── Tipo de servicio ─────────────────────────────────────── */}
       <div>
-        <label className={labelCls}>Tipo de servicio</label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-1">
+        <div className="flex items-center gap-2 mb-4">
+          <h2 className="text-base font-semibold text-gray-900">Tipo de servicio</h2>
+          <span className="text-xs text-gray-400">Selecciona uno para precargar las secciones del informe</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {Object.entries(PRESETS).map(([key, preset]: [string, PresetConfig]) => {
             const selected = data.servicio_tipo === key;
             return (
@@ -92,30 +97,64 @@ export default function StepDatosGenerales({ data, onChange, onTipoServicioChang
                 key={key}
                 type="button"
                 onClick={() => handleTipoClick(key)}
-                className={`flex flex-col items-center p-4 rounded-lg border-2 transition text-center ${
+                className={`relative flex flex-col items-center p-4 rounded-xl border-2 transition-all duration-200 text-center group ${
                   selected
-                    ? 'border-orange-500 bg-orange-50 text-orange-700'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                    ? 'border-orange-500 bg-orange-50 shadow-sm shadow-orange-100'
+                    : 'border-gray-200 bg-white text-gray-600 hover:border-orange-300 hover:bg-orange-50/40 hover:shadow-sm'
                 }`}
               >
-                <ServiceIcon icon={preset.icono} className={`w-8 h-8 mb-2 ${selected ? 'text-orange-500' : 'text-gray-400'}`} />
-                <span className="text-sm font-semibold">{preset.nombre}</span>
-                <span className="text-[11px] mt-1 text-gray-400 leading-tight">{preset.descripcion}</span>
+                {/* Checkmark seleccionado */}
+                {selected && (
+                  <span className="absolute top-2 right-2 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </span>
+                )}
+
+                <ServiceIcon
+                  icon={preset.icono}
+                  className={`w-8 h-8 mb-3 transition-colors duration-200 ${
+                    selected
+                      ? 'text-orange-500'
+                      : 'text-gray-400 group-hover:text-orange-400'
+                  }`}
+                />
+                <span className={`text-sm font-semibold leading-tight ${selected ? 'text-orange-700' : 'text-gray-700'}`}>
+                  {preset.nombre}
+                </span>
+                <span className={`text-[11px] mt-1.5 leading-tight line-clamp-2 ${selected ? 'text-orange-500' : 'text-gray-400'}`}>
+                  {preset.descripcion}
+                </span>
+                <span className={`mt-2 text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+                  selected
+                    ? 'bg-orange-100 text-orange-600'
+                    : 'bg-gray-100 text-gray-400 group-hover:bg-orange-50 group-hover:text-orange-400'
+                }`}>
+                  {preset.seccionesCount} secciones
+                </span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Datos del informe */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* ── Divisor ──────────────────────────────────────────────── */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-gray-100" />
+        <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Datos del proyecto</span>
+        <div className="flex-1 h-px bg-gray-100" />
+      </div>
+
+      {/* ── Campos del informe ───────────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="md:col-span-2">
           <label className={labelCls}>Título del informe</label>
           <input
             type="text"
             value={data.titulo}
             onChange={(e) => update('titulo', e.target.value)}
-            placeholder="Ej: Informe de montaje intercambiador de calor"
+            placeholder="Ej: Informe de montaje intercambiador de calor — Planta ENAP"
             className={inputCls}
           />
         </div>
@@ -126,7 +165,7 @@ export default function StepDatosGenerales({ data, onChange, onTipoServicioChang
             type="text"
             value={data.cliente_nombre}
             onChange={(e) => update('cliente_nombre', e.target.value)}
-            placeholder="Nombre del cliente"
+            placeholder="Nombre del cliente o supervisor"
             className={inputCls}
           />
         </div>
@@ -137,7 +176,7 @@ export default function StepDatosGenerales({ data, onChange, onTipoServicioChang
             type="text"
             value={data.cliente_empresa}
             onChange={(e) => update('cliente_empresa', e.target.value)}
-            placeholder="Nombre de la empresa"
+            placeholder="Nombre de la empresa cliente"
             className={inputCls}
           />
         </div>
