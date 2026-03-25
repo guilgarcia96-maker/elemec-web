@@ -136,6 +136,15 @@ interface InitialData {
   cargo?:          string;
   prioridad?:      string;
   fromFolio?:      string;
+  giro?:           string;
+  comuna?:         string;
+  ciudad?:         string;
+  glosa?:          string;
+  vendedor?:       string;
+  listaPrecio?:    string;
+  observaciones?:  string;
+  nombreDir?:      string;
+  origen?:         string;
 }
 
 /* ─── Component ──────────────────────────────────────────────────────── */
@@ -157,28 +166,28 @@ export default function NuevaCotizacionForm({
   const [cliente,        setCliente]        = useState(initialData?.cliente ?? '');
   const [fecha,          setFecha]          = useState(today());
   const [fechaVigencia,  setFechaVigencia]  = useState(today());
-  const [giro,           setGiro]           = useState('');
+  const [giro,           setGiro]           = useState(initialData?.giro ?? '');
   const [direccion,      setDireccion]      = useState(initialData?.direccion ?? '');
-  const [comuna,         setComuna]         = useState('');
-  const [ciudad,         setCiudad]         = useState('');
+  const [comuna,         setComuna]         = useState(initialData?.comuna ?? '');
+  const [ciudad,         setCiudad]         = useState(initialData?.ciudad ?? '');
   const [contactoNombre, setContactoNombre] = useState(initialData?.contactoNombre ?? '');
-  const [nombreDir,      setNombreDir]      = useState('');
+  const [nombreDir,      setNombreDir]      = useState(initialData?.nombreDir ?? '');
   const [telefono,       setTelefono]       = useState(initialData?.telefono ?? '');
   const [email,          setEmail]          = useState(initialData?.email ?? '');
   const [rutEmpresa,     setRutEmpresa]     = useState(initialData?.rutEmpresa ?? '');
   const [movil,          setMovil]          = useState(initialData?.movil ?? '');
   const [cargo,          setCargo]          = useState(initialData?.cargo ?? '');
-  const [glosa,          setGlosa]          = useState('');
-  const [vendedor,       setVendedor]       = useState('');
+  const [glosa,          setGlosa]          = useState(initialData?.glosa ?? '');
+  const [vendedor,       setVendedor]       = useState(initialData?.vendedor ?? '');
   const [comision,       setComision]       = useState('');
-  const [listaPrecio,    setListaPrecio]    = useState('');
-  const [observaciones,  setObservaciones]  = useState('');
+  const [listaPrecio,    setListaPrecio]    = useState(initialData?.listaPrecio ?? '');
+  const [observaciones,  setObservaciones]  = useState(initialData?.observaciones ?? '');
 
   /* ── Extra commercial fields ── */
   const [region,         setRegion]         = useState(initialData?.region ?? '');
   const [tipoServicio,   setTipoServicio]   = useState(initialData?.tipoServicio ?? '');
   const [prioridad,      setPrioridad]      = useState(initialData?.prioridad ?? '');
-  const [origen,         setOrigen]         = useState('');
+  const [origen,         setOrigen]         = useState(initialData?.origen ?? '');
   const [nombreObra,     setNombreObra]     = useState(initialData?.nombreObra ?? '');
 
   /* ── Condición de venta ────── */
