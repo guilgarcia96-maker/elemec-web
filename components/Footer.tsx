@@ -58,13 +58,7 @@ export default function Footer() {
             >
               Servicios
             </Link>
-            <Link
-              href="/productos"
-              className="hover:text-[var(--accent)] transition"
-            >
-              Productos
-            </Link>
-            <Link
+<Link
               href="/trabajaconnosotros"
               className="hover:text-[var(--accent)] transition"
             >
