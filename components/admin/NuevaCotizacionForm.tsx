@@ -316,19 +316,53 @@ export default function NuevaCotizacionForm({
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/admin/cotizaciones', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildBody(estado)),
-      });
-      if (!res.ok) {
-        const d = await res.json();
-        setError(d.error ?? 'Error al guardar');
-        setLoading(false);
-        return;
+      const payload = buildBody(estado);
+
+      if (fromSolicitudId) {
+        // Actualizar la cotización existente (PUT) + crear versión/items si no existen
+        const putRes = await fetch('/api/admin/cotizaciones', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: fromSolicitudId, ...payload }),
+        });
+        if (!putRes.ok) {
+          const d = await putRes.json();
+          setError(d.error ?? 'Error al actualizar');
+          setLoading(false);
+          return;
+        }
+
+        // Si hay items, crear versión con items en la cotización existente
+        if (payload.items && payload.items.length > 0) {
+          const postRes = await fetch('/api/admin/cotizaciones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...payload, solicitud_id: fromSolicitudId }),
+          });
+          if (postRes.ok) {
+            const { id } = await postRes.json();
+            router.push(`/admin/cotizaciones/${id}`);
+            return;
+          }
+        }
+
+        router.push(`/admin/cotizaciones/${fromSolicitudId}`);
+      } else {
+        // Crear nueva cotización (POST)
+        const res = await fetch('/api/admin/cotizaciones', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const d = await res.json();
+          setError(d.error ?? 'Error al guardar');
+          setLoading(false);
+          return;
+        }
+        const { id } = await res.json();
+        router.push(`/admin/cotizaciones/${id}`);
       }
-      const { id } = await res.json();
-      router.push(`/admin/cotizaciones/${id}`);
     } catch {
       setError('Error de conexión');
       setLoading(false);
