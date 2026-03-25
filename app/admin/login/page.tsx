@@ -28,41 +28,41 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0f0f1a]">
-      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#13131f] p-8">
-        <p className="text-2xl font-bold text-[#e2b44b]">ELEMEC</p>
-        <p className="mt-1 text-sm text-white/50">Backoffice — Acceso</p>
+    <div className="flex min-h-screen items-center justify-center bg-[#f8f9fb]">
+      <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+        <p className="text-2xl font-bold text-orange-500">ELEMEC</p>
+        <p className="mt-1 text-sm text-gray-500">Backoffice — Acceso</p>
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <div>
-            <label className="mb-1 block text-sm text-white/70">Correo</label>
+            <label className="mb-1 block text-sm text-gray-600">Correo</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b]"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
               placeholder="admin@elemec.cl"
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-white/70">Contraseña</label>
+            <label className="mb-1 block text-sm text-gray-600">Contraseña</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b]"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
               placeholder="••••••••"
             />
           </div>
-          <p className="text-xs text-white/35">
+          <p className="text-xs text-gray-400">
             En el primer acceso puedes usar la clave temporal configurada en el entorno.
           </p>
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-red-500">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="rounded-lg bg-[#e2b44b] py-2.5 font-bold text-black hover:bg-[#d4a43a] transition disabled:opacity-60"
+            className="rounded-lg bg-orange-500 py-2.5 font-bold text-white hover:bg-orange-600 transition disabled:opacity-60"
           >
             {loading ? "Verificando…" : "Ingresar"}
           </button>

@@ -85,13 +85,13 @@ export default function GastosPresupuestosClient() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Presupuestos</h1>
-          <p className="mt-1 text-sm text-white/50">
+          <p className="mt-1 text-sm text-gray-400">
             Limites de gasto por categoria y mes
           </p>
         </div>
         <Link
           href="/admin/gastos"
-          className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/60 transition hover:border-white/40 hover:text-white"
+          className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-500 transition hover:border-gray-400 hover:text-gray-900"
         >
           Dashboard
         </Link>
@@ -101,18 +101,18 @@ export default function GastosPresupuestosClient() {
       <div className="flex items-center gap-3">
         <button
           onClick={prevMonth}
-          className="p-1.5 rounded-lg border border-white/10 text-white/40 hover:bg-white/5 transition-colors"
+          className="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-100 transition-colors"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <span className="px-3 py-1 rounded-full border border-orange-500/30 bg-orange-500/10 text-sm font-medium text-orange-400">
+        <span className="px-3 py-1 rounded-full border border-orange-200 bg-orange-50 text-sm font-medium text-orange-600">
           {monthNames[mes - 1]} {anio}
         </span>
         <button
           onClick={nextMonth}
-          className="p-1.5 rounded-lg border border-white/10 text-white/40 hover:bg-white/5 transition-colors"
+          className="p-1.5 rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-100 transition-colors"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -122,19 +122,19 @@ export default function GastosPresupuestosClient() {
 
       {/* Error */}
       {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       )}
 
       {/* Formulario */}
-      <form onSubmit={handleSubmit} className="rounded-xl border border-white/10 bg-white/[0.03] p-5 flex flex-wrap gap-4 items-end">
+      <form onSubmit={handleSubmit} className="rounded-xl border border-gray-200 bg-gray-50 p-5 flex flex-wrap gap-4 items-end">
         <div>
-          <label className="mb-1 block text-xs text-white/50">Categoria</label>
+          <label className="mb-1 block text-xs text-gray-400">Categoria</label>
           <select
             value={form.categoria_id}
             onChange={(e) => setForm({ ...form, categoria_id: e.target.value })}
-            className="rounded-lg border border-white/15 bg-[#0f0f1a] px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
             required
           >
             <option value="">Seleccionar</option>
@@ -144,14 +144,14 @@ export default function GastosPresupuestosClient() {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs text-white/50">Limite mensual</label>
+          <label className="mb-1 block text-xs text-gray-400">Limite mensual</label>
           <input
             type="number"
             step="1"
             placeholder="Monto"
             value={form.monto}
             onChange={(e) => setForm({ ...form, monto: e.target.value })}
-            className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
             required
           />
         </div>
@@ -167,7 +167,7 @@ export default function GastosPresupuestosClient() {
       {/* Lista de presupuestos */}
       <div className="space-y-3">
         {presupuestos.length === 0 ? (
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-sm text-white/30 text-center">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-6 text-sm text-gray-300 text-center">
             No hay presupuestos configurados para {monthNames[mes - 1]} {anio}
           </div>
         ) : (
@@ -178,33 +178,33 @@ export default function GastosPresupuestosClient() {
             const remaining = b.monto - b.gastado;
 
             return (
-              <div key={b.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+              <div key={b.id} className="rounded-xl border border-gray-200 bg-gray-50 p-5">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <div
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: b.categoria?.color ?? "#6b7280" }}
                     />
-                    <span className="font-medium text-white/80">{b.categoria?.nombre ?? "Desconocida"}</span>
+                    <span className="font-medium text-gray-700">{b.categoria?.nombre ?? "Desconocida"}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className={`text-sm font-semibold tabular-nums ${
-                      over ? "text-red-400" : "text-white/60"
+                      over ? "text-red-400" : "text-gray-500"
                     }`}>
                       {CLP(b.gastado)} / {CLP(b.monto)}
                     </span>
                     <span className={`text-xs font-semibold tabular-nums px-2 py-0.5 rounded-full border ${
                       over
-                        ? "text-red-400 bg-red-500/10 border-red-500/30"
+                        ? "text-red-700 bg-red-50 border-red-200"
                         : realPct >= 80
-                          ? "text-yellow-400 bg-yellow-500/10 border-yellow-500/30"
-                          : "text-green-400 bg-green-500/10 border-green-500/30"
+                          ? "text-yellow-700 bg-yellow-50 border-yellow-200"
+                          : "text-green-700 bg-green-50 border-green-200"
                     }`}>
                       {Math.round(realPct)}%
                     </span>
                   </div>
                 </div>
-                <div className="w-full bg-white/5 rounded-full h-3">
+                <div className="w-full bg-gray-100 rounded-full h-3">
                   <div
                     className={`h-3 rounded-full transition-all ${
                       over ? "bg-red-500" : realPct >= 80 ? "bg-yellow-500" : "bg-green-500"
@@ -213,14 +213,14 @@ export default function GastosPresupuestosClient() {
                   />
                 </div>
                 <div className="flex items-center justify-between mt-2">
-                  <p className="text-xs text-white/30">
+                  <p className="text-xs text-gray-300">
                     {over
                       ? `Excedido por ${CLP(Math.abs(remaining))}`
                       : `Restante: ${CLP(remaining)}`
                     }
                   </p>
                   {b.centro_costo && (
-                    <span className="text-[10px] text-white/20 border border-white/10 rounded-full px-2 py-0.5">
+                    <span className="text-[10px] text-gray-300 border border-gray-200 rounded-full px-2 py-0.5">
                       CC: {b.centro_costo}
                     </span>
                   )}

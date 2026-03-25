@@ -72,8 +72,8 @@ export default async function AdminConciliacionPage({
         {/* Título */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Conciliación Contable</h1>
-            <p className="mt-1 text-sm text-white/50">
+            <h1 className="text-2xl font-bold text-gray-900">Conciliación Contable</h1>
+            <p className="mt-1 text-sm text-gray-500">
               {movimientos.length} movimiento{movimientos.length !== 1 ? "s" : ""}
               {filtroEstado ? ` · ${filtroEstado}` : ""}
               {filtroTipo   ? ` · ${filtroTipo}`   : ""}
@@ -82,7 +82,7 @@ export default async function AdminConciliacionPage({
           {canEdit && (
             <Link
               href="/admin/conciliacion/nuevo"
-              className="rounded-lg bg-[#e2b44b] px-4 py-2 text-sm font-bold text-black hover:bg-[#d4a43a] transition"
+              className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-bold text-white hover:bg-orange-600 transition"
             >
               + Nuevo movimiento
             </Link>
@@ -96,8 +96,8 @@ export default async function AdminConciliacionPage({
             { label: "Conciliado", value: totalConciliado, color: "text-green-400" },
             { label: "Observado",  value: totalObservado,  color: "text-red-400"   },
           ].map((c) => (
-            <div key={c.label} className="rounded-xl border border-white/10 bg-white/5 p-5">
-              <p className="text-xs uppercase tracking-widest text-white/40">{c.label}</p>
+            <div key={c.label} className="rounded-xl border border-gray-200 bg-white p-5">
+              <p className="text-xs uppercase tracking-widest text-gray-400">{c.label}</p>
               <p className={`mt-2 text-xl font-bold ${c.color}`}>{fmtCLP(c.value)}</p>
             </div>
           ))}
@@ -109,8 +109,8 @@ export default async function AdminConciliacionPage({
             href="/admin/conciliacion"
             className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
               !filtroEstado && !filtroTipo
-                ? "border-[#e2b44b] bg-[#e2b44b]/10 text-[#e2b44b]"
-                : "border-white/20 text-white/50 hover:border-white/40"
+                ? "border-orange-500 bg-orange-500/10 text-orange-500"
+                : "border-gray-300 text-gray-500 hover:border-gray-400"
             }`}
           >
             Todos
@@ -121,22 +121,22 @@ export default async function AdminConciliacionPage({
               href={`/admin/conciliacion?estado=${e}${filtroTipo ? `&tipo=${filtroTipo}` : ""}`}
               className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                 filtroEstado === e
-                  ? "border-[#e2b44b] bg-[#e2b44b]/10 text-[#e2b44b]"
-                  : "border-white/20 text-white/50 hover:border-white/40"
+                  ? "border-orange-500 bg-orange-500/10 text-orange-500"
+                  : "border-gray-300 text-gray-500 hover:border-gray-400"
               }`}
             >
               {e.charAt(0).toUpperCase() + e.slice(1)}
             </Link>
           ))}
-          <span className="border-l border-white/10 mx-1" />
+          <span className="border-l border-gray-200 mx-1" />
           {TIPOS.map((t) => (
             <Link
               key={t}
               href={`/admin/conciliacion?tipo=${t}${filtroEstado ? `&estado=${filtroEstado}` : ""}`}
               className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                 filtroTipo === t
-                  ? "border-[#e2b44b] bg-[#e2b44b]/10 text-[#e2b44b]"
-                  : "border-white/20 text-white/50 hover:border-white/40"
+                  ? "border-orange-500 bg-orange-500/10 text-orange-500"
+                  : "border-gray-300 text-gray-500 hover:border-gray-400"
               }`}
             >
               {t.charAt(0).toUpperCase() + t.slice(1)}

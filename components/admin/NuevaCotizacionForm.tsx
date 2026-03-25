@@ -72,25 +72,25 @@ function fmt(n: number) {
 }
 
 function inputCls(extra = '') {
-  return `w-full rounded border border-white/10 bg-white/5 px-2.5 py-1.5 text-sm text-white placeholder-white/25 outline-none transition focus:border-[#e2b44b]/60 focus:ring-1 focus:ring-[#e2b44b]/20 ${extra}`;
+  return `w-full rounded border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 ${extra}`;
 }
 
 function selectCls(extra = '') {
-  return `w-full rounded border border-white/10 bg-[#161625] px-2.5 py-1.5 text-sm text-white outline-none transition focus:border-[#e2b44b]/60 focus:ring-1 focus:ring-[#e2b44b]/20 ${extra}`;
+  return `w-full rounded border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-900 outline-none transition focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 ${extra}`;
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-3 flex items-center gap-2 border-b border-white/10 pb-2">
-      <span className="h-1 w-4 rounded bg-[#e2b44b]" />
-      <h3 className="text-xs font-bold uppercase tracking-widest text-white/60">{children}</h3>
+    <div className="mb-3 flex items-center gap-2 border-b border-gray-200 pb-2">
+      <span className="h-1 w-4 rounded bg-orange-500" />
+      <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500">{children}</h3>
     </div>
   );
 }
 
 function Label({ children, req }: { children: React.ReactNode; req?: boolean }) {
   return (
-    <label className="mb-1 block text-xs text-white/50">
+    <label className="mb-1 block text-xs text-gray-500">
       {children}{req && <span className="ml-0.5 text-red-400">*</span>}
     </label>
   );
@@ -99,7 +99,7 @@ function Label({ children, req }: { children: React.ReactNode; req?: boolean }) 
 function CharCount({ value, max }: { value: string; max: number }) {
   const rem = max - value.length;
   return (
-    <p className={`mt-1 text-right text-[10px] ${rem < 20 ? 'text-red-400' : 'text-white/30'}`}>
+    <p className={`mt-1 text-right text-[10px] ${rem < 20 ? 'text-red-400' : 'text-gray-400'}`}>
       Caracteres restantes: {rem}
     </p>
   );
@@ -335,23 +335,23 @@ export default function NuevaCotizacionForm({
       {/* ── Page title ─────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold text-white">Ingreso de documento de cotización</h1>
+          <h1 className="text-lg font-bold text-gray-900">Ingreso de documento de cotización</h1>
           {tipoLabel && (
-            <span className="rounded border border-blue-500/40 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-300">
+            <span className="rounded border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
               {tipoLabel}
             </span>
           )}
         </div>
         <Link
           href="/admin/cotizaciones"
-          className="flex items-center gap-1.5 rounded border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60 hover:bg-white/10"
+          className="flex items-center gap-1.5 rounded border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100"
         >
           ← Volver al listado
         </Link>
       </div>
 
       {fromSolicitudId && (
-        <div className="flex items-center gap-3 rounded-lg border border-orange-500/30 bg-orange-500/10 px-4 py-3 text-sm text-orange-300">
+        <div className="flex items-center gap-3 rounded-lg border border-orange-300 bg-orange-50 px-4 py-3 text-sm text-orange-600">
           <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
@@ -376,7 +376,7 @@ export default function NuevaCotizacionForm({
         {/* ═══════════════════════════════════════════════════════════
             SECCIÓN 1 — CABECERA DEL DOCUMENTO
         ═══════════════════════════════════════════════════════════ */}
-        <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
           <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 lg:grid-cols-4">
 
             {/* Sucursal */}
@@ -517,7 +517,7 @@ export default function NuevaCotizacionForm({
         {/* ═══════════════════════════════════════════════════════════
             SECCIÓN 2 — VENDEDOR / LISTA DE PRECIOS
         ═══════════════════════════════════════════════════════════ */}
-        <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
           <SectionTitle>Vendedor</SectionTitle>
           <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
             <div className="col-span-2">
@@ -575,12 +575,12 @@ export default function NuevaCotizacionForm({
         {/* ═══════════════════════════════════════════════════════════
             SECCIÓN 3 — REFERENCIAS DEL DOCUMENTO (opcional)
         ═══════════════════════════════════════════════════════════ */}
-        <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
           <SectionTitle>Referencias del documento (opcional)</SectionTitle>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-left text-white/40">
+                <tr className="text-left text-gray-400">
                   <th className="pb-2 pr-2 font-medium w-6">#</th>
                   <th className="pb-2 pr-2 font-medium">Documento</th>
                   <th className="pb-2 pr-2 font-medium">Número</th>
@@ -593,7 +593,7 @@ export default function NuevaCotizacionForm({
               <tbody className="space-y-1">
                 {refs.map((ref, i) => (
                   <tr key={i} className="align-top">
-                    <td className="pr-2 pt-1 text-white/30">{i + 1}</td>
+                    <td className="pr-2 pt-1 text-gray-400">{i + 1}</td>
                     <td className="pr-2">
                       <select value={ref.documento} onChange={e => updateRef(i, 'documento', e.target.value)}
                         className={selectCls('text-xs py-1')}>
@@ -632,7 +632,7 @@ export default function NuevaCotizacionForm({
             </table>
           </div>
           <button type="button" onClick={addRef}
-            className="mt-3 flex items-center gap-1.5 rounded border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60 hover:bg-white/10">
+            className="mt-3 flex items-center gap-1.5 rounded border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100">
             + Agregar referencia
           </button>
         </div>
@@ -640,17 +640,17 @@ export default function NuevaCotizacionForm({
         {/* ═══════════════════════════════════════════════════════════
             SECCIÓN 4 — INGRESO EN OTRA MONEDA
         ═══════════════════════════════════════════════════════════ */}
-        <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
           <div className="flex items-center gap-3">
             <SectionTitle>Ingreso en otra moneda</SectionTitle>
             <label className="flex items-center gap-2 cursor-pointer ml-4">
               <div
                 onClick={() => setOtraMoneda(v => !v)}
-                className={`relative h-5 w-9 rounded-full transition-colors ${otraMoneda ? 'bg-[#e2b44b]' : 'bg-white/20'}`}
+                className={`relative h-5 w-9 rounded-full transition-colors ${otraMoneda ? 'bg-orange-500' : 'bg-gray-300'}`}
               >
                 <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all ${otraMoneda ? 'left-4' : 'left-0.5'}`} />
               </div>
-              <span className="text-xs text-white/50">{otraMoneda ? 'Habilitado' : 'Habilitar'}</span>
+              <span className="text-xs text-gray-500">{otraMoneda ? 'Habilitado' : 'Habilitar'}</span>
             </label>
           </div>
           {otraMoneda && (
@@ -673,12 +673,12 @@ export default function NuevaCotizacionForm({
         {/* ═══════════════════════════════════════════════════════════
             SECCIÓN 5 — DETALLE DEL DOCUMENTO (LINE ITEMS)
         ═══════════════════════════════════════════════════════════ */}
-        <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
           <SectionTitle>Detalle del documento</SectionTitle>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[800px] text-xs">
               <thead>
-                <tr className="text-left text-white/40 border-b border-white/10">
+                <tr className="text-left text-gray-400 border-b border-gray-200">
                   <th className="pb-2 pr-2 font-medium w-6">#</th>
                   <th className="pb-2 pr-2 font-medium">Descripción ítem</th>
                   <th className="pb-2 pr-2 font-medium w-20">Cantidad</th>
@@ -695,8 +695,8 @@ export default function NuevaCotizacionForm({
                   const { neto } = calcItem(item);
                   const totalItem = neto * (item.tipo_imp === 'afecta' ? 1 + IVA_RATE : 1);
                   return (
-                    <tr key={i} className="border-b border-white/5 align-top">
-                      <td className="pr-2 pt-2 text-white/30">{i + 1}</td>
+                    <tr key={i} className="border-b border-gray-100 align-top">
+                      <td className="pr-2 pt-2 text-gray-400">{i + 1}</td>
                       <td className="pr-2 pt-1">
                         <input
                           value={item.descripcion}
@@ -751,7 +751,7 @@ export default function NuevaCotizacionForm({
                           <option value="exenta">Exenta</option>
                         </select>
                       </td>
-                      <td className="pr-2 pt-2 text-right font-mono text-white/80">
+                      <td className="pr-2 pt-2 text-right font-mono text-gray-700">
                         {fmt(totalItem)}
                       </td>
                       <td className="pt-1.5">
@@ -768,36 +768,36 @@ export default function NuevaCotizacionForm({
           </div>
 
           <button type="button" onClick={addItem}
-            className="mt-3 flex items-center gap-1.5 rounded border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60 hover:bg-white/10">
+            className="mt-3 flex items-center gap-1.5 rounded border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100">
             + Agregar ítem
           </button>
 
           {/* ── Totals footer ── */}
           <div className="mt-5 flex justify-end">
-            <div className="w-72 rounded-lg border border-white/10 bg-black/20 p-4 text-xs">
-              <div className="flex justify-between py-1 text-white/60">
+            <div className="w-72 rounded-lg border border-gray-200 bg-gray-50 p-4 text-xs">
+              <div className="flex justify-between py-1 text-gray-500">
                 <span>Desc.%</span><span className="font-mono">0.000000</span>
               </div>
-              <div className="flex justify-between py-1 text-white/60">
+              <div className="flex justify-between py-1 text-gray-500">
                 <span>Desc.$</span><span className="font-mono">0.00</span>
               </div>
-              <div className="flex justify-between py-1 text-white/60">
+              <div className="flex justify-between py-1 text-gray-500">
                 <span>Rec.%</span><span className="font-mono">0.000000</span>
               </div>
-              <div className="flex justify-between py-1 text-white/60">
+              <div className="flex justify-between py-1 text-gray-500">
                 <span>Rec.$</span><span className="font-mono">0.00</span>
               </div>
-              <div className="mt-2 border-t border-white/10 pt-2">
-                <div className="flex justify-between py-0.5 text-white/70">
+              <div className="mt-2 border-t border-gray-200 pt-2">
+                <div className="flex justify-between py-0.5 text-gray-600">
                   <span>Afecto</span><span className="font-mono">{fmt(totals.afecto)}</span>
                 </div>
-                <div className="flex justify-between py-0.5 text-white/70">
+                <div className="flex justify-between py-0.5 text-gray-600">
                   <span>Exento</span><span className="font-mono">{fmt(totals.exento)}</span>
                 </div>
-                <div className="flex justify-between py-0.5 text-white/70">
+                <div className="flex justify-between py-0.5 text-gray-600">
                   <span>IVA 19%</span><span className="font-mono">{fmt(iva)}</span>
                 </div>
-                <div className="flex justify-between border-t border-white/10 pt-1.5 mt-1 text-sm font-bold text-[#e2b44b]">
+                <div className="flex justify-between border-t border-gray-200 pt-1.5 mt-1 text-sm font-bold text-orange-500">
                   <span>Total</span><span className="font-mono">{fmt(total)}</span>
                 </div>
               </div>
@@ -808,7 +808,7 @@ export default function NuevaCotizacionForm({
         {/* ═══════════════════════════════════════════════════════════
             SECCIÓN 6 — CONDICIÓN DE VENTA
         ═══════════════════════════════════════════════════════════ */}
-        <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-lg border border-gray-200 bg-white p-5">
           <SectionTitle>Condición de Venta</SectionTitle>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div className="col-span-2">
@@ -829,17 +829,17 @@ export default function NuevaCotizacionForm({
         {/* ═══════════════════════════════════════════════════════════
             BOTONERA DE ACCIONES
         ═══════════════════════════════════════════════════════════ */}
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-5 py-4">
           <div className="flex gap-2">
             <Link
               href="/admin/cotizaciones"
-              className="rounded border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-white/60 hover:bg-white/10"
+              className="rounded border border-gray-200 bg-gray-50 px-4 py-2 text-xs font-medium text-gray-500 hover:bg-gray-100"
             >
               Cancelar
             </Link>
             <button
               type="button"
-              className="rounded border border-white/10 bg-white/5 px-4 py-2 text-xs font-medium text-white/60 hover:bg-white/10"
+              className="rounded border border-gray-200 bg-gray-50 px-4 py-2 text-xs font-medium text-gray-500 hover:bg-gray-100"
               onClick={() => {
                 setItems([emptyItem()]);
                 setRefs([emptyRef()]);
@@ -851,7 +851,7 @@ export default function NuevaCotizacionForm({
               type="button"
               disabled={loading}
               onClick={handleDraft}
-              className="rounded border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-xs font-medium text-orange-300 hover:bg-orange-500/20 disabled:opacity-50"
+              className="rounded border border-orange-300 bg-orange-50 px-4 py-2 text-xs font-medium text-orange-600 hover:bg-orange-100 disabled:opacity-50"
             >
               Guardar en proceso
             </button>
@@ -859,7 +859,7 @@ export default function NuevaCotizacionForm({
           <div className="flex gap-2">
             <button
               type="button"
-              className="rounded border border-[#e2b44b]/30 bg-[#e2b44b]/10 px-4 py-2 text-xs font-medium text-[#e2b44b] hover:bg-[#e2b44b]/20"
+              className="rounded border border-orange-300 bg-orange-500/10 px-4 py-2 text-xs font-medium text-orange-500 hover:bg-orange-100"
               onClick={() => setShowPreview(true)}
             >
               Vista Previa

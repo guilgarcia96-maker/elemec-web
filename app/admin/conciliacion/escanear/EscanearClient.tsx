@@ -216,19 +216,19 @@ export default function EscanearClient() {
   }
 
   const inputClass =
-    "w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30";
+    "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 placeholder:text-gray-400";
 
   return (
     <div className="flex-1 px-3 py-4 md:px-6 md:py-10">
       {/* Breadcrumb */}
       <div className="mb-6">
-        <Link href="/admin/conciliacion" className="text-xs text-white/40 hover:text-white transition">
+        <Link href="/admin/conciliacion" className="text-xs text-gray-400 hover:text-gray-900 transition">
           &larr; Conciliación
         </Link>
       </div>
 
-      <h1 className="text-2xl font-bold text-white mb-1">Escanear Documento con IA</h1>
-      <p className="text-sm text-white/50 mb-8">
+      <h1 className="text-2xl font-bold text-gray-900 mb-1">Escanear Documento con IA</h1>
+      <p className="text-sm text-gray-400 mb-8">
         Sube una imagen de recibo, factura o boleta para extraer datos automáticamente.
       </p>
 
@@ -241,19 +241,19 @@ export default function EscanearClient() {
           onDragLeave={(e) => { e.preventDefault(); setDragging(false); }}
           className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition ${
             dragging
-              ? "border-[#e2b44b] bg-[#e2b44b]/10"
-              : "border-white/20 hover:border-[#e2b44b]/60 hover:bg-white/5"
+              ? "border-orange-500 bg-orange-50"
+              : "border-gray-300 hover:border-orange-400 hover:bg-gray-100"
           }`}
         >
           {preview ? (
             <img src={preview} alt="Vista previa" className="max-h-64 mx-auto rounded-lg" />
           ) : (
             <div>
-              <div className="text-4xl text-white/20 mb-3">&#128196;</div>
-              <p className="text-white/50">
+              <div className="text-4xl text-gray-300 mb-3">&#128196;</div>
+              <p className="text-gray-400">
                 {dragging ? "Suelta la imagen aquí" : "Click o arrastra una imagen de recibo/factura"}
               </p>
-              <p className="text-xs text-white/30 mt-1">JPG, PNG - Tickets, facturas, recibos</p>
+              <p className="text-xs text-gray-300 mt-1">JPG, PNG - Tickets, facturas, recibos</p>
             </div>
           )}
         </div>
@@ -263,7 +263,7 @@ export default function EscanearClient() {
         {preview && !ocrText && !processing && (
           <button
             onClick={analyzeFile}
-            className="mt-4 rounded-lg bg-[#e2b44b] px-6 py-2.5 text-sm font-bold text-black hover:bg-[#d4a43a] transition"
+            className="mt-4 rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-bold text-white hover:bg-orange-600 transition"
           >
             Analizar con IA
           </button>
@@ -271,13 +271,13 @@ export default function EscanearClient() {
 
         {processing && (
           <div className="mt-4 flex items-center gap-3">
-            <div className="animate-spin h-5 w-5 border-2 border-[#e2b44b] border-t-transparent rounded-full" />
-            <span className="text-sm text-white/50">Analizando documento con IA...</span>
+            <div className="animate-spin h-5 w-5 border-2 border-orange-500 border-t-transparent rounded-full" />
+            <span className="text-sm text-gray-400">Analizando documento con IA...</span>
           </div>
         )}
 
         {error && !ocrText && (
-          <p className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300">
+          <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
             {error}
           </p>
         )}
@@ -288,20 +288,20 @@ export default function EscanearClient() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Texto detectado */}
           <div>
-            <h2 className="text-sm font-semibold text-white/70 mb-3">Texto detectado por IA</h2>
-            <pre className="text-sm bg-[#13131f] border border-white/10 p-4 rounded-lg whitespace-pre-wrap max-h-96 overflow-auto text-white/60">
+            <h2 className="text-sm font-semibold text-gray-500 mb-3">Texto detectado por IA</h2>
+            <pre className="text-sm bg-gray-50 border border-gray-200 p-4 rounded-lg whitespace-pre-wrap max-h-96 overflow-auto text-gray-600">
               {ocrText}
             </pre>
           </div>
 
           {/* Formulario */}
           <div>
-            <h2 className="text-sm font-semibold text-white/70 mb-3">Datos del movimiento</h2>
+            <h2 className="text-sm font-semibold text-gray-500 mb-3">Datos del movimiento</h2>
             <form onSubmit={handleSave} className="space-y-4">
               {/* Tipo y fecha */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">Tipo *</label>
+                  <label className="mb-1 block text-sm text-gray-600">Tipo *</label>
                   <select
                     value={form.tipo}
                     onChange={(e) => setForm({ ...form, tipo: e.target.value })}
@@ -313,7 +313,7 @@ export default function EscanearClient() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">Fecha *</label>
+                  <label className="mb-1 block text-sm text-gray-600">Fecha *</label>
                   <input
                     type="date"
                     value={form.fecha}
@@ -326,7 +326,7 @@ export default function EscanearClient() {
 
               {/* Monto */}
               <div>
-                <label className="mb-1 block text-sm text-white/70">Monto CLP * (detectado por IA)</label>
+                <label className="mb-1 block text-sm text-gray-600">Monto CLP * (detectado por IA)</label>
                 <input
                   type="number"
                   step="1"
@@ -341,7 +341,7 @@ export default function EscanearClient() {
 
               {/* Descripción */}
               <div>
-                <label className="mb-1 block text-sm text-white/70">Descripción</label>
+                <label className="mb-1 block text-sm text-gray-600">Descripción</label>
                 <input
                   type="text"
                   value={form.descripcion}
@@ -354,7 +354,7 @@ export default function EscanearClient() {
 
               {/* Categoría */}
               <div>
-                <label className="mb-1 block text-sm text-white/70">Categoría * (sugerida por IA)</label>
+                <label className="mb-1 block text-sm text-gray-600">Categoría * (sugerida por IA)</label>
                 <select
                   value={form.categoria}
                   onChange={(e) => setForm({ ...form, categoria: e.target.value })}
@@ -371,7 +371,7 @@ export default function EscanearClient() {
               {/* Referencia y centro de costo */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">Referencia / N° documento</label>
+                  <label className="mb-1 block text-sm text-gray-600">Referencia / N° documento</label>
                   <input
                     type="text"
                     value={form.referencia}
@@ -382,7 +382,7 @@ export default function EscanearClient() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">Centro de costo</label>
+                  <label className="mb-1 block text-sm text-gray-600">Centro de costo</label>
                   <input
                     type="text"
                     value={form.centro_costo}
@@ -395,14 +395,14 @@ export default function EscanearClient() {
               </div>
 
               {/* Separador: Datos tributarios */}
-              <div className="border-t border-white/10 pt-4 mt-2">
-                <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40 mb-3">Datos Tributarios</h3>
+              <div className="border-t border-gray-200 pt-4 mt-2">
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Datos Tributarios</h3>
               </div>
 
               {/* Tipo documento y forma de pago */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">Tipo Documento</label>
+                  <label className="mb-1 block text-sm text-gray-600">Tipo Documento</label>
                   <select
                     value={form.tipo_documento}
                     onChange={(e) => setForm({ ...form, tipo_documento: e.target.value })}
@@ -415,7 +415,7 @@ export default function EscanearClient() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">Forma de Pago</label>
+                  <label className="mb-1 block text-sm text-gray-600">Forma de Pago</label>
                   <select
                     value={form.forma_pago}
                     onChange={(e) => setForm({ ...form, forma_pago: e.target.value })}
@@ -432,7 +432,7 @@ export default function EscanearClient() {
               {/* RUT emisor y razón social */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">RUT Emisor</label>
+                  <label className="mb-1 block text-sm text-gray-600">RUT Emisor</label>
                   <input
                     type="text"
                     value={form.rut_emisor}
@@ -443,7 +443,7 @@ export default function EscanearClient() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">Razón Social Emisor</label>
+                  <label className="mb-1 block text-sm text-gray-600">Razón Social Emisor</label>
                   <input
                     type="text"
                     value={form.razon_social_emisor}
@@ -458,7 +458,7 @@ export default function EscanearClient() {
               {/* Montos neto, IVA, total */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">Monto Neto</label>
+                  <label className="mb-1 block text-sm text-gray-600">Monto Neto</label>
                   <input
                     type="number"
                     step="1"
@@ -480,7 +480,7 @@ export default function EscanearClient() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">IVA (19%)</label>
+                  <label className="mb-1 block text-sm text-gray-600">IVA (19%)</label>
                   <input
                     type="number"
                     step="1"
@@ -492,7 +492,7 @@ export default function EscanearClient() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm text-white/70">Monto Total</label>
+                  <label className="mb-1 block text-sm text-gray-600">Monto Total</label>
                   <input
                     type="number"
                     step="1"
@@ -517,7 +517,7 @@ export default function EscanearClient() {
 
               {/* RUT receptor */}
               <div>
-                <label className="mb-1 block text-sm text-white/70">RUT Receptor</label>
+                <label className="mb-1 block text-sm text-gray-600">RUT Receptor</label>
                 <input
                   type="text"
                   value={form.rut_receptor}
@@ -529,7 +529,7 @@ export default function EscanearClient() {
               </div>
 
               {error && (
-                <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300">
+                <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
                   {error}
                 </p>
               )}
@@ -538,14 +538,14 @@ export default function EscanearClient() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-lg bg-[#e2b44b] px-6 py-2.5 text-sm font-bold text-black hover:bg-[#d4a43a] transition disabled:opacity-50"
+                  className="rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-bold text-white hover:bg-orange-600 transition disabled:opacity-50"
                 >
                   {saving ? "Guardando..." : "Guardar movimiento"}
                 </button>
                 <button
                   type="button"
                   onClick={reset}
-                  className="rounded-lg border border-white/20 px-6 py-2.5 text-sm text-white/60 hover:text-white transition"
+                  className="rounded-lg border border-gray-300 px-6 py-2.5 text-sm text-gray-500 hover:text-gray-900 transition"
                 >
                   Cancelar
                 </button>
@@ -558,18 +558,18 @@ export default function EscanearClient() {
       {/* Éxito */}
       {saved && (
         <div className="max-w-md">
-          <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-6 text-center">
-            <p className="text-green-400 font-semibold mb-4">Movimiento guardado correctamente</p>
+          <div className="rounded-lg border border-green-200 bg-green-50 p-6 text-center">
+            <p className="text-green-700 font-semibold mb-4">Movimiento guardado correctamente</p>
             <div className="flex gap-3 justify-center">
               <Link
                 href="/admin/conciliacion"
-                className="rounded-lg border border-white/20 px-5 py-2 text-sm text-white/60 hover:text-white transition"
+                className="rounded-lg border border-gray-300 px-5 py-2 text-sm text-gray-500 hover:text-gray-900 transition"
               >
                 Ver conciliación
               </Link>
               <button
                 onClick={reset}
-                className="rounded-lg bg-[#e2b44b] px-5 py-2 text-sm font-bold text-black hover:bg-[#d4a43a] transition"
+                className="rounded-lg bg-orange-500 px-5 py-2 text-sm font-bold text-white hover:bg-orange-600 transition"
               >
                 Escanear otro
               </button>

@@ -8,14 +8,14 @@ type Estado = "pendiente" | "conciliado" | "observado";
 type Tipo = "ingreso" | "egreso";
 
 const BADGE_ESTADO: Record<Estado, string> = {
-  pendiente:  "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
-  conciliado: "bg-green-500/20 text-green-300 border-green-500/40",
-  observado:  "bg-red-500/20 text-red-300 border-red-500/40",
+  pendiente:  "bg-yellow-100 text-yellow-700 border-yellow-200",
+  conciliado: "bg-green-100 text-green-700 border-green-200",
+  observado:  "bg-red-100 text-red-700 border-red-200",
 };
 
 const BADGE_TIPO: Record<Tipo, string> = {
-  ingreso: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-  egreso:  "bg-rose-500/20 text-rose-300 border-rose-500/40",
+  ingreso: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  egreso:  "bg-rose-100 text-rose-700 border-rose-200",
 };
 
 function fmtCLP(n: number) {
@@ -49,11 +49,11 @@ interface Movimiento {
 }
 
 const BADGE_TIPO_DOC: Record<string, string> = {
-  boleta: "bg-sky-500/20 text-sky-300 border-sky-500/40",
-  factura: "bg-violet-500/20 text-violet-300 border-violet-500/40",
-  factura_exenta: "bg-teal-500/20 text-teal-300 border-teal-500/40",
-  nota_credito: "bg-amber-500/20 text-amber-300 border-amber-500/40",
-  guia_despacho: "bg-pink-500/20 text-pink-300 border-pink-500/40",
+  boleta: "bg-sky-100 text-sky-700 border-sky-200",
+  factura: "bg-violet-100 text-violet-700 border-violet-200",
+  factura_exenta: "bg-teal-100 text-teal-700 border-teal-200",
+  nota_credito: "bg-amber-100 text-amber-700 border-amber-200",
+  guia_despacho: "bg-pink-100 text-pink-700 border-pink-200",
 };
 
 const TIPO_DOC_LABELS: Record<string, string> = {
@@ -100,10 +100,10 @@ export default function ConciliacionTableClient({ movimientos, canEdit }: Props)
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-white/10">
+      <div className="overflow-x-auto rounded-xl border border-gray-200">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-widest text-white/40">
+            <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs uppercase tracking-widest text-gray-400">
               <th className="px-4 py-3 w-10"></th>
               <th className="px-4 py-3">Fecha</th>
               <th className="px-4 py-3">Tipo</th>
@@ -118,13 +118,13 @@ export default function ConciliacionTableClient({ movimientos, canEdit }: Props)
           <tbody>
             {movimientos.length === 0 && (
               <tr>
-                <td colSpan={canEdit ? 9 : 8} className="px-4 py-10 text-center text-white/30">
+                <td colSpan={canEdit ? 9 : 8} className="px-4 py-10 text-center text-gray-400">
                   No hay movimientos registrados.
                 </td>
               </tr>
             )}
             {movimientos.map((m) => (
-              <tr key={m.id} className="border-b border-white/5 hover:bg-white/5 transition">
+              <tr key={m.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
                 <td className="px-4 py-3">
                   <AdjuntoThumbnail
                     storagePath={getStoragePath(m)}
@@ -133,7 +133,7 @@ export default function ConciliacionTableClient({ movimientos, canEdit }: Props)
                     size="sm"
                   />
                 </td>
-                <td className="px-4 py-3 text-white/50 whitespace-nowrap">
+                <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
                   {m.fecha}
                 </td>
                 <td className="px-4 py-3">
@@ -145,24 +145,24 @@ export default function ConciliacionTableClient({ movimientos, canEdit }: Props)
                     {m.tipo}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-white/70 hidden md:table-cell">{m.categoria}</td>
+                <td className="px-4 py-3 text-gray-600 hidden md:table-cell">{m.categoria}</td>
                 <td className="px-4 py-3 max-w-xs hidden md:table-cell">
                   <div className="flex items-center gap-2">
-                    <span className="text-white/70 truncate">{m.descripcion || "\u2014"}</span>
+                    <span className="text-gray-600 truncate">{m.descripcion || "\u2014"}</span>
                     {m.tipo_documento && (
-                      <span className={`inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${BADGE_TIPO_DOC[m.tipo_documento] ?? "bg-white/10 text-white/50 border-white/20"}`}>
+                      <span className={`inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${BADGE_TIPO_DOC[m.tipo_documento] ?? "bg-gray-100 text-gray-500 border-gray-200"}`}>
                         {TIPO_DOC_LABELS[m.tipo_documento] ?? m.tipo_documento}
                       </span>
                     )}
                   </div>
                   {m.rut_emisor && (
-                    <div className="text-xs text-white/40 mt-0.5">{m.rut_emisor}</div>
+                    <div className="text-xs text-gray-400 mt-0.5">{m.rut_emisor}</div>
                   )}
                 </td>
-                <td className="px-4 py-3 text-white/50 font-mono text-xs hidden md:table-cell">
+                <td className="px-4 py-3 text-gray-500 font-mono text-xs hidden md:table-cell">
                   {m.referencia || "\u2014"}
                 </td>
-                <td className="px-4 py-3 text-right font-mono font-semibold text-white">
+                <td className="px-4 py-3 text-right font-mono font-semibold text-gray-900">
                   {fmtCLP(Number(m.monto))}
                 </td>
                 <td className="px-4 py-3">
@@ -182,7 +182,7 @@ export default function ConciliacionTableClient({ movimientos, canEdit }: Props)
                         <button
                           name="estado"
                           value="conciliado"
-                          className="rounded border border-green-500/40 px-2 py-0.5 text-xs text-green-300 hover:bg-green-500/10 transition"
+                          className="rounded border border-green-200 px-2 py-0.5 text-xs text-green-700 hover:bg-green-50 transition"
                         >
                           Conciliar
                         </button>
@@ -191,7 +191,7 @@ export default function ConciliacionTableClient({ movimientos, canEdit }: Props)
                         <button
                           name="estado"
                           value="observado"
-                          className="rounded border border-red-500/40 px-2 py-0.5 text-xs text-red-300 hover:bg-red-500/10 transition"
+                          className="rounded border border-red-200 px-2 py-0.5 text-xs text-red-700 hover:bg-red-50 transition"
                         >
                           Observar
                         </button>
@@ -200,7 +200,7 @@ export default function ConciliacionTableClient({ movimientos, canEdit }: Props)
                         <button
                           name="estado"
                           value="pendiente"
-                          className="rounded border border-yellow-500/40 px-2 py-0.5 text-xs text-yellow-300 hover:bg-yellow-500/10 transition"
+                          className="rounded border border-yellow-200 px-2 py-0.5 text-xs text-yellow-700 hover:bg-yellow-50 transition"
                         >
                           Pendiente
                         </button>

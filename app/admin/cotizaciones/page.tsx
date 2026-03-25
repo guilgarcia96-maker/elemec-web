@@ -9,12 +9,12 @@ const ESTADOS = ["proceso", "nueva", "en_revision", "cotizada", "ganada", "perdi
 type Estado = (typeof ESTADOS)[number];
 
 const BADGE: Record<Estado, string> = {
-  proceso:     "bg-orange-500/20 text-orange-300 border-orange-500/40",
-  nueva:       "bg-blue-500/20 text-blue-300 border-blue-500/40",
-  en_revision: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
-  cotizada:    "bg-purple-500/20 text-purple-300 border-purple-500/40",
-  ganada:      "bg-green-500/20 text-green-300 border-green-500/40",
-  perdida:     "bg-red-500/20 text-red-300 border-red-500/40",
+  proceso:     "bg-orange-100 text-orange-700 border-orange-200",
+  nueva:       "bg-blue-100 text-blue-700 border-blue-200",
+  en_revision: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  cotizada:    "bg-purple-100 text-purple-700 border-purple-200",
+  ganada:      "bg-green-100 text-green-700 border-green-200",
+  perdida:     "bg-red-100 text-red-700 border-red-200",
 };
 
 const LABEL: Record<Estado, string> = {
@@ -102,24 +102,24 @@ export default async function AdminCotizacionesPage({
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Solicitudes de cotización</h1>
-            <p className="mt-1 text-sm text-white/50">
+            <p className="mt-1 text-sm text-gray-500">
               {cotizaciones.length} registro{cotizaciones.length !== 1 ? "s" : ""}
               {hayFiltros ? " · con filtros aplicados" : ""}
             </p>
           </div>
         </div>
 
-        {/* ── Botonera ─────────────────────────────────────────── */}
+        {/* Botonera */}
         <div className="mt-6 flex flex-wrap items-center gap-3">
           {/* Nueva Cotización dropdown */}
           <details className="group relative">
-            <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg bg-green-700 px-2 md:px-4 py-2 text-xs md:text-sm font-semibold text-white transition hover:bg-green-600">
+            <summary className="flex cursor-pointer list-none items-center gap-2 rounded-lg bg-green-600 px-2 md:px-4 py-2 text-xs md:text-sm font-semibold text-white transition hover:bg-green-700">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
               NUEVA COTIZACIÓN
               <svg className="h-3 w-3 transition group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
             </summary>
-            <div className="absolute left-0 top-full z-30 mt-1 w-72 overflow-hidden rounded-xl border border-white/10 bg-[#1a1a2e] shadow-2xl">
-              <p className="border-b border-white/10 bg-blue-900/30 px-4 py-2 text-xs font-bold uppercase tracking-widest text-blue-300">
+            <div className="absolute left-0 top-full z-30 mt-1 w-72 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+              <p className="border-b border-gray-200 bg-blue-50 px-4 py-2 text-xs font-bold uppercase tracking-widest text-blue-700">
                 Documentos electrónicos
               </p>
               {[
@@ -130,11 +130,11 @@ export default async function AdminCotizacionesPage({
                 { tipo: "factura_exenta_electronica",      label: "Factura Exenta Electrónica" },
               ].map(({ tipo, label }) => (
                 <Link key={tipo} href={`/admin/cotizaciones/nueva?tipo=${tipo}`}
-                  className="block px-4 py-2 text-sm text-white/70 transition hover:bg-white/5 hover:text-white">
+                  className="block px-4 py-2 text-sm text-gray-600 transition hover:bg-gray-50 hover:text-gray-900">
                   {label}
                 </Link>
               ))}
-              <p className="border-b border-t border-white/10 bg-blue-900/30 px-4 py-2 text-xs font-bold uppercase tracking-widest text-blue-300">
+              <p className="border-b border-t border-gray-200 bg-blue-50 px-4 py-2 text-xs font-bold uppercase tracking-widest text-blue-700">
                 Documentos manuales
               </p>
               {[
@@ -142,7 +142,7 @@ export default async function AdminCotizacionesPage({
                 { tipo: "factura_exenta", label: "Factura Exenta" },
               ].map(({ tipo, label }) => (
                 <Link key={tipo} href={`/admin/cotizaciones/nueva?tipo=${tipo}`}
-                  className="block px-4 py-2 text-sm text-white/70 transition hover:bg-white/5 hover:text-white">
+                  className="block px-4 py-2 text-sm text-gray-600 transition hover:bg-gray-50 hover:text-gray-900">
                   {label}
                 </Link>
               ))}
@@ -152,7 +152,7 @@ export default async function AdminCotizacionesPage({
           {/* Importar documentos */}
           <Link
             href="/admin/cotizaciones/importar"
-            className="flex items-center gap-2 rounded-lg border border-blue-500/40 bg-blue-500/10 px-2 md:px-4 py-2 text-xs md:text-sm font-semibold text-blue-300 transition hover:bg-blue-500/20"
+            className="flex items-center gap-2 rounded-lg border border-blue-300 bg-blue-50 px-2 md:px-4 py-2 text-xs md:text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4 4m0 0l-4-4m4 4V4"/></svg>
             IMPORTAR DOCUMENTOS
@@ -161,61 +161,56 @@ export default async function AdminCotizacionesPage({
           {/* Generar Excel (CSV) */}
           <a
             href={exportHref}
-            className="flex items-center gap-2 rounded-lg border border-yellow-500/40 bg-yellow-500/10 px-2 md:px-4 py-2 text-xs md:text-sm font-semibold text-yellow-300 transition hover:bg-yellow-500/20"
+            className="flex items-center gap-2 rounded-lg border border-yellow-300 bg-yellow-50 px-2 md:px-4 py-2 text-xs md:text-sm font-semibold text-yellow-700 transition hover:bg-yellow-100"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 12l4 4 4-4M12 4v12"/></svg>
             GENERAR EXCEL
           </a>
         </div>
-        {/* ── Fin botonera ──────────────────────────────────────── */}
 
-        {/* Panel de filtros (KAME-style) */}
-        <div className="mt-6 rounded-xl border border-white/10 bg-white/5">
-          <div className="border-b border-white/10 px-5 py-3">
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40">
+        {/* Panel de filtros */}
+        <div className="mt-6 rounded-xl border border-gray-200 bg-white">
+          <div className="border-b border-gray-200 px-5 py-3">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400">
               Filtro de cotizaciones
             </h3>
           </div>
           <form method="GET" className="p-5">
             <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4 md:gap-4">
-              {/* Fecha desde */}
               <div>
-                <label className="mb-1 block text-xs text-white/50">Fecha desde</label>
+                <label className="mb-1 block text-xs text-gray-500">Fecha desde</label>
                 <input
                   type="date"
                   name="desde"
                   defaultValue={filtroDesde}
-                  className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e2b44b]"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
-              {/* Fecha hasta */}
               <div>
-                <label className="mb-1 block text-xs text-white/50">Fecha hasta</label>
+                <label className="mb-1 block text-xs text-gray-500">Fecha hasta</label>
                 <input
                   type="date"
                   name="hasta"
                   defaultValue={filtroHasta}
-                  className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e2b44b]"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
-              {/* Búsqueda */}
               <div>
-                <label className="mb-1 block text-xs text-white/50">Cliente / empresa / email</label>
+                <label className="mb-1 block text-xs text-gray-500">Cliente / empresa / email</label>
                 <input
                   type="text"
                   name="busqueda"
                   defaultValue={filtroBusqueda}
                   placeholder="Buscar..."
-                  className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-[#e2b44b]"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
-              {/* Estado */}
               <div>
-                <label className="mb-1 block text-xs text-white/50">Estado</label>
+                <label className="mb-1 block text-xs text-gray-500">Estado</label>
                 <select
                   name="estado"
                   defaultValue={filtroEstado}
-                  className="w-full rounded-lg border border-white/15 bg-[#0f0f1a] px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#e2b44b]"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 >
                   <option value="">Todos</option>
                   {ESTADOS.map((e) => (
@@ -227,14 +222,14 @@ export default async function AdminCotizacionesPage({
             <div className="mt-4 flex items-center gap-3">
               <button
                 type="submit"
-                className="rounded-lg bg-[#e2b44b] px-5 py-2 text-sm font-semibold text-black transition hover:bg-[#c99d3a]"
+                className="rounded-lg bg-orange-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-600"
               >
                 Buscar
               </button>
               {hayFiltros && (
                 <Link
                   href="/admin/cotizaciones"
-                  className="rounded-lg border border-white/20 px-5 py-2 text-sm text-white/60 transition hover:border-white/40"
+                  className="rounded-lg border border-gray-300 px-5 py-2 text-sm text-gray-500 transition hover:border-gray-400"
                 >
                   Limpiar filtros
                 </Link>
@@ -249,8 +244,8 @@ export default async function AdminCotizacionesPage({
             href={`/admin/cotizaciones${filtroDesde || filtroHasta || filtroBusqueda ? "?" + new URLSearchParams({ ...(filtroDesde && { desde: filtroDesde }), ...(filtroHasta && { hasta: filtroHasta }), ...(filtroBusqueda && { busqueda: filtroBusqueda }) }).toString() : ""}`}
             className={`rounded-full border px-4 py-1 text-xs font-semibold transition ${
               !filtroEstado
-                ? "border-[#e2b44b] bg-[#e2b44b]/10 text-[#e2b44b]"
-                : "border-white/20 text-white/50 hover:border-white/40"
+                ? "border-orange-500 bg-orange-50 text-orange-600"
+                : "border-gray-300 text-gray-500 hover:border-gray-400"
             }`}
           >
             Todas
@@ -263,8 +258,8 @@ export default async function AdminCotizacionesPage({
                 href={`/admin/cotizaciones?${sp.toString()}`}
                 className={`rounded-full border px-4 py-1 text-xs font-semibold transition ${
                   filtroEstado === e
-                    ? "border-[#e2b44b] bg-[#e2b44b]/10 text-[#e2b44b]"
-                    : "border-white/20 text-white/50 hover:border-white/40"
+                    ? "border-orange-500 bg-orange-50 text-orange-600"
+                    : "border-gray-300 text-gray-500 hover:border-gray-400"
                 }`}
               >
                 {LABEL[e]}
@@ -274,10 +269,10 @@ export default async function AdminCotizacionesPage({
         </div>
 
         {/* Tabla */}
-        <div className="mt-4 overflow-x-auto rounded-xl border border-white/10">
+        <div className="mt-4 overflow-x-auto rounded-xl border border-gray-200">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-widest text-white/40">
+              <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs uppercase tracking-widest text-gray-400">
                 <th className="px-4 py-3">Folio</th>
                 <th className="px-4 py-3 hidden md:table-cell">Fecha</th>
                 <th className="px-4 py-3">Contacto</th>
@@ -293,7 +288,7 @@ export default async function AdminCotizacionesPage({
             <tbody>
               {cotizaciones.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-4 py-10 text-center text-white/30">
+                  <td colSpan={10} className="px-4 py-10 text-center text-gray-400">
                     No hay cotizaciones{hayFiltros ? " que coincidan con los filtros" : " registradas"}.
                   </td>
                 </tr>
@@ -301,27 +296,27 @@ export default async function AdminCotizacionesPage({
               {cotizaciones.map((c: Record<string, unknown>) => (
                 <tr
                   key={c.id as string}
-                  className="border-b border-white/5 hover:bg-white/5 transition"
+                  className="border-b border-gray-100 hover:bg-gray-50 transition"
                 >
-                  <td className="px-4 py-3 text-xs font-mono text-[#e2b44b] whitespace-nowrap">
-                    {(c.codigo as string) || <span className="text-white/20">—</span>}
+                  <td className="px-4 py-3 text-xs font-mono text-orange-500 whitespace-nowrap">
+                    {(c.codigo as string) || <span className="text-gray-300">—</span>}
                   </td>
-                  <td className="px-4 py-3 text-white/50 whitespace-nowrap hidden md:table-cell">
+                  <td className="px-4 py-3 text-gray-500 whitespace-nowrap hidden md:table-cell">
                     {new Date(c.created_at as string).toLocaleDateString("es-CL")}
                   </td>
                   <td className="px-4 py-3">
-                    <p className="font-semibold">{c.nombre as string} {c.apellidos as string}</p>
-                    <p className="text-xs text-white/40">{c.email as string}</p>
+                    <p className="font-semibold text-gray-900">{c.nombre as string} {c.apellidos as string}</p>
+                    <p className="text-xs text-gray-400">{c.email as string}</p>
                   </td>
-                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{(c.compania as string) || "—"}</td>
-                  <td className="px-4 py-3 text-white/70 max-w-xs truncate hidden md:table-cell">{(c.tipo_servicio as string) || "—"}</td>
-                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{(c.region as string) || "—"}</td>
-                  <td className="px-4 py-3 text-right font-mono text-white/70 whitespace-nowrap hidden md:table-cell">
+                  <td className="px-4 py-3 text-gray-600 hidden md:table-cell">{(c.compania as string) || "—"}</td>
+                  <td className="px-4 py-3 text-gray-600 max-w-xs truncate hidden md:table-cell">{(c.tipo_servicio as string) || "—"}</td>
+                  <td className="px-4 py-3 text-gray-600 hidden md:table-cell">{(c.region as string) || "—"}</td>
+                  <td className="px-4 py-3 text-right font-mono text-gray-600 whitespace-nowrap hidden md:table-cell">
                     {c.total
                       ? `$${Number(c.total).toLocaleString("es-CL", { maximumFractionDigits: 0 })}`
                       : c.monto_estimado
-                        ? <span className="text-white/40">~${Number(c.monto_estimado).toLocaleString("es-CL", { maximumFractionDigits: 0 })}</span>
-                        : <span className="text-white/20">—</span>}
+                        ? <span className="text-gray-400">~${Number(c.monto_estimado).toLocaleString("es-CL", { maximumFractionDigits: 0 })}</span>
+                        : <span className="text-gray-300">—</span>}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${BADGE[c.estado as Estado] ?? BADGE.nueva}`}>
@@ -331,8 +326,8 @@ export default async function AdminCotizacionesPage({
                   <td className="px-4 py-3 hidden md:table-cell">
                     <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium ${
                       c.tipo_registro === "solicitud_cliente"
-                        ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
-                        : "border-white/10 bg-white/5 text-white/40"
+                        ? "border-cyan-200 bg-cyan-50 text-cyan-700"
+                        : "border-gray-200 bg-gray-50 text-gray-500"
                     }`}>
                       {c.tipo_registro === "solicitud_cliente" ? "Web" : "Backoffice"}
                     </span>
@@ -340,7 +335,7 @@ export default async function AdminCotizacionesPage({
                   <td className="px-4 py-3">
                     <Link
                       href={`/admin/cotizaciones/${c.id}`}
-                      className="rounded-lg border border-white/20 px-3 py-1 text-xs text-white/60 hover:border-[#e2b44b] hover:text-[#e2b44b] transition"
+                      className="rounded-lg border border-gray-300 px-3 py-1 text-xs text-gray-500 hover:border-orange-500 hover:text-orange-500 transition"
                     >
                       Ver detalle
                     </Link>

@@ -25,7 +25,6 @@ export default function AdjuntoThumbnail({
       setUrl(null);
       return;
     }
-    // Construir URL pública de Supabase Storage
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (supabaseUrl) {
       setUrl(
@@ -36,8 +35,8 @@ export default function AdjuntoThumbnail({
 
   const wrapperClass = `relative shrink-0 cursor-pointer overflow-hidden rounded-md border transition hover:scale-105 ${
     storagePath && url
-      ? "border-white/15 hover:border-orange-500/50"
-      : "border-white/10 bg-white/5 hover:border-white/20"
+      ? "border-gray-200 hover:border-orange-500"
+      : "border-gray-200 bg-gray-50 hover:border-gray-300"
   }`;
 
   return (
@@ -57,7 +56,7 @@ export default function AdjuntoThumbnail({
         />
       ) : (
         <svg
-          className="h-full w-full p-1.5 text-white/20"
+          className="h-full w-full p-1.5 text-gray-300"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

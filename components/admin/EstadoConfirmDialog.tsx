@@ -15,12 +15,12 @@ const LABEL: Record<Estado, string> = {
 };
 
 const BADGE: Record<Estado, string> = {
-  proceso:     'bg-orange-500/20 text-orange-300 border-orange-500/40',
-  nueva:       'bg-blue-500/20 text-blue-300 border-blue-500/40',
-  en_revision: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40',
-  cotizada:    'bg-purple-500/20 text-purple-300 border-purple-500/40',
-  ganada:      'bg-green-500/20 text-green-300 border-green-500/40',
-  perdida:     'bg-red-500/20 text-red-300 border-red-500/40',
+  proceso:     'bg-orange-100 text-orange-700 border-orange-200',
+  nueva:       'bg-blue-100 text-blue-700 border-blue-200',
+  en_revision: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  cotizada:    'bg-purple-100 text-purple-700 border-purple-200',
+  ganada:      'bg-green-100 text-green-700 border-green-200',
+  perdida:     'bg-red-100 text-red-700 border-red-200',
 };
 
 // Transiciones válidas según el estado actual
@@ -48,9 +48,9 @@ export default function EstadoConfirmDialog({ cotizacionId, estadoActual }: Prop
 
   if (transicionesValidas.length === 0) {
     return (
-      <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
-        <p className="text-sm font-semibold text-white/70">Cambiar estado</p>
-        <p className="mt-2 text-xs text-white/40">
+      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="text-sm font-semibold text-gray-600">Cambiar estado</p>
+        <p className="mt-2 text-xs text-gray-400">
           Estado terminal: no hay transiciones disponibles desde &quot;{LABEL[estadoActual as Estado] ?? estadoActual}&quot;.
         </p>
       </div>
@@ -82,8 +82,8 @@ export default function EstadoConfirmDialog({ cotizacionId, estadoActual }: Prop
 
   return (
     <>
-      <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
-        <p className="mb-3 text-sm font-semibold text-white/70">Cambiar estado</p>
+      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+        <p className="mb-3 text-sm font-semibold text-gray-600">Cambiar estado</p>
         <div className="flex flex-wrap gap-2">
           {transicionesValidas.map((e) => (
             <button
@@ -100,12 +100,12 @@ export default function EstadoConfirmDialog({ cotizacionId, estadoActual }: Prop
 
       {/* Dialog overlay */}
       {dialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="mx-4 w-full max-w-md rounded-xl border border-white/10 bg-[#1a1a2e] p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-2xl">
             {dialog === 'perdida' ? (
               <>
-                <h3 className="text-lg font-bold text-red-300">Marcar como Perdida</h3>
-                <p className="mt-2 text-sm text-white/50">
+                <h3 className="text-lg font-bold text-red-600">Marcar como Perdida</h3>
+                <p className="mt-2 text-sm text-gray-500">
                   Indica el motivo por el cual se perdió esta cotización.
                 </p>
                 <textarea
@@ -113,13 +113,13 @@ export default function EstadoConfirmDialog({ cotizacionId, estadoActual }: Prop
                   onChange={(e) => setMotivoPerdida(e.target.value)}
                   rows={3}
                   placeholder="Motivo de pérdida (requerido)..."
-                  className="mt-3 w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-red-400 placeholder:text-white/30"
+                  className="mt-3 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-red-400 placeholder:text-gray-400"
                 />
                 <div className="mt-4 flex justify-end gap-3">
                   <button
                     type="button"
                     onClick={() => { setDialog(null); setMotivoPerdida(''); }}
-                    className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/60 hover:border-white/40 transition"
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-500 hover:border-gray-400 transition"
                   >
                     Cancelar
                   </button>
@@ -127,7 +127,7 @@ export default function EstadoConfirmDialog({ cotizacionId, estadoActual }: Prop
                     type="button"
                     disabled={loading || !motivoPerdida.trim()}
                     onClick={() => submitEstado('perdida')}
-                    className="rounded-lg bg-red-700 px-5 py-2 text-sm font-bold text-white hover:bg-red-600 disabled:opacity-50 transition"
+                    className="rounded-lg bg-red-500 px-5 py-2 text-sm font-bold text-white hover:bg-red-600 disabled:opacity-50 transition"
                   >
                     {loading ? 'Guardando...' : 'Confirmar pérdida'}
                   </button>
@@ -135,15 +135,15 @@ export default function EstadoConfirmDialog({ cotizacionId, estadoActual }: Prop
               </>
             ) : dialog === 'ganada' ? (
               <>
-                <h3 className="text-lg font-bold text-green-300">Confirmar cotización ganada</h3>
-                <p className="mt-2 text-sm text-white/50">
+                <h3 className="text-lg font-bold text-green-600">Confirmar cotización ganada</h3>
+                <p className="mt-2 text-sm text-gray-500">
                   Confirmar que esta cotización fue ganada. Esta acción es irreversible.
                 </p>
                 <div className="mt-4 flex justify-end gap-3">
                   <button
                     type="button"
                     onClick={() => setDialog(null)}
-                    className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/60 hover:border-white/40 transition"
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-500 hover:border-gray-400 transition"
                   >
                     Cancelar
                   </button>
@@ -151,7 +151,7 @@ export default function EstadoConfirmDialog({ cotizacionId, estadoActual }: Prop
                     type="button"
                     disabled={loading}
                     onClick={() => submitEstado('ganada')}
-                    className="rounded-lg bg-green-700 px-5 py-2 text-sm font-bold text-white hover:bg-green-600 disabled:opacity-50 transition"
+                    className="rounded-lg bg-green-600 px-5 py-2 text-sm font-bold text-white hover:bg-green-700 disabled:opacity-50 transition"
                   >
                     {loading ? 'Guardando...' : 'Confirmar ganada'}
                   </button>
@@ -159,15 +159,15 @@ export default function EstadoConfirmDialog({ cotizacionId, estadoActual }: Prop
               </>
             ) : (
               <>
-                <h3 className="text-lg font-bold text-white">Cambiar estado</h3>
-                <p className="mt-2 text-sm text-white/50">
+                <h3 className="text-lg font-bold text-gray-900">Cambiar estado</h3>
+                <p className="mt-2 text-sm text-gray-500">
                   Cambiar el estado a <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold ${BADGE[dialog]}`}>{LABEL[dialog]}</span>
                 </p>
                 <div className="mt-4 flex justify-end gap-3">
                   <button
                     type="button"
                     onClick={() => setDialog(null)}
-                    className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/60 hover:border-white/40 transition"
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-500 hover:border-gray-400 transition"
                   >
                     Cancelar
                   </button>
@@ -175,7 +175,7 @@ export default function EstadoConfirmDialog({ cotizacionId, estadoActual }: Prop
                     type="button"
                     disabled={loading}
                     onClick={() => submitEstado(dialog)}
-                    className="rounded-lg bg-[#e2b44b] px-5 py-2 text-sm font-bold text-black hover:bg-[#d4a43a] disabled:opacity-50 transition"
+                    className="rounded-lg bg-orange-500 px-5 py-2 text-sm font-bold text-white hover:bg-orange-600 disabled:opacity-50 transition"
                   >
                     {loading ? 'Guardando...' : 'Confirmar'}
                   </button>

@@ -44,10 +44,10 @@ export default function CotizacionAdjuntosForm({ cotizacionId }: Props) {
     <form
       onSubmit={onSubmit}
       encType="multipart/form-data"
-      className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5"
+      className="mt-6 rounded-xl border border-gray-200 bg-white p-5"
     >
       <input type="hidden" name="id" value={cotizacionId} />
-      <label className="mb-2 block text-sm font-semibold text-white/70">
+      <label className="mb-2 block text-sm font-semibold text-gray-600">
         Adjuntar documentos
       </label>
       <input
@@ -55,16 +55,16 @@ export default function CotizacionAdjuntosForm({ cotizacionId }: Props) {
         name="archivos"
         multiple
         required
-        className="block w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white file:mr-4 file:rounded-md file:border-0 file:bg-[#e2b44b] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-black"
+        className="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 file:mr-4 file:rounded-md file:border-0 file:bg-orange-500 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white"
       />
-      <p className="mt-2 text-xs text-white/35">
+      <p className="mt-2 text-xs text-gray-400">
         Requiere haber ejecutado el SQL extendido y creado el bucket privado `backoffice-docs`.
       </p>
-      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
       <button
         type="submit"
         disabled={subiendo}
-        className="mt-3 rounded-lg bg-[#e2b44b] px-5 py-2 text-sm font-bold text-black hover:bg-[#d4a43a] transition disabled:opacity-60"
+        className="mt-3 rounded-lg bg-orange-500 px-5 py-2 text-sm font-bold text-white hover:bg-orange-600 transition disabled:opacity-60"
       >
         {subiendo ? "Subiendo..." : "Subir archivos"}
       </button>

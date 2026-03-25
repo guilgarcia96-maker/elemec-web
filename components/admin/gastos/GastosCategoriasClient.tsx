@@ -82,13 +82,13 @@ export default function GastosCategoriasClient() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Categorias de Gastos</h1>
-          <p className="mt-1 text-sm text-white/50">
+          <p className="mt-1 text-sm text-gray-400">
             {categorias.length} categoria{categorias.length !== 1 ? "s" : ""} registrada{categorias.length !== 1 ? "s" : ""}
           </p>
         </div>
         <Link
           href="/admin/gastos"
-          className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/60 transition hover:border-white/40 hover:text-white"
+          className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-500 transition hover:border-gray-400 hover:text-gray-900"
         >
           Dashboard
         </Link>
@@ -102,42 +102,42 @@ export default function GastosCategoriasClient() {
       )}
 
       {/* Formulario */}
-      <form onSubmit={handleSubmit} className="rounded-xl border border-white/10 bg-white/[0.03] p-5 space-y-4">
-        <h2 className="text-sm font-semibold text-white">
+      <form onSubmit={handleSubmit} className="rounded-xl border border-gray-200 bg-gray-50 p-5 space-y-4">
+        <h2 className="text-sm font-semibold text-gray-900">
           {editId ? "Editar Categoria" : "Nueva Categoria"}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="mb-1 block text-xs text-white/50">Nombre</label>
+            <label className="mb-1 block text-xs text-gray-400">Nombre</label>
             <input
               type="text"
               placeholder="Nombre de la categoria"
               value={form.nombre}
               onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-orange-500"
               required
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-white/50">Icono (ej: box, truck, tag)</label>
+            <label className="mb-1 block text-xs text-gray-400">Icono (ej: box, truck, tag)</label>
             <input
               type="text"
               placeholder="tag"
               value={form.icono}
               onChange={(e) => setForm({ ...form, icono: e.target.value })}
-              className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-orange-500"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-white/50">Color</label>
+            <label className="mb-1 block text-xs text-gray-400">Color</label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
                 value={form.color}
                 onChange={(e) => setForm({ ...form, color: e.target.value })}
-                className="w-10 h-10 rounded-lg border border-white/15 cursor-pointer bg-transparent"
+                className="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer bg-transparent"
               />
-              <span className="text-sm text-white/40 font-mono">{form.color}</span>
+              <span className="text-sm text-gray-400 font-mono">{form.color}</span>
             </div>
           </div>
         </div>
@@ -153,7 +153,7 @@ export default function GastosCategoriasClient() {
             <button
               type="button"
               onClick={handleCancel}
-              className="rounded-lg border border-white/20 px-5 py-2 text-sm text-white/60 transition hover:border-white/40"
+              className="rounded-lg border border-gray-300 px-5 py-2 text-sm text-gray-500 transition hover:border-gray-400"
             >
               Cancelar
             </button>
@@ -162,18 +162,18 @@ export default function GastosCategoriasClient() {
       </form>
 
       {/* Lista */}
-      <div className="rounded-xl border border-white/10 overflow-hidden">
-        <div className="border-b border-white/10 bg-white/5 px-5 py-3">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-white/40">
+      <div className="rounded-xl border border-gray-200 overflow-hidden">
+        <div className="border-b border-gray-200 bg-gray-50 px-5 py-3">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400">
             Categorias ({categorias.length})
           </h2>
         </div>
         {categorias.length === 0 ? (
-          <p className="px-5 py-10 text-sm text-white/30 text-center">No hay categorias registradas</p>
+          <p className="px-5 py-10 text-sm text-gray-300 text-center">No hay categorias registradas</p>
         ) : (
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-gray-100">
             {categorias.map((cat) => (
-              <div key={cat.id} className="flex items-center justify-between px-5 py-4 hover:bg-white/5 transition">
+              <div key={cat.id} className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition">
                 <div className="flex items-center gap-3">
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold"
@@ -182,12 +182,12 @@ export default function GastosCategoriasClient() {
                     {cat.nombre.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-white/80">{cat.nombre}</p>
-                    <p className="text-[10px] text-white/30">Icono: {cat.icono}</p>
+                    <p className="text-sm font-medium text-gray-700">{cat.nombre}</p>
+                    <p className="text-[10px] text-gray-300">Icono: {cat.icono}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full border border-white/10" style={{ backgroundColor: cat.color }} />
+                  <div className="w-4 h-4 rounded-full border border-gray-200" style={{ backgroundColor: cat.color }} />
                   <button
                     onClick={() => handleEdit(cat)}
                     className="text-xs text-orange-400 hover:text-orange-300 transition"

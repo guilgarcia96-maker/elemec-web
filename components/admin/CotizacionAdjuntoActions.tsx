@@ -41,7 +41,7 @@ export default function CotizacionAdjuntoActions({ adjuntoId, openHref, canDelet
         href={openHref}
         target="_blank"
         rel="noreferrer"
-        className="rounded-lg border border-white/20 px-3 py-1 text-xs text-white/65 hover:border-[#e2b44b] hover:text-[#e2b44b] transition"
+        className="rounded-lg border border-gray-300 px-3 py-1 text-xs text-gray-500 hover:border-orange-500 hover:text-orange-500 transition"
       >
         Abrir
       </a>
@@ -50,7 +50,7 @@ export default function CotizacionAdjuntoActions({ adjuntoId, openHref, canDelet
           type="button"
           onClick={eliminarAdjunto}
           disabled={eliminando}
-          className="rounded-lg border border-red-500/40 px-3 py-1 text-xs text-red-300 hover:bg-red-500/10 transition disabled:opacity-50"
+          className="rounded-lg border border-red-200 px-3 py-1 text-xs text-red-600 hover:bg-red-50 transition disabled:opacity-50"
         >
           {eliminando ? "Eliminando..." : "Eliminar"}
         </button>

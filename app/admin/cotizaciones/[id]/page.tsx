@@ -13,12 +13,12 @@ const ESTADOS = ["proceso", "nueva", "en_revision", "cotizada", "ganada", "perdi
 type Estado = (typeof ESTADOS)[number];
 
 const BADGE: Record<Estado, string> = {
-  proceso:     "bg-orange-500/20 text-orange-300 border-orange-500/40",
-  nueva:       "bg-blue-500/20 text-blue-300 border-blue-500/40",
-  en_revision: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
-  cotizada:    "bg-purple-500/20 text-purple-300 border-purple-500/40",
-  ganada:      "bg-green-500/20 text-green-300 border-green-500/40",
-  perdida:     "bg-red-500/20 text-red-300 border-red-500/40",
+  proceso:     "bg-orange-100 text-orange-700 border-orange-200",
+  nueva:       "bg-blue-100 text-blue-700 border-blue-200",
+  en_revision: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  cotizada:    "bg-purple-100 text-purple-700 border-purple-200",
+  ganada:      "bg-green-100 text-green-700 border-green-200",
+  perdida:     "bg-red-100 text-red-700 border-red-200",
 };
 
 const LABEL: Record<Estado, string> = {
@@ -37,7 +37,6 @@ const CAMPOS: { key: string; label: string }[] = [
   { key: "fecha_inicio",  label: "Fecha" },
   { key: "fecha_cierre_estimada", label: "Fecha vigencia" },
   { key: "sucursal",      label: "Sucursal" },
-  // Cliente
   { key: "compania",      label: "Compañía / Cliente" },
   { key: "nombre",        label: "Contacto" },
   { key: "apellidos",     label: "Apellidos" },
@@ -52,14 +51,12 @@ const CAMPOS: { key: string; label: string }[] = [
   { key: "ciudad",        label: "Ciudad" },
   { key: "region",        label: "Región" },
   { key: "nombre_dir",    label: "Nombre dirección" },
-  // Proyecto
   { key: "nombre_obra",   label: "Obra / Proyecto" },
   { key: "tipo_obra",     label: "Tipo de obra" },
   { key: "tipo_servicio", label: "Tipo de servicio" },
   { key: "prioridad",     label: "Prioridad" },
   { key: "origen",        label: "Origen" },
   { key: "canal",         label: "Canal" },
-  // Comercial
   { key: "glosa",         label: "Glosa" },
   { key: "vendedor",      label: "Vendedor" },
   { key: "lista_precio",  label: "Lista de precios" },
@@ -74,7 +71,6 @@ const CAMPOS: { key: string; label: string }[] = [
   { key: "margen_estimado", label: "Margen estimado %" },
   { key: "probabilidad_cierre", label: "Probabilidad cierre %" },
   { key: "motivo_perdida", label: "Motivo pérdida" },
-  // Notas
   { key: "observaciones", label: "Observaciones" },
   { key: "comentarios",   label: "Comentarios" },
   { key: "notas_internas", label: "Notas internas" },
@@ -113,20 +109,17 @@ export default async function DetalleCotizacionPage({
     .eq("cotizacion_id", id)
     .order("created_at", { ascending: false });
 
-  // Versiones con items e info completa
   const { data: versionRows } = await supabase
     .from("cotizacion_versiones")
     .select("id, version_num, total, subtotal, descuentos, impuestos, estado, moneda, condiciones_comerciales, notas_internas, json_snapshot, created_at, created_by")
     .eq("cotizacion_id", id)
     .order("version_num", { ascending: false });
 
-  // Seleccionar versión según query param o usar la más reciente
   const selectedVersionNum = sp.version ? parseInt(sp.version) : null;
   const activeVersion = selectedVersionNum
     ? versionRows?.find((v) => v.version_num === selectedVersionNum) ?? versionRows?.[0] ?? null
     : versionRows?.[0] ?? null;
 
-  // Fetch items de la version activa
   const { data: itemRows } = activeVersion
     ? await supabase
         .from("cotizacion_items")
@@ -147,7 +140,6 @@ export default async function DetalleCotizacionPage({
 
   const aprobaciones = aprobacionRows ?? [];
 
-  // Cotizaciones derivadas (formales generadas desde esta solicitud)
   const { data: derivadasRows } = await supabase
     .from("cotizaciones")
     .select("id, codigo, estado, total, created_at")
@@ -160,18 +152,14 @@ export default async function DetalleCotizacionPage({
 
   const attachments = attachmentError ? [] : (attachmentRows ?? []);
 
-  // Separar adjuntos: cliente (subido_por IS NULL) vs internos (subido_por IS NOT NULL)
   const adjuntosCliente = attachments.filter((a) => !a.subido_por);
   const adjuntosInternos = attachments.filter((a) => !!a.subido_por);
 
-  // Determine if approval is required (rule: > 50MM CLP)
   const montoActual: number = activeVersion?.total ?? cotizacion.monto_estimado ?? cotizacion.total ?? 0;
   const requiereAprobacion = montoActual > 50_000_000;
   const pendingApproval = aprobaciones.find((a) => a.estado === "pendiente");
   const isAdmin = session.role === "admin";
 
-  // Build URL for pre-populating the nueva cotización form from this solicitud
-  // Incluir todos los campos disponibles
   const desarrollarParams: Record<string, string> = { from_id: cotizacion.id };
   if (cotizacion.compania)      desarrollarParams.compania      = cotizacion.compania;
   if (cotizacion.nombre_obra)   desarrollarParams.nombre_obra   = cotizacion.nombre_obra;
@@ -194,7 +182,7 @@ export default async function DetalleCotizacionPage({
     <AdminShell session={session} active="cotizaciones">
       <main className="mx-auto max-w-4xl px-3 py-4 md:px-6 md:py-10">
         <div className="mb-6">
-          <Link href="/admin/cotizaciones" className="text-xs text-white/40 hover:text-white transition">
+          <Link href="/admin/cotizaciones" className="text-xs text-gray-400 hover:text-gray-900 transition">
             ← Cotizaciones
           </Link>
         </div>
@@ -202,19 +190,19 @@ export default async function DetalleCotizacionPage({
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             {cotizacion.codigo && (
-              <p className="text-xs font-mono text-[#e2b44b] mb-1">{cotizacion.codigo}</p>
+              <p className="text-xs font-mono text-orange-500 mb-1">{cotizacion.codigo}</p>
             )}
             <h1 className="text-2xl font-bold">
               {cotizacion.nombre} {cotizacion.apellidos}
             </h1>
-            <p className="mt-1 text-sm text-white/50">
+            <p className="mt-1 text-sm text-gray-500">
               {cotizacion.compania && <span>{cotizacion.compania} · </span>}
               Recibida el {new Date(cotizacion.created_at).toLocaleDateString("es-CL")}
               {cotizacion.tipo_registro && (
                 <span className={`ml-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium ${
                   cotizacion.tipo_registro === "solicitud_cliente"
-                    ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
-                    : "border-white/10 bg-white/5 text-white/40"
+                    ? "border-cyan-200 bg-cyan-50 text-cyan-700"
+                    : "border-gray-200 bg-gray-50 text-gray-500"
                 }`}>
                   {cotizacion.tipo_registro === "solicitud_cliente" ? "Web" : "Backoffice"}
                 </span>
@@ -226,21 +214,20 @@ export default async function DetalleCotizacionPage({
           </span>
         </div>
 
-        {/* Cambiar estado — con confirmación */}
         <EstadoConfirmDialog cotizacionId={cotizacion.id} estadoActual={cotizacion.estado} />
 
         {/* Generar cotización formal */}
-        <div className="mt-6 rounded-xl border border-orange-500/30 bg-orange-500/5 p-5">
+        <div className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-sm font-semibold text-orange-300">Generar cotización formal</h2>
-              <p className="mt-1 text-xs text-white/40">
+              <h2 className="text-sm font-semibold text-orange-700">Generar cotización formal</h2>
+              <p className="mt-1 text-xs text-gray-500">
                 Desarrolla esta solicitud con items, precios y folio oficial. Puedes generar múltiples cotizaciones por solicitud.
               </p>
             </div>
             <Link
               href={desarrollarHref}
-              className="flex items-center gap-2 rounded-lg bg-orange-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-600"
+              className="flex items-center gap-2 rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-700"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -252,28 +239,28 @@ export default async function DetalleCotizacionPage({
 
         {/* Cotizaciones derivadas */}
         {derivadas.length > 0 && (
-          <section className="mt-6 rounded-xl border border-purple-500/20 bg-purple-500/5 p-5">
-            <h2 className="text-sm font-semibold text-purple-300 mb-3">Cotizaciones derivadas</h2>
+          <section className="mt-6 rounded-xl border border-purple-200 bg-purple-50 p-5">
+            <h2 className="text-sm font-semibold text-purple-700 mb-3">Cotizaciones derivadas</h2>
             <div className="space-y-2">
               {derivadas.map((d) => (
                 <Link
                   key={d.id}
                   href={`/admin/cotizaciones/${d.id}`}
-                  className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm hover:bg-white/10 transition"
+                  className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm hover:bg-gray-50 transition"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs text-[#e2b44b]">{d.codigo ?? d.id.slice(0, 8)}</span>
+                    <span className="font-mono text-xs text-orange-500">{d.codigo ?? d.id.slice(0, 8)}</span>
                     <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${BADGE[d.estado as Estado] ?? BADGE.nueva}`}>
                       {LABEL[d.estado as Estado] ?? d.estado}
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
                     {d.total && (
-                      <span className="font-mono text-xs text-white/60">
+                      <span className="font-mono text-xs text-gray-500">
                         ${Number(d.total).toLocaleString("es-CL", { maximumFractionDigits: 0 })}
                       </span>
                     )}
-                    <span className="text-[10px] text-white/30">
+                    <span className="text-[10px] text-gray-400">
                       {new Date(d.created_at).toLocaleDateString("es-CL")}
                     </span>
                   </div>
@@ -284,18 +271,18 @@ export default async function DetalleCotizacionPage({
         )}
 
         {/* Datos de la cotización */}
-        <div className="mt-6 rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+        <div className="mt-6 rounded-xl border border-gray-200 bg-white overflow-hidden">
           <table className="w-full text-sm">
             <tbody>
               {CAMPOS.map(({ key, label }) =>
                 cotizacion[key] ? (
-                  <tr key={key} className="border-b border-white/5">
-                    <td className="px-5 py-3 font-semibold text-white/40 w-44 align-top whitespace-nowrap">
+                  <tr key={key} className="border-b border-gray-100">
+                    <td className="px-5 py-3 font-semibold text-gray-400 w-44 align-top whitespace-nowrap">
                       {label}
                     </td>
-                    <td className="px-5 py-3 text-white/80 whitespace-pre-wrap">
+                    <td className="px-5 py-3 text-gray-700 whitespace-pre-wrap">
                       {key === "email" ? (
-                        <a href={`mailto:${cotizacion[key]}`} className="text-[#e2b44b] underline">
+                        <a href={`mailto:${cotizacion[key]}`} className="text-orange-500 underline">
                           {cotizacion[key]}
                         </a>
                       ) : (
@@ -309,10 +296,10 @@ export default async function DetalleCotizacionPage({
           </table>
         </div>
 
-        {/* Selector de versiones (solo si hay más de una) */}
+        {/* Selector de versiones */}
         {hasMultipleVersions && (
-          <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
-            <h2 className="text-sm font-semibold text-white/80 mb-3">Historial de versiones</h2>
+          <section className="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+            <h2 className="text-sm font-semibold text-gray-700 mb-3">Historial de versiones</h2>
             <div className="space-y-2">
               {versionRows!.map((v) => {
                 const isActive = v.id === activeVersion?.id;
@@ -322,33 +309,33 @@ export default async function DetalleCotizacionPage({
                     href={`/admin/cotizaciones/${id}?version=${v.version_num}`}
                     className={`flex items-center justify-between rounded-lg border px-4 py-2.5 text-sm transition ${
                       isActive
-                        ? "border-[#e2b44b]/40 bg-[#e2b44b]/10"
-                        : "border-white/10 bg-white/5 hover:bg-white/10"
+                        ? "border-orange-300 bg-orange-50"
+                        : "border-gray-200 bg-white hover:bg-gray-50"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`font-mono text-xs ${isActive ? "text-[#e2b44b]" : "text-white/50"}`}>
+                      <span className={`font-mono text-xs ${isActive ? "text-orange-500" : "text-gray-500"}`}>
                         v{v.version_num}
                       </span>
                       {v.estado && (
-                        <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${BADGE[v.estado as Estado] ?? "border-white/10 bg-white/5 text-white/40"}`}>
+                        <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${BADGE[v.estado as Estado] ?? "border-gray-200 bg-gray-50 text-gray-500"}`}>
                           {LABEL[v.estado as Estado] ?? v.estado}
                         </span>
                       )}
                       {v.created_at && (
-                        <span className="text-[10px] text-white/30">
+                        <span className="text-[10px] text-gray-400">
                           {new Date(v.created_at).toLocaleDateString("es-CL")}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
                       {v.total != null && (
-                        <span className="font-mono text-xs text-white/60">
+                        <span className="font-mono text-xs text-gray-500">
                           ${Number(v.total).toLocaleString("es-CL", { minimumFractionDigits: 2 })}
                         </span>
                       )}
                       {isActive && (
-                        <span className="rounded border border-[#e2b44b]/30 bg-[#e2b44b]/10 px-2 py-0.5 text-[10px] font-medium text-[#e2b44b]">
+                        <span className="rounded border border-orange-300 bg-orange-50 px-2 py-0.5 text-[10px] font-medium text-orange-500">
                           Seleccionada
                         </span>
                       )}
@@ -362,14 +349,14 @@ export default async function DetalleCotizacionPage({
 
         {/* Items de la versión activa */}
         {items.length > 0 && (
-          <section className="mt-6 rounded-xl border border-white/10 bg-white/5 overflow-hidden">
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-3">
-              <h2 className="text-sm font-semibold text-white/80">
+          <section className="mt-6 rounded-xl border border-gray-200 bg-white overflow-hidden">
+            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
+              <h2 className="text-sm font-semibold text-gray-700">
                 Detalle de items
-                {activeVersion && <span className="ml-2 text-xs text-white/35 font-mono">Version {activeVersion.version_num}</span>}
+                {activeVersion && <span className="ml-2 text-xs text-gray-400 font-mono">Version {activeVersion.version_num}</span>}
               </h2>
               {activeVersion && (
-                <span className="text-xs text-white/35">
+                <span className="text-xs text-gray-400">
                   {activeVersion.moneda ?? "CLP"}
                 </span>
               )}
@@ -377,7 +364,7 @@ export default async function DetalleCotizacionPage({
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-widest text-white/40">
+                  <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs uppercase tracking-widest text-gray-400">
                     <th className="px-4 py-2 w-10">#</th>
                     <th className="px-4 py-2">Descripción</th>
                     <th className="px-4 py-2 text-right w-20">Cant.</th>
@@ -390,27 +377,27 @@ export default async function DetalleCotizacionPage({
                 </thead>
                 <tbody>
                   {items.map((item: Record<string, unknown>) => (
-                    <tr key={item.id as string} className="border-b border-white/5">
-                      <td className="px-4 py-2 text-white/30">{item.item_num as number}</td>
-                      <td className="px-4 py-2 text-white/80">{item.descripcion as string}</td>
-                      <td className="px-4 py-2 text-right font-mono text-white/70">{Number(item.cantidad)}</td>
-                      <td className="px-4 py-2 text-white/50">{(item.unidad as string) || "UN"}</td>
-                      <td className="px-4 py-2 text-right font-mono text-white/70">
+                    <tr key={item.id as string} className="border-b border-gray-100">
+                      <td className="px-4 py-2 text-gray-400">{item.item_num as number}</td>
+                      <td className="px-4 py-2 text-gray-700">{item.descripcion as string}</td>
+                      <td className="px-4 py-2 text-right font-mono text-gray-600">{Number(item.cantidad)}</td>
+                      <td className="px-4 py-2 text-gray-500">{(item.unidad as string) || "UN"}</td>
+                      <td className="px-4 py-2 text-right font-mono text-gray-600">
                         ${Number(item.precio_unitario).toLocaleString("es-CL", { minimumFractionDigits: 2 })}
                       </td>
-                      <td className="px-4 py-2 text-right font-mono text-white/50">
+                      <td className="px-4 py-2 text-right font-mono text-gray-500">
                         {Number(item.descuento_pct) > 0 ? `${item.descuento_pct}%` : "\u2014"}
                       </td>
                       <td className="px-4 py-2">
                         <span className={`inline-flex rounded border px-1.5 py-0.5 text-[10px] font-medium ${
                           item.tipo_impuesto === "exenta"
-                            ? "border-green-500/30 bg-green-500/10 text-green-300"
-                            : "border-blue-500/30 bg-blue-500/10 text-blue-300"
+                            ? "border-green-200 bg-green-50 text-green-700"
+                            : "border-blue-200 bg-blue-50 text-blue-700"
                         }`}>
                           {item.tipo_impuesto === "exenta" ? "Exenta" : `${item.impuesto_pct ?? 19}%`}
                         </span>
                       </td>
-                      <td className="px-4 py-2 text-right font-mono font-semibold text-white/80">
+                      <td className="px-4 py-2 text-right font-mono font-semibold text-gray-700">
                         ${Number(item.total).toLocaleString("es-CL", { minimumFractionDigits: 2 })}
                       </td>
                     </tr>
@@ -418,25 +405,24 @@ export default async function DetalleCotizacionPage({
                 </tbody>
               </table>
             </div>
-            {/* Totales de la versión */}
             {activeVersion && (
-              <div className="flex justify-end border-t border-white/10 px-5 py-4">
+              <div className="flex justify-end border-t border-gray-200 px-5 py-4">
                 <div className="w-64 space-y-1 text-sm">
-                  <div className="flex justify-between text-white/50">
+                  <div className="flex justify-between text-gray-500">
                     <span>Subtotal</span>
                     <span className="font-mono">${Number(activeVersion.subtotal ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
                   </div>
                   {Number(activeVersion.descuentos ?? 0) > 0 && (
-                    <div className="flex justify-between text-white/50">
+                    <div className="flex justify-between text-gray-500">
                       <span>Descuentos</span>
                       <span className="font-mono">-${Number(activeVersion.descuentos).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-white/50">
+                  <div className="flex justify-between text-gray-500">
                     <span>Impuestos</span>
                     <span className="font-mono">${Number(activeVersion.impuestos ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
                   </div>
-                  <div className="flex justify-between border-t border-white/10 pt-1 font-bold text-[#e2b44b]">
+                  <div className="flex justify-between border-t border-gray-200 pt-1 font-bold text-orange-500">
                     <span>Total</span>
                     <span className="font-mono">${Number(activeVersion.total ?? 0).toLocaleString("es-CL", { minimumFractionDigits: 2 })}</span>
                   </div>
@@ -447,21 +433,21 @@ export default async function DetalleCotizacionPage({
         )}
 
         {/* Notas internas */}
-        <form action="/api/admin/cotizaciones/notas" method="POST" className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
+        <form action="/api/admin/cotizaciones/notas" method="POST" className="mt-6 rounded-xl border border-gray-200 bg-white p-5">
           <input type="hidden" name="id" value={cotizacion.id} />
-          <label className="mb-2 block text-sm font-semibold text-white/70">
+          <label className="mb-2 block text-sm font-semibold text-gray-600">
             Notas internas
           </label>
           <textarea
             name="notas_internas"
             rows={4}
             defaultValue={cotizacion.notas_internas ?? ""}
-            className="w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
             placeholder="Agrega observaciones, seguimiento, comentarios internos..."
           />
           <button
             type="submit"
-            className="mt-3 rounded-lg bg-[#e2b44b] px-5 py-2 text-sm font-bold text-black hover:bg-[#d4a43a] transition"
+            className="mt-3 rounded-lg bg-orange-500 px-5 py-2 text-sm font-bold text-white hover:bg-orange-600 transition"
           >
             Guardar notas
           </button>
@@ -469,50 +455,49 @@ export default async function DetalleCotizacionPage({
 
         {/* Aprobación de cotización */}
         {(requiereAprobacion || aprobaciones.length > 0) && (
-          <section className="mt-6 rounded-xl border border-[#e2b44b]/30 bg-[#e2b44b]/5 p-5">
+          <section className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-5">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
-                <h2 className="text-sm font-semibold text-[#e2b44b]">Flujo de aprobación</h2>
-                <p className="mt-1 text-xs text-white/40">
+                <h2 className="text-sm font-semibold text-orange-600">Flujo de aprobación</h2>
+                <p className="mt-1 text-xs text-gray-500">
                   {requiereAprobacion
                     ? `Monto > 50MM CLP — requiere aprobación de Administrador.`
                     : "Registro de aprobaciones de esta versión."}
                 </p>
               </div>
               {activeVersion && (
-                <span className="text-xs text-white/35 font-mono">
+                <span className="text-xs text-gray-400 font-mono">
                   Version {activeVersion.version_num}
                 </span>
               )}
             </div>
 
-            {/* Estado de aprobaciones existentes */}
             {aprobaciones.length > 0 && (
               <div className="mt-4 space-y-2">
                 {aprobaciones.map((a) => (
                   <div
                     key={a.id}
-                    className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm"
+                    className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm"
                   >
                     <div>
-                      <span className="font-semibold text-white/70">Nivel {a.nivel}</span>
+                      <span className="font-semibold text-gray-600">Nivel {a.nivel}</span>
                       {a.comentario && (
-                        <p className="mt-0.5 text-xs text-white/40">{a.comentario}</p>
+                        <p className="mt-0.5 text-xs text-gray-400">{a.comentario}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
                       {a.aprobado_at && (
-                        <span className="text-xs text-white/30">
+                        <span className="text-xs text-gray-400">
                           {new Date(a.aprobado_at).toLocaleDateString("es-CL")}
                         </span>
                       )}
                       <span
                         className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
                           a.estado === "aprobada"
-                            ? "border-green-500/40 bg-green-500/10 text-green-300"
+                            ? "border-green-200 bg-green-50 text-green-700"
                             : a.estado === "rechazada"
-                            ? "border-red-500/40 bg-red-500/10 text-red-300"
-                            : "border-yellow-500/40 bg-yellow-500/10 text-yellow-300"
+                            ? "border-red-200 bg-red-50 text-red-700"
+                            : "border-yellow-200 bg-yellow-50 text-yellow-700"
                         }`}
                       >
                         {a.estado}
@@ -523,29 +508,28 @@ export default async function DetalleCotizacionPage({
               </div>
             )}
 
-            {/* Admin: approve/reject form */}
             {isAdmin && activeVersion && (pendingApproval || aprobaciones.length === 0) && (
               <form
                 action="/api/admin/cotizaciones/aprobar"
                 method="POST"
-                className="mt-4 rounded-lg border border-white/10 bg-white/5 p-4"
+                className="mt-4 rounded-lg border border-gray-200 bg-white p-4"
               >
                 <input type="hidden" name="cotizacion_version_id" value={activeVersion.id} />
                 <input type="hidden" name="nivel" value={pendingApproval?.nivel ?? 1} />
                 <input type="hidden" name="cotizacion_id" value={cotizacion.id} />
-                <p className="mb-3 text-xs font-semibold text-white/60">Decisión de aprobación</p>
+                <p className="mb-3 text-xs font-semibold text-gray-500">Decisión de aprobación</p>
                 <textarea
                   name="comentario"
                   rows={2}
                   placeholder="Comentario opcional..."
-                  className="w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30 mb-3"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 mb-3"
                 />
                 <div className="flex gap-3">
                   <button
                     name="decision"
                     value="aprobada"
                     type="submit"
-                    className="rounded-lg bg-green-600 px-5 py-2 text-sm font-bold text-white hover:bg-green-500 transition"
+                    className="rounded-lg bg-green-600 px-5 py-2 text-sm font-bold text-white hover:bg-green-700 transition"
                   >
                     Aprobar
                   </button>
@@ -553,7 +537,7 @@ export default async function DetalleCotizacionPage({
                     name="decision"
                     value="rechazada"
                     type="submit"
-                    className="rounded-lg bg-red-700 px-5 py-2 text-sm font-bold text-white hover:bg-red-600 transition"
+                    className="rounded-lg bg-red-500 px-5 py-2 text-sm font-bold text-white hover:bg-red-600 transition"
                   >
                     Rechazar
                   </button>
@@ -562,7 +546,7 @@ export default async function DetalleCotizacionPage({
             )}
 
             {!activeVersion && (
-              <p className="mt-3 text-xs text-white/30">
+              <p className="mt-3 text-xs text-gray-400">
                 Crea una versión de cotización para activar el flujo de aprobación.
               </p>
             )}
@@ -572,11 +556,11 @@ export default async function DetalleCotizacionPage({
         <CotizacionAdjuntosForm cotizacionId={cotizacion.id} />
 
         {/* Archivos del cliente */}
-        <section className="mt-6 rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+        <section className="mt-6 rounded-xl border border-cyan-200 bg-cyan-50 p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-cyan-300">Archivos del cliente</h2>
-              <p className="mt-1 text-xs text-white/35">
+              <h2 className="text-sm font-semibold text-cyan-700">Archivos del cliente</h2>
+              <p className="mt-1 text-xs text-gray-400">
                 Documentos adjuntados por el cliente al enviar la solicitud.
               </p>
             </div>
@@ -584,14 +568,14 @@ export default async function DetalleCotizacionPage({
 
           <div className="mt-4 space-y-3">
             {adjuntosCliente.length === 0 && (
-              <p className="text-sm text-white/35">
+              <p className="text-sm text-gray-400">
                 El cliente no adjuntó archivos.
               </p>
             )}
             {adjuntosCliente.map((attachment) => (
               <div
                 key={attachment.id}
-                className="flex items-center justify-between rounded-lg border border-cyan-500/15 bg-white/5 px-4 py-3"
+                className="flex items-center justify-between rounded-lg border border-cyan-200 bg-white px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <CotizacionAdjuntoPreview
@@ -599,12 +583,12 @@ export default async function DetalleCotizacionPage({
                     openHref={`/api/admin/cotizaciones/adjuntos/${attachment.id}`}
                     storagePath={attachment.storage_path ?? null}
                   />
-                  <span className="inline-flex rounded border border-cyan-500/30 bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-medium text-cyan-300">
+                  <span className="inline-flex rounded border border-cyan-200 bg-cyan-50 px-1.5 py-0.5 text-[10px] font-medium text-cyan-700">
                     Cliente
                   </span>
                   <div>
-                    <p className="font-medium text-white/85">{attachment.nombre_archivo}</p>
-                    <p className="text-xs text-white/35">
+                    <p className="font-medium text-gray-800">{attachment.nombre_archivo}</p>
+                    <p className="text-xs text-gray-400">
                       {new Date(attachment.created_at).toLocaleString("es-CL")}
                     </p>
                   </div>
@@ -620,11 +604,11 @@ export default async function DetalleCotizacionPage({
         </section>
 
         {/* Documentos internos */}
-        <section className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
+        <section className="mt-6 rounded-xl border border-gray-200 bg-white p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-white/80">Documentos internos</h2>
-              <p className="mt-1 text-xs text-white/35">
+              <h2 className="text-sm font-semibold text-gray-700">Documentos internos</h2>
+              <p className="mt-1 text-xs text-gray-400">
                 Contratos, propuestas, anexos, informes y respaldos subidos por el equipo.
               </p>
             </div>
@@ -632,14 +616,14 @@ export default async function DetalleCotizacionPage({
 
           <div className="mt-4 space-y-3">
             {adjuntosInternos.length === 0 && (
-              <p className="text-sm text-white/35">
+              <p className="text-sm text-gray-400">
                 Sin documentos internos adjuntos.
               </p>
             )}
             {adjuntosInternos.map((attachment) => (
               <div
                 key={attachment.id}
-                className="flex items-center justify-between rounded-lg border border-white/10 px-4 py-3"
+                className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <CotizacionAdjuntoPreview
@@ -647,12 +631,12 @@ export default async function DetalleCotizacionPage({
                     openHref={`/api/admin/cotizaciones/adjuntos/${attachment.id}`}
                     storagePath={attachment.storage_path ?? null}
                   />
-                  <span className="inline-flex rounded border border-white/20 bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-white/40">
+                  <span className="inline-flex rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
                     Interno
                   </span>
                   <div>
-                    <p className="font-medium text-white/85">{attachment.nombre_archivo}</p>
-                    <p className="text-xs text-white/35">
+                    <p className="font-medium text-gray-800">{attachment.nombre_archivo}</p>
+                    <p className="text-xs text-gray-400">
                       {new Date(attachment.created_at).toLocaleString("es-CL")}
                     </p>
                   </div>

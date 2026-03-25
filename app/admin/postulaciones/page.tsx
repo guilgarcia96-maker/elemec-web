@@ -16,12 +16,12 @@ const ESTADOS = [
 type Estado = (typeof ESTADOS)[number];
 
 const BADGE: Record<Estado, string> = {
-  recibida:   "bg-blue-500/20 text-blue-300 border-blue-500/40",
-  en_revision:"bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
-  entrevista: "bg-purple-500/20 text-purple-300 border-purple-500/40",
-  aprobada:   "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
-  rechazada:  "bg-red-500/20 text-red-300 border-red-500/40",
-  contratada: "bg-green-500/20 text-green-300 border-green-500/40",
+  recibida:   "bg-blue-100 text-blue-700 border-blue-200",
+  en_revision:"bg-yellow-100 text-yellow-700 border-yellow-200",
+  entrevista: "bg-purple-100 text-purple-700 border-purple-200",
+  aprobada:   "bg-emerald-100 text-emerald-700 border-emerald-200",
+  rechazada:  "bg-red-100 text-red-700 border-red-200",
+  contratada: "bg-green-100 text-green-700 border-green-200",
 };
 
 const LABEL: Record<Estado, string> = {
@@ -84,8 +84,8 @@ export default async function AdminPostulacionesPage({
         {/* Título */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Pipeline de Postulaciones</h1>
-            <p className="mt-1 text-sm text-white/50">
+            <h1 className="text-2xl font-bold text-gray-900">Pipeline de Postulaciones</h1>
+            <p className="mt-1 text-sm text-gray-400">
               {postulaciones.length} candidato{postulaciones.length !== 1 ? "s" : ""}
               {filtroEstado ? ` · filtro: ${LABEL[filtroEstado as Estado] ?? filtroEstado}` : ""}
             </p>
@@ -100,14 +100,14 @@ export default async function AdminPostulacionesPage({
               href={filtroEstado === e ? "/admin/postulaciones" : `/admin/postulaciones?estado=${e}`}
               className={`rounded-xl border p-3 text-center transition ${
                 filtroEstado === e
-                  ? "border-[#e2b44b] bg-[#e2b44b]/10"
-                  : "border-white/10 bg-white/5 hover:border-white/20"
+                  ? "border-orange-500 bg-orange-50"
+                  : "border-gray-200 bg-gray-50 hover:border-gray-300"
               }`}
             >
-              <p className={`text-2xl font-bold ${filtroEstado === e ? "text-[#e2b44b]" : "text-white"}`}>
+              <p className={`text-2xl font-bold ${filtroEstado === e ? "text-orange-500" : "text-gray-900"}`}>
                 {counts[e] ?? 0}
               </p>
-              <p className={`mt-1 text-[10px] uppercase tracking-wider ${filtroEstado === e ? "text-[#e2b44b]/70" : "text-white/40"}`}>
+              <p className={`mt-1 text-[10px] uppercase tracking-wider ${filtroEstado === e ? "text-orange-400" : "text-gray-400"}`}>
                 {LABEL[e]}
               </p>
             </Link>
@@ -120,8 +120,8 @@ export default async function AdminPostulacionesPage({
             href="/admin/postulaciones"
             className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
               !filtroEstado
-                ? "border-[#e2b44b] bg-[#e2b44b]/10 text-[#e2b44b]"
-                : "border-white/20 text-white/50 hover:border-white/40"
+                ? "border-orange-500 bg-orange-50 text-orange-500"
+                : "border-gray-300 text-gray-500 hover:border-gray-400"
             }`}
           >
             Todos
@@ -132,8 +132,8 @@ export default async function AdminPostulacionesPage({
               href={`/admin/postulaciones?estado=${e}`}
               className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
                 filtroEstado === e
-                  ? "border-[#e2b44b] bg-[#e2b44b]/10 text-[#e2b44b]"
-                  : "border-white/20 text-white/50 hover:border-white/40"
+                  ? "border-orange-500 bg-orange-50 text-orange-500"
+                  : "border-gray-300 text-gray-500 hover:border-gray-400"
               }`}
             >
               {LABEL[e]}
@@ -142,10 +142,10 @@ export default async function AdminPostulacionesPage({
         </div>
 
         {/* Tabla */}
-        <div className="mt-6 overflow-x-auto rounded-xl border border-white/10">
+        <div className="mt-6 overflow-x-auto rounded-xl border border-gray-200">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/10 bg-white/5 text-left text-xs uppercase tracking-widest text-white/40">
+              <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs uppercase tracking-widest text-gray-400">
                 <th className="px-4 py-3 hidden md:table-cell">Fecha</th>
                 <th className="px-4 py-3">Candidato</th>
                 <th className="px-4 py-3 hidden md:table-cell">Cargo postulado</th>
@@ -158,25 +158,25 @@ export default async function AdminPostulacionesPage({
             <tbody>
               {postulaciones.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-white/30">
+                  <td colSpan={7} className="px-4 py-10 text-center text-gray-300">
                     No hay postulaciones registradas.
                   </td>
                 </tr>
               )}
               {postulaciones.map((p: Record<string, string>) => (
-                <tr key={p.id} className="border-b border-white/5 hover:bg-white/5 transition">
-                  <td className="px-4 py-3 text-white/50 whitespace-nowrap hidden md:table-cell">
+                <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                  <td className="px-4 py-3 text-gray-400 whitespace-nowrap hidden md:table-cell">
                     {new Date(p.created_at).toLocaleDateString("es-CL")}
                   </td>
                   <td className="px-4 py-3">
-                    <p className="font-semibold text-white">
+                    <p className="font-semibold text-gray-900">
                       {p.nombre} {p.apellidos}
                     </p>
-                    <p className="text-xs text-white/40">{p.email}</p>
+                    <p className="text-xs text-gray-400">{p.email}</p>
                   </td>
-                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{p.cargo_postulado || "—"}</td>
-                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{p.area || "—"}</td>
-                  <td className="px-4 py-3 text-white/70 hidden md:table-cell">{p.region || "—"}</td>
+                  <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{p.cargo_postulado || "—"}</td>
+                  <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{p.area || "—"}</td>
+                  <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{p.region || "—"}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
@@ -189,7 +189,7 @@ export default async function AdminPostulacionesPage({
                   <td className="px-4 py-3">
                     <Link
                       href={`/admin/postulaciones/${p.id}`}
-                      className="rounded-lg border border-white/20 px-3 py-1 text-xs text-white/60 hover:border-[#e2b44b] hover:text-[#e2b44b] transition"
+                      className="rounded-lg border border-gray-300 px-3 py-1 text-xs text-gray-500 hover:border-orange-500 hover:text-orange-500 transition"
                     >
                       Ver detalle
                     </Link>

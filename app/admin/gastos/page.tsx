@@ -17,7 +17,7 @@ export default async function GastosDashboardPage() {
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold">Control de Gastos</h1>
-            <p className="mt-1 text-sm text-white/50">
+            <p className="mt-1 text-sm text-gray-400">
               Dashboard de egresos, presupuestos y tendencias
             </p>
           </div>
@@ -34,7 +34,7 @@ export default async function GastosDashboardPage() {
             </Link>
             <Link
               href="/admin/gastos/lista"
-              className="flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2 text-sm text-white/60 transition hover:border-white/40 hover:text-white"
+              className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-500 transition hover:border-gray-400 hover:text-gray-900"
             >
               Ver Lista
             </Link>
@@ -45,31 +45,31 @@ export default async function GastosDashboardPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
           <Link
             href="/admin/gastos/lista"
-            className="group flex flex-col gap-1.5 rounded-xl border border-white/8 bg-white/[0.025] hover:bg-white/[0.06] hover:border-white/20 transition p-4"
+            className="group flex flex-col gap-1.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 transition p-4"
           >
-            <span className="text-sm font-semibold text-white/80 group-hover:text-white transition">Lista de Gastos</span>
-            <span className="text-[10px] text-white/30">CRUD completo</span>
+            <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition">Lista de Gastos</span>
+            <span className="text-[10px] text-gray-300">CRUD completo</span>
           </Link>
           <Link
             href="/admin/gastos/categorias"
-            className="group flex flex-col gap-1.5 rounded-xl border border-white/8 bg-white/[0.025] hover:bg-white/[0.06] hover:border-white/20 transition p-4"
+            className="group flex flex-col gap-1.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 transition p-4"
           >
-            <span className="text-sm font-semibold text-white/80 group-hover:text-white transition">Categorias</span>
-            <span className="text-[10px] text-white/30">Gestionar categorias</span>
+            <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition">Categorias</span>
+            <span className="text-[10px] text-gray-300">Gestionar categorias</span>
           </Link>
           <Link
             href="/admin/gastos/presupuestos"
-            className="group flex flex-col gap-1.5 rounded-xl border border-white/8 bg-white/[0.025] hover:bg-white/[0.06] hover:border-white/20 transition p-4"
+            className="group flex flex-col gap-1.5 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 transition p-4"
           >
-            <span className="text-sm font-semibold text-white/80 group-hover:text-white transition">Presupuestos</span>
-            <span className="text-[10px] text-white/30">Limites por categoria</span>
+            <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition">Presupuestos</span>
+            <span className="text-[10px] text-gray-300">Limites por categoria</span>
           </Link>
           <Link
             href="/admin/conciliacion/escanear"
             className="group flex flex-col gap-1.5 rounded-xl border border-orange-500/20 bg-orange-500/[0.04] hover:bg-orange-500/[0.08] hover:border-orange-500/30 transition p-4"
           >
-            <span className="text-sm font-semibold text-orange-300/80 group-hover:text-orange-300 transition">Escanear Recibo</span>
-            <span className="text-[10px] text-orange-300/30">OCR con IA</span>
+            <span className="text-sm font-semibold text-orange-600 group-hover:text-orange-500 transition">Escanear Recibo</span>
+            <span className="text-[10px] text-orange-300">OCR con IA</span>
           </Link>
         </div>
 

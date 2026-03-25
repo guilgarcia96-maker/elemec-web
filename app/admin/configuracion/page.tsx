@@ -75,13 +75,13 @@ export default async function ConfiguracionPage() {
       <main className="px-3 py-4 md:px-6 md:py-10 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-2xl font-bold">Configuración</h1>
-          <p className="mt-1 text-sm text-white/40">
+          <p className="mt-1 text-sm text-gray-400">
             Parámetros del motor de negocio: aprobaciones, conciliación y cobranza.
           </p>
           {aprobacionReglas.length === 0 && engineList.length === 0 && tramosArr.length === 0 && (
-            <div className="mt-4 rounded-xl border border-yellow-500/30 bg-yellow-500/5 px-5 py-4 text-sm text-yellow-300">
+            <div className="mt-4 rounded-xl border border-yellow-200 bg-yellow-50 px-5 py-4 text-sm text-yellow-700">
               Ejecuta{" "}
-              <code className="font-mono text-[#e2b44b]">backoffice-consolidated-schema.sql</code>{" "}
+              <code className="font-mono text-orange-500">backoffice-consolidated-schema.sql</code>{" "}
               en el Editor SQL de Supabase para cargar los parámetros de configuración.
             </div>
           )}
@@ -90,18 +90,18 @@ export default async function ConfiguracionPage() {
         {/* ── Reglas de aprobación ── */}
         <section className="mb-8">
           <h2 className="text-base font-bold mb-1">Reglas de aprobación de cotizaciones</h2>
-          <p className="text-xs text-white/40 mb-4">
+          <p className="text-xs text-gray-400 mb-4">
             Definen qué rol debe aprobar una cotización según monto o margen.
           </p>
           {aprobacionReglas.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white/35">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm text-gray-300">
               Sin reglas cargadas.
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-white/10">
+            <div className="overflow-x-auto rounded-xl border border-gray-200">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/5 text-left text-xs text-white/40 uppercase tracking-wider">
+                  <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs text-gray-400 uppercase tracking-wider">
                     <th className="px-4 py-3">Nombre</th>
                     <th className="px-4 py-3">Prioridad</th>
                     <th className="px-4 py-3">Monto desde</th>
@@ -113,25 +113,25 @@ export default async function ConfiguracionPage() {
                 </thead>
                 <tbody>
                   {aprobacionReglas.map((r) => (
-                    <tr key={r.id} className="border-b border-white/5 hover:bg-white/5 transition">
-                      <td className="px-4 py-3 font-semibold text-white/85">{r.nombre}</td>
-                      <td className="px-4 py-3 text-white/50">{r.prioridad}</td>
-                      <td className="px-4 py-3 text-white/70">{CLP(r.monto_desde)}</td>
-                      <td className="px-4 py-3 text-white/50">
+                    <tr key={r.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                      <td className="px-4 py-3 font-semibold text-gray-700">{r.nombre}</td>
+                      <td className="px-4 py-3 text-gray-400">{r.prioridad}</td>
+                      <td className="px-4 py-3 text-gray-500">{CLP(r.monto_desde)}</td>
+                      <td className="px-4 py-3 text-gray-400">
                         {r.monto_hasta ? CLP(r.monto_hasta) : "sin límite"}
                       </td>
-                      <td className="px-4 py-3 text-white/50">
+                      <td className="px-4 py-3 text-gray-400">
                         {r.margen_minimo != null ? `${r.margen_minimo}%` : "—"}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="rounded-full border border-[#e2b44b]/30 bg-[#e2b44b]/10 px-2.5 py-0.5 text-xs font-semibold text-[#e2b44b]">
+                        <span className="rounded-full border border-orange-200 bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-orange-500">
                           {r.requiere_rol}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
                         <span
                           className={`text-xs font-bold ${
-                            r.activo ? "text-green-400" : "text-white/30"
+                            r.activo ? "text-green-600" : "text-gray-300"
                           }`}
                         >
                           {r.activo ? "✓" : "✗"}
@@ -148,18 +148,18 @@ export default async function ConfiguracionPage() {
         {/* ── Motor de conciliación ── */}
         <section className="mb-8">
           <h2 className="text-base font-bold mb-1">Motor de conciliación</h2>
-          <p className="text-xs text-white/40 mb-4">
+          <p className="text-xs text-gray-400 mb-4">
             Parámetros del algoritmo deterministico de scoring para matches cartola&nbsp;↔ movimiento.
           </p>
           {!activeEngine ? (
-            <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white/35">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm text-gray-300">
               Sin configuración activa.
             </div>
           ) : (
-            <div className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
-              <div className="px-5 py-3 border-b border-white/10 flex items-center justify-between">
-                <p className="text-sm font-bold text-white/85 font-mono">{activeEngine.nombre}</p>
-                <span className="rounded-full border border-green-500/30 bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-300">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 overflow-hidden">
+              <div className="px-5 py-3 border-b border-gray-200 flex items-center justify-between">
+                <p className="text-sm font-bold text-gray-700 font-mono">{activeEngine.nombre}</p>
+                <span className="rounded-full border border-green-200 bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-700">
                   activo
                 </span>
               </div>
@@ -173,9 +173,9 @@ export default async function ConfiguracionPage() {
                   { label: "Score auto-match",     value: `≥ ${activeEngine.score_min_auto}` },
                   { label: "Score sugerencia",     value: `≥ ${activeEngine.score_min_sugerencia}` },
                 ].map(({ label, value }) => (
-                  <div key={label} className="bg-[#0f0f1a] px-5 py-4">
-                    <p className="text-xs text-white/35 uppercase tracking-wider">{label}</p>
-                    <p className="mt-1 text-base font-bold text-white">{value}</p>
+                  <div key={label} className="bg-[#f8f9fb] px-5 py-4">
+                    <p className="text-xs text-gray-300 uppercase tracking-wider">{label}</p>
+                    <p className="mt-1 text-base font-bold text-gray-900">{value}</p>
                   </div>
                 ))}
               </div>
@@ -186,11 +186,11 @@ export default async function ConfiguracionPage() {
         {/* ── Tramos de mora ── */}
         <section className="mb-8">
           <h2 className="text-base font-bold mb-1">Tramos de mora (Aging CxC)</h2>
-          <p className="text-xs text-white/40 mb-4">
+          <p className="text-xs text-gray-400 mb-4">
             Segmentación de cartera vencida utilizada en la vista v_cxc_aging.
           </p>
           {tramosArr.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white/35">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm text-gray-300">
               Sin tramos cargados.
             </div>
           ) : (
@@ -200,15 +200,15 @@ export default async function ConfiguracionPage() {
                   key={t.id}
                   className={`rounded-xl border px-5 py-4 min-w-[130px] ${
                     t.activo
-                      ? "border-[#e2b44b]/30 bg-[#e2b44b]/5"
-                      : "border-white/10 bg-white/5 opacity-50"
+                      ? "border-orange-200 bg-orange-50"
+                      : "border-gray-200 bg-gray-50 opacity-50"
                   }`}
                 >
-                  <p className="text-lg font-bold text-white font-mono">{t.codigo}</p>
-                  <p className="mt-1 text-xs text-white/40">
+                  <p className="text-lg font-bold text-gray-900 font-mono">{t.codigo}</p>
+                  <p className="mt-1 text-xs text-gray-400">
                     {t.dias_desde} – {t.dias_hasta != null ? t.dias_hasta : "∞"} días
                   </p>
-                  <p className="mt-0.5 text-[10px] text-white/25 uppercase tracking-widest">
+                  <p className="mt-0.5 text-[10px] text-gray-300 uppercase tracking-widest">
                     Orden {t.orden}
                   </p>
                 </div>
@@ -220,12 +220,12 @@ export default async function ConfiguracionPage() {
         {/* ── Enforcement CLP ── */}
         <section className="mb-8">
           <h2 className="text-base font-bold mb-1">Política de moneda</h2>
-          <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-4">
             <div className="flex items-center gap-3">
               <span className="text-2xl">🔒</span>
               <div>
-                <p className="text-sm font-semibold text-white">Solo CLP · Fase 1</p>
-                <p className="mt-0.5 text-xs text-white/40">
+                <p className="text-sm font-semibold text-gray-900">Solo CLP · Fase 1</p>
+                <p className="mt-0.5 text-xs text-gray-400">
                   Constraints activos en: cotizaciones, versiones, órdenes de venta, facturas (cliente y
                   proveedor), pagos y movimientos de conciliación.
                 </p>
@@ -239,7 +239,7 @@ export default async function ConfiguracionPage() {
               ].map((t) => (
                 <span
                   key={t}
-                  className="rounded border border-green-500/20 bg-green-500/5 px-2 py-0.5 font-mono text-xs text-green-300"
+                  className="rounded border border-green-200 bg-green-50 px-2 py-0.5 font-mono text-xs text-green-700"
                 >
                   {t}
                 </span>
@@ -251,22 +251,22 @@ export default async function ConfiguracionPage() {
         {/* ── Impuestos mixtos ── */}
         <section>
           <h2 className="text-base font-bold mb-1">Impuestos mixtos (ítems de cotización)</h2>
-          <div className="rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-sm">
-            <p className="text-white/70 mb-3">
-              Cada ítem en <code className="font-mono text-[#e2b44b]">cotizacion_items</code> puede
+          <div className="rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm">
+            <p className="text-gray-500 mb-3">
+              Cada ítem en <code className="font-mono text-orange-500">cotizacion_items</code> puede
               clasificarse como:
             </p>
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-lg border border-blue-500/30 bg-blue-500/5 px-4 py-3">
-                <p className="font-semibold text-blue-300">afecta</p>
-                <p className="mt-1 text-xs text-white/40">IVA 19% · Campo <code className="font-mono">monto_afecto</code> + <code className="font-mono">monto_iva</code></p>
+              <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
+                <p className="font-semibold text-blue-700">afecta</p>
+                <p className="mt-1 text-xs text-gray-400">IVA 19% · Campo <code className="font-mono">monto_afecto</code> + <code className="font-mono">monto_iva</code></p>
               </div>
-              <div className="rounded-lg border border-purple-500/30 bg-purple-500/5 px-4 py-3">
-                <p className="font-semibold text-purple-300">exenta</p>
-                <p className="mt-1 text-xs text-white/40">IVA 0% · Campo <code className="font-mono">monto_exento</code></p>
+              <div className="rounded-lg border border-purple-200 bg-purple-50 px-4 py-3">
+                <p className="font-semibold text-purple-700">exenta</p>
+                <p className="mt-1 text-xs text-gray-400">IVA 0% · Campo <code className="font-mono">monto_exento</code></p>
               </div>
             </div>
-            <p className="mt-3 text-xs text-white/35">
+            <p className="mt-3 text-xs text-gray-300">
               Constraint <code className="font-mono">ck_cotizacion_items_iva_consistente</code> impide
               combinaciones inválidas.
             </p>

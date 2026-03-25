@@ -44,12 +44,12 @@ export default function NuevoMovimientoPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#0f0f1a] text-white">
+    <div className="flex min-h-screen bg-[#f8f9fb] text-gray-900">
       {/* Mini sidebar placeholder que coincide con AdminShell */}
-      <aside className="w-56 shrink-0 border-r border-white/10 bg-[#13131f] flex flex-col sticky top-0 h-screen">
-        <div className="px-5 py-5 border-b border-white/10">
-          <p className="text-base font-bold text-[#e2b44b]">ELEMEC</p>
-          <p className="text-[10px] text-white/35 mt-0.5 uppercase tracking-widest">Backoffice</p>
+      <aside className="w-56 shrink-0 border-r border-gray-200 bg-white flex flex-col sticky top-0 h-screen">
+        <div className="px-5 py-5 border-b border-gray-200">
+          <p className="text-base font-bold text-orange-500">ELEMEC</p>
+          <p className="text-[10px] text-gray-400 mt-0.5 uppercase tracking-widest">Backoffice</p>
         </div>
         <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5">
           {[
@@ -62,12 +62,12 @@ export default function NuevoMovimientoPage() {
               href={item.href}
               className={`flex flex-col px-3 py-2.5 rounded-lg text-sm transition ${
                 item.active
-                  ? "bg-[#e2b44b]/10 text-[#e2b44b] border border-[#e2b44b]/30"
-                  : "text-white/55 hover:text-white hover:bg-white/5"
+                  ? "bg-orange-500/10 text-orange-500 border border-[#e2b44b]/30"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}
             >
               <span className="font-semibold">{item.label}</span>
-              <span className={`text-[10px] mt-0.5 ${item.active ? "text-[#e2b44b]/60" : "text-white/30"}`}>
+              <span className={`text-[10px] mt-0.5 ${item.active ? "text-orange-500/60" : "text-gray-400"}`}>
                 {item.sub}
               </span>
             </a>
@@ -77,31 +77,31 @@ export default function NuevoMovimientoPage() {
 
       <div className="flex-1 px-3 py-4 md:px-6 md:py-10">
         <div className="mb-6">
-          <a href="/admin/conciliacion" className="text-xs text-white/40 hover:text-white transition">
+          <a href="/admin/conciliacion" className="text-xs text-gray-400 hover:text-gray-700 transition">
             ← Conciliación
           </a>
         </div>
 
         <div className="flex items-center justify-between mb-1">
-          <h1 className="text-2xl font-bold text-white">Nuevo Movimiento</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Nuevo Movimiento</h1>
           <a
             href="/admin/conciliacion/escanear"
-            className="flex items-center gap-2 rounded-lg border border-[#e2b44b]/40 bg-[#e2b44b]/10 px-4 py-2 text-sm font-semibold text-[#e2b44b] hover:bg-[#e2b44b]/20 transition"
+            className="flex items-center gap-2 rounded-lg border border-[#e2b44b]/40 bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-500/20 transition"
           >
             <span>&#128196;</span> Escanear recibo con IA
           </a>
         </div>
-        <p className="text-sm text-white/50 mb-8">Registra un ingreso o egreso para conciliación contable.</p>
+        <p className="text-sm text-gray-500 mb-8">Registra un ingreso o egreso para conciliación contable.</p>
 
         <form onSubmit={handleSubmit} className="space-y-5 max-w-2xl">
           {/* Tipo y fecha */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm text-white/70">Tipo *</label>
+              <label className="mb-1 block text-sm text-gray-600">Tipo *</label>
               <select
                 name="tipo"
                 required
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b]"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
               >
                 <option value="">Selecciona...</option>
                 <option value="ingreso">Ingreso</option>
@@ -109,24 +109,24 @@ export default function NuevoMovimientoPage() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm text-white/70">Fecha *</label>
+              <label className="mb-1 block text-sm text-gray-600">Fecha *</label>
               <input
                 type="date"
                 name="fecha"
                 required
                 defaultValue={new Date().toISOString().slice(0, 10)}
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b]"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
               />
             </div>
           </div>
 
           {/* Categoría */}
           <div>
-            <label className="mb-1 block text-sm text-white/70">Categoría *</label>
+            <label className="mb-1 block text-sm text-gray-600">Categoría *</label>
             <select
               name="categoria"
               required
-              className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b]"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
             >
               <option value="">Selecciona una categoría...</option>
               {CATEGORIAS.map((c) => (
@@ -137,12 +137,12 @@ export default function NuevoMovimientoPage() {
 
           {/* Descripción */}
           <div>
-            <label className="mb-1 block text-sm text-white/70">Descripción</label>
+            <label className="mb-1 block text-sm text-gray-600">Descripción</label>
             <input
               type="text"
               name="descripcion"
               maxLength={500}
-              className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
               placeholder="Descripción del movimiento..."
             />
           </div>
@@ -150,22 +150,22 @@ export default function NuevoMovimientoPage() {
           {/* Referencia y centro de costo */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm text-white/70">Referencia / N° documento</label>
+              <label className="mb-1 block text-sm text-gray-600">Referencia / N° documento</label>
               <input
                 type="text"
                 name="referencia"
                 maxLength={100}
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
                 placeholder="Ej: FAC-2026-001"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-white/70">Centro de costo</label>
+              <label className="mb-1 block text-sm text-gray-600">Centro de costo</label>
               <input
                 type="text"
                 name="centro_costo"
                 maxLength={100}
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
                 placeholder="Ej: Operaciones Sur"
               />
             </div>
@@ -173,30 +173,30 @@ export default function NuevoMovimientoPage() {
 
           {/* Monto */}
           <div>
-            <label className="mb-1 block text-sm text-white/70">Monto CLP *</label>
+            <label className="mb-1 block text-sm text-gray-600">Monto CLP *</label>
             <input
               type="number"
               name="monto"
               required
               min={0}
               step={1}
-              className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
               placeholder="0"
             />
           </div>
 
           {/* Datos tributarios */}
-          <div className="border-t border-white/10 pt-4 mt-2">
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40 mb-4">Datos Tributarios</h3>
+          <div className="border-t border-gray-200 pt-4 mt-2">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Datos Tributarios</h3>
           </div>
 
           {/* Tipo documento y forma de pago */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm text-white/70">Tipo Documento</label>
+              <label className="mb-1 block text-sm text-gray-600">Tipo Documento</label>
               <select
                 name="tipo_documento"
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b]"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
               >
                 <option value="">Sin especificar</option>
                 <option value="boleta">Boleta</option>
@@ -207,10 +207,10 @@ export default function NuevoMovimientoPage() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm text-white/70">Forma de Pago</label>
+              <label className="mb-1 block text-sm text-gray-600">Forma de Pago</label>
               <select
                 name="forma_pago"
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b]"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
               >
                 <option value="">Sin especificar</option>
                 <option value="efectivo">Efectivo</option>
@@ -226,22 +226,22 @@ export default function NuevoMovimientoPage() {
           {/* RUT emisor y razón social */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1 block text-sm text-white/70">RUT Emisor</label>
+              <label className="mb-1 block text-sm text-gray-600">RUT Emisor</label>
               <input
                 type="text"
                 name="rut_emisor"
                 maxLength={20}
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
                 placeholder="Ej: 76.123.456-7"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-white/70">Razón Social Emisor</label>
+              <label className="mb-1 block text-sm text-gray-600">Razón Social Emisor</label>
               <input
                 type="text"
                 name="razon_social_emisor"
                 maxLength={200}
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
                 placeholder="Nombre legal del emisor"
               />
             </div>
@@ -250,35 +250,35 @@ export default function NuevoMovimientoPage() {
           {/* Montos neto, IVA, total */}
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="mb-1 block text-sm text-white/70">Monto Neto</label>
+              <label className="mb-1 block text-sm text-gray-600">Monto Neto</label>
               <input
                 type="number"
                 name="monto_neto"
                 step="1"
                 min={0}
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
                 placeholder="Sin IVA"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-white/70">IVA (19%)</label>
+              <label className="mb-1 block text-sm text-gray-600">IVA (19%)</label>
               <input
                 type="number"
                 name="monto_iva"
                 step="1"
                 min={0}
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
                 placeholder="IVA"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-white/70">Monto Total</label>
+              <label className="mb-1 block text-sm text-gray-600">Monto Total</label>
               <input
                 type="number"
                 name="monto_total"
                 step="1"
                 min={0}
-                className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
                 placeholder="Con IVA"
               />
             </div>
@@ -286,30 +286,30 @@ export default function NuevoMovimientoPage() {
 
           {/* RUT receptor */}
           <div>
-            <label className="mb-1 block text-sm text-white/70">RUT Receptor</label>
+            <label className="mb-1 block text-sm text-gray-600">RUT Receptor</label>
             <input
               type="text"
               name="rut_receptor"
               maxLength={20}
-              className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
               placeholder="RUT de ELEMEC"
             />
           </div>
 
           {/* Notas */}
           <div>
-            <label className="mb-1 block text-sm text-white/70">Notas internas</label>
+            <label className="mb-1 block text-sm text-gray-600">Notas internas</label>
             <textarea
               name="notas"
               rows={3}
               maxLength={2000}
-              className="w-full rounded-lg border border-white/20 bg-[#13131f] px-3 py-2 text-sm text-white outline-none focus:border-[#e2b44b] placeholder:text-white/30"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
               placeholder="Observaciones adicionales..."
             />
           </div>
 
           {error && (
-            <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-300">
+            <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm text-red-700">
               {error}
             </p>
           )}
@@ -318,13 +318,13 @@ export default function NuevoMovimientoPage() {
             <button
               type="submit"
               disabled={loading}
-              className="rounded-lg bg-[#e2b44b] px-6 py-2.5 text-sm font-bold text-black hover:bg-[#d4a43a] transition disabled:opacity-50"
+              className="rounded-lg bg-orange-500 px-6 py-2.5 text-sm font-bold text-white hover:bg-orange-600 transition disabled:opacity-50"
             >
               {loading ? "Guardando..." : "Registrar movimiento"}
             </button>
             <a
               href="/admin/conciliacion"
-              className="rounded-lg border border-white/20 px-6 py-2.5 text-sm text-white/60 hover:text-white transition"
+              className="rounded-lg border border-gray-300 px-6 py-2.5 text-sm text-gray-500 hover:text-gray-700 transition"
             >
               Cancelar
             </a>
