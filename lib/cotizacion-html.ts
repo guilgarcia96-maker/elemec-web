@@ -345,20 +345,27 @@ export function generateCotizacionHTML(data: CotizacionPDFData): string {
   </div>` : ''}
 
   <!-- SIGNATURES -->
-  <table style="margin-top:40px;margin-bottom:16px">
-    <tr>
-      <td style="width:50%;padding-right:20px">
-        <div style="border-top:1px solid #999;padding-top:4px;text-align:center;font-size:9px;color:#666">
-          Firma y Timbre Emisor<br/>ELEMEC
-        </div>
-      </td>
-      <td style="width:50%;padding-left:20px">
-        <div style="border-top:1px solid #999;padding-top:4px;text-align:center;font-size:9px;color:#666">
-          Firma y Timbre Receptor<br/>${esc(data.cliente) || '___________________________'}
-        </div>
-      </td>
-    </tr>
-  </table>
+  <div style="page-break-inside:avoid;margin-top:80px">
+    <table style="width:100%;margin-bottom:16px">
+      <tr>
+        <td style="width:45%;padding-right:30px;vertical-align:bottom">
+          <div style="height:80px"></div>
+          <div style="border-top:1px solid #666;padding-top:6px;text-align:center">
+            <div style="font-size:9px;font-weight:600;color:#444">Firma y Timbre Emisor</div>
+            <div style="font-size:9px;color:#888;margin-top:2px">ELEMEC</div>
+          </div>
+        </td>
+        <td style="width:10%"></td>
+        <td style="width:45%;padding-left:30px;vertical-align:bottom">
+          <div style="height:80px"></div>
+          <div style="border-top:1px solid #666;padding-top:6px;text-align:center">
+            <div style="font-size:9px;font-weight:600;color:#444">Firma y Timbre Receptor</div>
+            <div style="font-size:9px;color:#888;margin-top:2px">${esc(data.cliente) || '___________________________'}</div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
 
   <!-- FOOTER -->
   <div style="display:flex;justify-content:space-between;margin-top:30px;border-top:1px solid #eee;padding-top:8px;font-size:8px;color:#bbb">
