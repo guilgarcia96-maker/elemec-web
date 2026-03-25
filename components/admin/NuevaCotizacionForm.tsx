@@ -145,6 +145,12 @@ interface InitialData {
   observaciones?:  string;
   nombreDir?:      string;
   origen?:         string;
+  sucursal?:       string;
+  tipoDocumento?:  string;
+  condVenta?:      string;
+  fecha?:          string;
+  fechaVigencia?:  string;
+  comision?:       string;
 }
 
 /* ─── Component ──────────────────────────────────────────────────────── */
@@ -159,13 +165,14 @@ export default function NuevaCotizacionForm({
   initialData?: InitialData;
 }) {
   const router    = useRouter();
-  const tipoLabel = TIPO_DOC_LABELS[tipo] ?? tipo;
+  const tipoEfectivo = tipo || initialData?.tipoDocumento || '';
+  const tipoLabel = TIPO_DOC_LABELS[tipoEfectivo] ?? tipoEfectivo;
 
   /* ── Form header state ────── */
-  const [sucursal,       setSucursal]       = useState('');
+  const [sucursal,       setSucursal]       = useState(initialData?.sucursal ?? '');
   const [cliente,        setCliente]        = useState(initialData?.cliente ?? '');
-  const [fecha,          setFecha]          = useState(today());
-  const [fechaVigencia,  setFechaVigencia]  = useState(today());
+  const [fecha,          setFecha]          = useState(initialData?.fecha ?? today());
+  const [fechaVigencia,  setFechaVigencia]  = useState(initialData?.fechaVigencia ?? today());
   const [giro,           setGiro]           = useState(initialData?.giro ?? '');
   const [direccion,      setDireccion]      = useState(initialData?.direccion ?? '');
   const [comuna,         setComuna]         = useState(initialData?.comuna ?? '');
@@ -179,7 +186,7 @@ export default function NuevaCotizacionForm({
   const [cargo,          setCargo]          = useState(initialData?.cargo ?? '');
   const [glosa,          setGlosa]          = useState(initialData?.glosa ?? '');
   const [vendedor,       setVendedor]       = useState(initialData?.vendedor ?? '');
-  const [comision,       setComision]       = useState('');
+  const [comision,       setComision]       = useState(initialData?.comision ?? '');
   const [listaPrecio,    setListaPrecio]    = useState(initialData?.listaPrecio ?? '');
   const [observaciones,  setObservaciones]  = useState(initialData?.observaciones ?? '');
 
@@ -191,7 +198,7 @@ export default function NuevaCotizacionForm({
   const [nombreObra,     setNombreObra]     = useState(initialData?.nombreObra ?? '');
 
   /* ── Condición de venta ────── */
-  const [condVenta,      setCondVenta]      = useState('');
+  const [condVenta,      setCondVenta]      = useState(initialData?.condVenta ?? '');
   const [fechaVenc,      setFechaVenc]      = useState(today());
 
   /* ── Moneda ─────────────────── */
@@ -244,7 +251,7 @@ export default function NuevaCotizacionForm({
     return {
       estado,
       // Header
-      tipo_documento:  tipo || undefined,
+      tipo_documento:  tipoEfectivo || undefined,
       sucursal:        sucursal || undefined,
       nombre:          contactoNombre || undefined,
       compania:        cliente || undefined,
@@ -900,7 +907,7 @@ export default function NuevaCotizacionForm({
         <CotizacionPreview
           onClose={() => setShowPreview(false)}
           data={{
-            tipo,
+            tipo: tipoEfectivo,
             tipoLabel,
             fecha,
             fechaVigencia,

@@ -5,6 +5,8 @@ import { supabase } from '@/lib/supabase';
 import AdminShell from '@/components/admin/AdminShell';
 import NuevaCotizacionForm from '@/components/admin/NuevaCotizacionForm';
 
+export const dynamic = 'force-dynamic';
+
 export default async function NuevaCotizacionPage({
   searchParams,
 }: {
@@ -56,6 +58,12 @@ export default async function NuevaCotizacionPage({
         observaciones:  cotiz.observaciones ?? undefined,
         nombreDir:      cotiz.nombre_dir ?? undefined,
         origen:         cotiz.origen ?? undefined,
+        sucursal:       cotiz.sucursal ?? undefined,
+        tipoDocumento:  cotiz.tipo_documento ?? undefined,
+        condVenta:      cotiz.condicion_venta ?? undefined,
+        fecha:          cotiz.fecha_inicio ?? undefined,
+        fechaVigencia:  cotiz.fecha_cierre_estimada ?? undefined,
+        comision:       cotiz.comision_pct != null ? String(cotiz.comision_pct) : undefined,
         fromFolio,
       };
     }
@@ -75,6 +83,7 @@ export default async function NuevaCotizacionPage({
   return (
     <AdminShell session={session} active="cotizaciones">
       <NuevaCotizacionForm
+        key={params.from_id ?? 'new'}
         tipo={params.tipo ?? ''}
         fromSolicitudId={params.from_id}
         initialData={initialData}
