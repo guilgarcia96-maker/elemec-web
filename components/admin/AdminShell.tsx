@@ -32,6 +32,11 @@ const NAV = [
     sub: "Control de gastos y OCR",
   },
   {
+    href: "/admin/informes",
+    label: "Informes",
+    sub: "Informes tecnicos con IA",
+  },
+  {
     href: "/admin/cobranza",
     label: "Cobranza",
     sub: "Aging CxC y mora",
@@ -50,7 +55,7 @@ export default function AdminShell({
 }: {
   session: AdminSession;
   children: React.ReactNode;
-  active?: "dashboard" | "cotizaciones" | "postulaciones" | "conciliacion" | "gastos" | "cobranza" | "configuracion";
+  active?: "dashboard" | "cotizaciones" | "postulaciones" | "conciliacion" | "gastos" | "informes" | "cobranza" | "configuracion";
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
