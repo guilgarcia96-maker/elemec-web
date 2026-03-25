@@ -33,28 +33,34 @@ const noticias = [
 
 const serviciosDestacados = [
   {
-    titulo: "Obras e Instalaciones Industriales",
+    titulo: "Montaje Industrial",
     descripcion:
-      "Diseño y montaje de redes de gas, calefacción y utilidades con tramitaciones y puesta en marcha.",
-    href: "/servicios",
+      "Montaje de estructuras metálicas, equipos, cañerías y sistemas mecánicos para la industria.",
+    href: "/servicios/montaje-instalaciones",
   },
   {
-    titulo: "Mantención de Calderas",
+    titulo: "Mantención de Equipos y Redes",
     descripcion:
-      "Mantenciones preventivas y correctivas para recintos críticos de alta exigencia.",
-    href: "/servicios",
+      "Mantenciones preventivas y correctivas de equipos industriales, redes de gas, vapor y calefacción.",
+    href: "/servicios/mantencion-equipos",
   },
   {
-    titulo: "Proyectos Eléctricos",
+    titulo: "Ingeniería y Diseño",
     descripcion:
-      "Infraestructura eléctrica, tableros, variadores de frecuencia y bancos de condensadores.",
-    href: "/servicios",
+      "Desarrollo de proyectos de ingeniería conceptual, básica y de detalle para la industria.",
+    href: "/servicios/ingenieria-diseno",
   },
   {
-    titulo: "Generación de Vapor",
+    titulo: "Aislación Térmica",
     descripcion:
-      "Instalación y puesta en marcha de generadores de vapor para operación industrial continua.",
-    href: "/servicios",
+      "Aislación térmica industrial para cañerías, equipos, estanques y ductos con materiales certificados.",
+    href: "/servicios/aislacion-termica",
+  },
+  {
+    titulo: "Servicios Básicos Industriales",
+    descripcion:
+      "Soldadura, fabricación de piezas, apoyo operacional y servicios complementarios en terreno.",
+    href: "/servicios/servicios-basicos-industriales",
   },
 ];
 
@@ -157,7 +163,7 @@ export default function HomePage() {
             Disponibilidad y respuesta efectiva a los requerimientos de sus
             proyectos e instalaciones industriales en la Región de Magallanes.
           </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             {serviciosDestacados.map((s) => (
               <Link
                 key={s.titulo}
