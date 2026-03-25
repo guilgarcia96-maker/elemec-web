@@ -31,6 +31,7 @@ export default async function NuevaCotizacionPage({
       .eq('id', params.from_id)
       .maybeSingle();
 
+    console.log("[nueva] from_id:", params.from_id, "cotiz found:", !!cotiz, "keys:", cotiz ? Object.keys(cotiz).length : 0);
     if (cotiz) {
       fromFolio = cotiz.codigo ?? undefined;
       initialData = {

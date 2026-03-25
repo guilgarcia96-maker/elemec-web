@@ -162,21 +162,7 @@ export default async function DetalleCotizacionPage({
   const pendingApproval = aprobaciones.find((a) => a.estado === "pendiente");
   const isAdmin = session.role === "admin";
 
-  const desarrollarParams: Record<string, string> = { from_id: cotizacion.id };
-  if (cotizacion.compania)      desarrollarParams.compania      = cotizacion.compania;
-  if (cotizacion.nombre_obra)   desarrollarParams.nombre_obra   = cotizacion.nombre_obra;
-  if (cotizacion.email)         desarrollarParams.email         = cotizacion.email;
-  if (cotizacion.region)        desarrollarParams.region        = cotizacion.region;
-  if (cotizacion.tipo_servicio) desarrollarParams.tipo_servicio = cotizacion.tipo_servicio;
-  if (cotizacion.direccion)     desarrollarParams.direccion     = cotizacion.direccion;
-  if (cotizacion.telefono)      desarrollarParams.telefono      = cotizacion.telefono;
-  if (cotizacion.movil)         desarrollarParams.movil         = cotizacion.movil;
-  if (cotizacion.rut_empresa)   desarrollarParams.rut_empresa   = cotizacion.rut_empresa;
-  if (cotizacion.cargo)         desarrollarParams.cargo         = cotizacion.cargo;
-  if (cotizacion.prioridad)     desarrollarParams.prioridad     = cotizacion.prioridad;
-  const nombreCompleto = [cotizacion.nombre, cotizacion.apellidos].filter(Boolean).join(" ");
-  if (nombreCompleto) desarrollarParams.nombre = nombreCompleto;
-  const desarrollarHref = "/admin/cotizaciones/nueva?" + new URLSearchParams(desarrollarParams).toString();
+  const desarrollarHref = `/admin/cotizaciones/nueva?from_id=${cotizacion.id}`;
 
   const hasMultipleVersions = (versionRows?.length ?? 0) > 1;
 
