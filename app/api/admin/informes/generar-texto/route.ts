@@ -94,7 +94,7 @@ Responde SOLO con un JSON valido (sin markdown, sin backticks) con esta estructu
 Cada campo "contenido" debe ser uno o varios parrafos de texto profesional. No uses listas con viñetas, usa texto corrido con oraciones completas. Genera contenido para TODAS las secciones listadas.`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-5.4",
       messages: [
         {
           role: "system",
