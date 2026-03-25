@@ -40,24 +40,29 @@ export default async function EditarInformePage({
     .eq("informe_id", id)
     .order("orden", { ascending: true });
 
-  // Generar URLs firmadas para las fotos existentes
-  const fotos: FotoItem[] = [];
-  for (const adj of adjuntos ?? []) {
-    if (adj.mime_type?.startsWith("image/") && adj.storage_path) {
-      const { data: signed } = await supabase.storage
+  // Generar URLs firmadas para las fotos existentes (en paralelo)
+  const adjuntosImagen = (adjuntos ?? []).filter(
+    (adj) => adj.mime_type?.startsWith("image/") && adj.storage_path,
+  );
+  const signedResults = await Promise.all(
+    adjuntosImagen.map((adj, i) =>
+      supabase.storage
         .from(adj.storage_bucket ?? "backoffice-docs")
-        .createSignedUrl(adj.storage_path, 3600);
-      if (signed?.signedUrl) {
-        fotos.push({
-          id: adj.id as string,
-          url: signed.signedUrl,
-          descripcion: adj.descripcion_ai || "",
-          analizando: false,
-          orden: adj.orden ?? fotos.length + 1,
-        });
-      }
-    }
-  }
+        .createSignedUrl(adj.storage_path, 3600)
+        .then(({ data: signed }) =>
+          signed?.signedUrl
+            ? {
+                id: adj.id as string,
+                url: signed.signedUrl,
+                descripcion: adj.descripcion_ai || "",
+                analizando: false,
+                orden: adj.orden ?? i + 1,
+              }
+            : null,
+        ),
+    ),
+  );
+  const fotos: FotoItem[] = signedResults.filter((f): f is FotoItem => f !== null);
 
   // Reconstruir secciones desde contenido_json
   const contenidoRaw = (informe.contenido_json ?? {}) as Record<string, unknown>;
@@ -102,6 +107,7 @@ export default async function EditarInformePage({
     servicio_tipo: informe.servicio_tipo ?? "",
     cliente_nombre: informe.cliente_nombre ?? "",
     cliente_empresa: informe.cliente_empresa ?? "",
+    cliente_email: informe.cliente_email ?? "",
     obra: informe.obra ?? "",
     ubicacion: informe.ubicacion ?? "",
     fecha_trabajo: informe.fecha_trabajo ?? "",

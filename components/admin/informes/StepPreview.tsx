@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react';
 
 interface Props {
   informeId?: string;
+  clienteEmail?: string;
   onGuardarBorrador: () => Promise<void>;
   onEmitir: () => Promise<void>;
 }
@@ -86,9 +87,10 @@ function ModalConfirmacion({
 
 /* ─── Componente ──────────────────────────────────────────────────── */
 
-export default function StepPreview({ informeId, onGuardarBorrador, onEmitir }: Props) {
+export default function StepPreview({ informeId, clienteEmail, onGuardarBorrador, onEmitir }: Props) {
   const [guardando, setGuardando] = useState(false);
   const [emitiendo, setEmitiendo] = useState(false);
+  const [enviando, setEnviando] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
@@ -108,6 +110,28 @@ export default function StepPreview({ informeId, onGuardarBorrador, onEmitir }: 
       setGuardando(false);
     }
   }, [onGuardarBorrador]);
+
+  const handleEnviar = useCallback(async () => {
+    if (!informeId) return;
+    setEnviando(true);
+    setError('');
+    setMensaje('');
+    try {
+      const res = await fetch(`/api/admin/informes/${informeId}/enviar`, {
+        method: 'POST',
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? 'Error al enviar');
+      }
+      const result = await res.json();
+      setMensaje(`Informe enviado a ${result.enviado_a}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al enviar');
+    } finally {
+      setEnviando(false);
+    }
+  }, [informeId]);
 
   const handleEmitirConfirm = useCallback(async () => {
     setEmitiendo(true);
@@ -243,20 +267,25 @@ export default function StepPreview({ informeId, onGuardarBorrador, onEmitir }: 
               Emitir informe
             </button>
 
-            {/* Enviar al cliente (próximamente) */}
+            {/* Enviar al cliente */}
             <button
               type="button"
-              disabled
-              className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 text-gray-400 px-5 py-2.5 rounded-xl cursor-not-allowed text-sm font-medium"
-              title="Próximamente disponible"
+              onClick={handleEnviar}
+              disabled={enviando || !informeId || !clienteEmail}
+              className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl transition font-semibold text-sm shadow-sm hover:shadow-md"
+              title={!clienteEmail ? 'Agrega el email del cliente en Datos Generales' : 'Enviar informe por email'}
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-              </svg>
-              Enviar al cliente
-              <span className="text-[10px] bg-gray-200 text-gray-400 px-1.5 py-0.5 rounded-full font-semibold">
-                Próximamente
-              </span>
+              {enviando ? (
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+              )}
+              {enviando ? 'Enviando...' : 'Enviar al cliente'}
             </button>
           </div>
         </div>

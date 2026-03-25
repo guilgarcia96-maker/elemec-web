@@ -80,8 +80,10 @@ export async function POST(req: NextRequest) {
     fecha_trabajo: body.fecha_trabajo || null,
     cliente_nombre: body.cliente_nombre || null,
     cliente_empresa: body.cliente_empresa || null,
+    cliente_email: body.cliente_email || null,
     responsable_id: session.userId,
     estado: body.estado === "emitido" ? "emitido" : "borrador",
+    descripcion_trabajos: body.descripcion_trabajos || null,
     contenido_json: body.contenido_json || {},
     contenido_html: body.contenido_html || null,
   };

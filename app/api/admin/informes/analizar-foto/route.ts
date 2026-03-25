@@ -18,38 +18,51 @@ export async function POST(req: NextRequest) {
 
   try {
     const formData = await req.formData();
-    const file = formData.get("image") as File | null;
+    const file = formData.get("foto") as File | null;
+    const fotoUrl = formData.get("foto_url") as string | null;
     const informeId = formData.get("informe_id") as string | null;
 
-    if (!file) {
-      return NextResponse.json({ error: "No se envio imagen" }, { status: 400 });
+    if (!file && !fotoUrl) {
+      return NextResponse.json({ error: "No se envio imagen (foto o foto_url)" }, { status: 400 });
     }
     if (!informeId) {
       return NextResponse.json({ error: "informe_id es requerido" }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const base64 = buffer.toString("base64");
-    const mimeType = file.type || "image/jpeg";
-
-    // Subir a Supabase Storage
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
 
-    const timestamp = Date.now();
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const storagePath = `informes/${informeId}/${timestamp}-${safeName}`;
+    let imageUrlForVision: string;
+    let storagePath: string | null = null;
+    let adjuntoId: string | null = null;
+    let mimeType = "image/jpeg";
 
-    const { error: uploadError } = await supabase.storage
-      .from("backoffice-docs")
-      .upload(storagePath, buffer, { contentType: mimeType, upsert: false });
+    if (file) {
+      // Flujo con archivo: subir a Storage + analizar
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const base64 = buffer.toString("base64");
+      mimeType = file.type || "image/jpeg";
 
-    if (uploadError) {
-      console.error("Error subiendo imagen:", uploadError.message);
-      return NextResponse.json({ error: "Error al subir la imagen" }, { status: 500 });
+      const timestamp = Date.now();
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      storagePath = `informes/${informeId}/${timestamp}-${safeName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("backoffice-docs")
+        .upload(storagePath, buffer, { contentType: mimeType, upsert: false });
+
+      if (uploadError) {
+        console.error("Error subiendo imagen:", uploadError.message);
+        return NextResponse.json({ error: "Error al subir la imagen" }, { status: 500 });
+      }
+
+      imageUrlForVision = `data:${mimeType};base64,${base64}`;
+    } else {
+      // Flujo con URL existente: solo re-analizar
+      imageUrlForVision = fotoUrl!;
     }
 
     // Analizar con GPT-4o-mini Vision
@@ -69,7 +82,7 @@ export async function POST(req: NextRequest) {
             { type: "text", text: "Describe esta fotografia para un informe tecnico:" },
             {
               type: "image_url",
-              image_url: { url: `data:${mimeType};base64,${base64}`, detail: "low" },
+              image_url: { url: imageUrlForVision, detail: "auto" },
             },
           ],
         },
@@ -80,42 +93,46 @@ export async function POST(req: NextRequest) {
 
     const descripcionAi = response.choices[0]?.message?.content?.trim() || "";
 
-    // Obtener el orden maximo actual
-    const { data: maxOrden } = await supabase
-      .from("informe_adjuntos")
-      .select("orden")
-      .eq("informe_id", informeId)
-      .order("orden", { ascending: false })
-      .limit(1);
+    // Solo insertar adjunto si se subió un archivo nuevo
+    if (file && storagePath) {
+      const { data: maxOrden } = await supabase
+        .from("informe_adjuntos")
+        .select("orden")
+        .eq("informe_id", informeId)
+        .order("orden", { ascending: false })
+        .limit(1);
 
-    const nextOrden = (maxOrden?.[0]?.orden ?? -1) + 1;
+      const nextOrden = (maxOrden?.[0]?.orden ?? -1) + 1;
 
-    // Insertar en informe_adjuntos
-    const { data: adjunto, error: insertError } = await supabase
-      .from("informe_adjuntos")
-      .insert({
-        informe_id: informeId,
-        nombre_archivo: file.name,
-        mime_type: mimeType,
-        tamano_bytes: buffer.byteLength,
-        storage_bucket: "backoffice-docs",
-        storage_path: storagePath,
-        descripcion_ai: descripcionAi,
-        orden: nextOrden,
-        subido_por: session.userId,
-      })
-      .select("id")
-      .single();
+      const { data: adjunto, error: insertError } = await supabase
+        .from("informe_adjuntos")
+        .insert({
+          informe_id: informeId,
+          nombre_archivo: file.name,
+          mime_type: mimeType,
+          tamano_bytes: file.size,
+          storage_bucket: "backoffice-docs",
+          storage_path: storagePath,
+          descripcion_ai: descripcionAi,
+          orden: nextOrden,
+          subido_por: session.userId,
+        })
+        .select("id")
+        .single();
 
-    if (insertError) {
-      console.error("Error insertando adjunto:", insertError.message);
-      return NextResponse.json({ error: "Error al guardar adjunto" }, { status: 500 });
+      if (insertError) {
+        console.error("Error insertando adjunto:", insertError.message);
+        return NextResponse.json({ error: "Error al guardar adjunto" }, { status: 500 });
+      }
+
+      adjuntoId = (adjunto as { id: string }).id;
     }
 
     return NextResponse.json({
-      id: (adjunto as { id: string }).id,
+      id: adjuntoId,
       storagePath,
       descripcion_ai: descripcionAi,
+      descripcion: descripcionAi,
     });
   } catch (error) {
     console.error("Error analizando foto:", error);

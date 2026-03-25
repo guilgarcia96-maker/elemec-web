@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminSessionFromRequest, hasAnyRole } from "@/lib/admin-auth";
 import OpenAI from "openai";
 
+interface FotoInput {
+  url?: string;
+  descripcion?: string;
+  orden?: number;
+}
+
+interface SeccionInput {
+  id: string;
+  titulo: string;
+  tipo?: string;
+}
+
 export async function POST(req: NextRequest) {
   const session = await getAdminSessionFromRequest(req);
   if (!session) {
@@ -17,10 +29,11 @@ export async function POST(req: NextRequest) {
 
   let body: {
     informe_id?: string;
-    tipo_servicio?: string;
-    obra?: string;
+    servicio_tipo?: string;
     descripcion_trabajos?: string;
-    fotos_descripciones?: string[];
+    obra?: string;
+    fotos?: FotoInput[];
+    secciones?: SeccionInput[];
   };
 
   try {
@@ -36,35 +49,49 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const seccionesReq = body.secciones ?? [];
+  if (seccionesReq.length === 0) {
+    return NextResponse.json(
+      { error: "Se requiere al menos una seccion para generar" },
+      { status: 422 },
+    );
+  }
+
   try {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+    // Contexto de fotos
     const fotosContext =
-      body.fotos_descripciones && body.fotos_descripciones.length > 0
-        ? `\n\nDescripciones de las fotografias del trabajo:\n${body.fotos_descripciones
-            .map((d, i) => `- Foto ${i + 1}: ${d}`)
+      body.fotos && body.fotos.length > 0
+        ? `\n\nDescripciones de las fotografias del trabajo:\n${body.fotos
+            .map((f, i) => `- Foto ${i + 1}: ${f.descripcion || "Sin descripcion"}`)
             .join("\n")}`
         : "";
 
+    // Construir lista de secciones dinámicas
+    const seccionesListStr = seccionesReq
+      .map((s) => `  - id: "${s.id}", titulo: "${s.titulo}", tipo: "${s.tipo ?? "texto"}"`)
+      .join("\n");
+
     const userContent = `Genera un informe tecnico con la siguiente informacion:
 
-Tipo de servicio: ${body.tipo_servicio || "No especificado"}
+Tipo de servicio: ${body.servicio_tipo || "No especificado"}
 Obra/Proyecto: ${body.obra || "No especificado"}
 
 Descripcion de los trabajos realizados:
 ${body.descripcion_trabajos}${fotosContext}
 
+Debes generar contenido para CADA una de las siguientes secciones:
+${seccionesListStr}
+
 Responde SOLO con un JSON valido (sin markdown, sin backticks) con esta estructura:
 {
-  "resumen_ejecutivo": "...",
-  "alcance": "...",
-  "descripcion_trabajos": "...",
-  "hallazgos": "...",
-  "conclusiones": "...",
-  "recomendaciones": "..."
+  "secciones": [
+    { "id": "<id de la seccion>", "contenido": "<texto generado>" }
+  ]
 }
 
-Cada campo debe ser un parrafo o varios parrafos de texto profesional. No uses listas con viñetas, usa texto corrido con oraciones completas.`;
+Cada campo "contenido" debe ser uno o varios parrafos de texto profesional. No uses listas con viñetas, usa texto corrido con oraciones completas. Genera contenido para TODAS las secciones listadas.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -76,13 +103,13 @@ Cada campo debe ser un parrafo o varios parrafos de texto profesional. No uses l
         },
         { role: "user", content: userContent },
       ],
-      max_tokens: 2000,
+      max_tokens: 3000,
       temperature: 0.4,
     });
 
     const content = response.choices[0]?.message?.content?.trim() || "";
 
-    let parsed;
+    let parsed: { secciones?: Array<{ id: string; contenido: string }> };
     try {
       const jsonStr = content.replace(/```json?\n?/g, "").replace(/```/g, "").trim();
       parsed = JSON.parse(jsonStr);
@@ -93,14 +120,16 @@ Cada campo debe ser un parrafo o varios parrafos de texto profesional. No uses l
       );
     }
 
-    return NextResponse.json({
-      resumen_ejecutivo: parsed.resumen_ejecutivo || "",
-      alcance: parsed.alcance || "",
-      descripcion_trabajos: parsed.descripcion_trabajos || "",
-      hallazgos: parsed.hallazgos || "",
-      conclusiones: parsed.conclusiones || "",
-      recomendaciones: parsed.recomendaciones || "",
+    // Asegurar que devolvemos el formato esperado
+    const seccionesResult = seccionesReq.map((sec) => {
+      const generada = parsed.secciones?.find((g) => g.id === sec.id);
+      return {
+        id: sec.id,
+        contenido: generada?.contenido || "",
+      };
     });
+
+    return NextResponse.json({ secciones: seccionesResult });
   } catch (error) {
     console.error("Error generando texto:", error);
     return NextResponse.json({ error: "Error al generar texto con IA" }, { status: 500 });

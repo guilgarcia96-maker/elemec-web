@@ -53,22 +53,25 @@ export async function POST(
     .eq("informe_id", id)
     .order("orden", { ascending: true });
 
-  const fotos: { descripcion: string; url: string; orden: number }[] = [];
-  for (const adj of adjuntos ?? []) {
-    if (adj.storage_path && adj.mime_type?.startsWith("image/")) {
-      // URL firmada larga (24 h) para incluir en el email
-      const { data: signed } = await supabase.storage
-        .from(adj.storage_bucket ?? "backoffice-docs")
-        .createSignedUrl(adj.storage_path, 86400);
-      if (signed?.signedUrl) {
-        fotos.push({
-          descripcion: adj.descripcion_ai || "",
-          url: signed.signedUrl,
-          orden: adj.orden ?? fotos.length + 1,
-        });
-      }
-    }
-  }
+  const adjuntosImagen = (adjuntos ?? []).filter(
+    (adj) => adj.storage_path && adj.mime_type?.startsWith("image/"),
+  );
+  const fotos = (
+    await Promise.all(
+      adjuntosImagen.map(async (adj, i) => {
+        const { data: signed } = await supabase.storage
+          .from(adj.storage_bucket ?? "backoffice-docs")
+          .createSignedUrl(adj.storage_path, 86400);
+        return signed?.signedUrl
+          ? {
+              descripcion: adj.descripcion_ai || "",
+              url: signed.signedUrl,
+              orden: adj.orden ?? i + 1,
+            }
+          : null;
+      }),
+    )
+  ).filter((f): f is { descripcion: string; url: string; orden: number } => f !== null);
 
   // Nombre del responsable
   let responsable = session.nombre || "ELEMEC";

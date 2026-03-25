@@ -61,45 +61,54 @@ export async function GET(
     responsableNombre = user?.nombre ?? "";
   }
 
-  /* ── URLs para fotos ─────────────────────────────────── */
-  // Preferir URLs públicas si el bucket es público; fallback a signed URL.
+  /* ── URLs para fotos (en paralelo) ───────────────────── */
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const fotosConUrl: InformePDFData["fotos"] = [];
+  const adjuntosImagen = (adjuntos ?? []).filter(
+    (adj) => adj.storage_path && adj.mime_type?.startsWith("image/"),
+  );
 
-  for (const adj of adjuntos ?? []) {
-    if (!adj.storage_path || !adj.mime_type?.startsWith("image/")) continue;
-
-    const bucket = adj.storage_bucket ?? "backoffice-docs";
-    let imageUrl = "";
-
-    // Intentar URL pública primero (más estable para renderizado PDF)
-    const publicUrl = `${supabaseUrl}/storage/v1/object/public/${bucket}/${adj.storage_path}`;
-    // Generar URL firmada como respaldo
-    const { data: signed } = await supabase.storage
-      .from(bucket)
-      .createSignedUrl(adj.storage_path, 7200); // 2 horas de validez
-
-    imageUrl = signed?.signedUrl ?? publicUrl;
-
-    if (imageUrl) {
-      fotosConUrl.push({
-        url:         imageUrl,
-        descripcion: adj.descripcion_ai ?? "",
-        orden:       adj.orden ?? fotosConUrl.length,
-      });
-    }
-  }
+  const fotosConUrl: InformePDFData["fotos"] = (
+    await Promise.all(
+      adjuntosImagen.map(async (adj, i) => {
+        const bucket = adj.storage_bucket ?? "backoffice-docs";
+        const publicUrl = `${supabaseUrl}/storage/v1/object/public/${bucket}/${adj.storage_path}`;
+        const { data: signed } = await supabase.storage
+          .from(bucket)
+          .createSignedUrl(adj.storage_path, 7200);
+        const imageUrl = signed?.signedUrl ?? publicUrl;
+        return {
+          url:         imageUrl,
+          descripcion: adj.descripcion_ai ?? "",
+          orden:       adj.orden ?? i,
+        };
+      }),
+    )
+  ).filter((f) => f.url);
 
   /* ── Construir secciones desde contenido_json ────────── */
-  const contenido = (informe.contenido_json ?? {}) as Record<string, string>;
+  const raw = (informe.contenido_json ?? {}) as Record<string, unknown>;
+  let secciones: InformePDFData["secciones"];
 
-  const secciones: InformePDFData["secciones"] = SECCIONES_ORDEN
-    .filter((s) => contenido[s.key]?.trim())
-    .map((s) => ({
-      titulo:    s.titulo,
-      contenido: contenido[s.key] ?? "",
-      tipo:      s.tipo,
-    }));
+  if (Array.isArray(raw.secciones)) {
+    secciones = (raw.secciones as Array<Record<string, unknown>>)
+      .filter((s) => typeof s.contenido === "string" && (s.contenido as string).trim() && s.visible !== false)
+      .sort((a, b) => ((a.orden as number) ?? 0) - ((b.orden as number) ?? 0))
+      .map((s) => ({
+        titulo:    (s.titulo as string) ?? "Sección",
+        contenido: s.contenido as string,
+        tipo:      (s.tipo as "texto" | "fotos" | "conclusion") ?? "texto",
+      }));
+  } else {
+    // Formato legacy: objeto plano de strings
+    const contenido = raw as Record<string, string>;
+    secciones = SECCIONES_ORDEN
+      .filter((s) => contenido[s.key]?.trim())
+      .map((s) => ({
+        titulo:    s.titulo,
+        contenido: contenido[s.key] ?? "",
+        tipo:      s.tipo,
+      }));
+  }
 
   /* ── Generar HTML ────────────────────────────────────── */
   const pdfData: InformePDFData = {

@@ -75,22 +75,23 @@ export default async function InformeDetallePage({
     responsableNombre = user?.nombre ?? "—";
   }
 
-  // URLs firmadas para fotos
-  const fotosConUrl: { descripcion: string; url: string; nombre: string }[] = [];
-  for (const adj of adjuntos ?? []) {
-    if (adj.storage_path && adj.mime_type?.startsWith("image/")) {
-      const { data: signed } = await supabase.storage
+  // URLs firmadas para fotos (en paralelo)
+  const adjuntosImagen = (adjuntos ?? []).filter(
+    (adj) => adj.storage_path && adj.mime_type?.startsWith("image/"),
+  );
+  const signedResults = await Promise.all(
+    adjuntosImagen.map((adj) =>
+      supabase.storage
         .from(adj.storage_bucket ?? "backoffice-docs")
-        .createSignedUrl(adj.storage_path, 3600);
-      if (signed?.signedUrl) {
-        fotosConUrl.push({
+        .createSignedUrl(adj.storage_path, 3600)
+        .then(({ data: signed }) => ({
           descripcion: adj.descripcion_ai || "",
-          url: signed.signedUrl,
+          url: signed?.signedUrl ?? "",
           nombre: adj.nombre_archivo || "",
-        });
-      }
-    }
-  }
+        })),
+    ),
+  );
+  const fotosConUrl = signedResults.filter((f) => f.url);
 
   // Secciones de contenido — soporta formato nuevo (array) y legacy (objeto plano)
   const contenidoRaw = (informe.contenido_json ?? {}) as Record<string, unknown>;

@@ -113,16 +113,20 @@ export default function StepFotos({ fotos, onChange, informeId }: Props) {
     }
   }, [fotos, onChange, informeId]);
 
-  /* Analizar todas las fotos sin descripción */
+  /* Analizar todas las fotos sin descripción (en chunks de 3) */
   const analizarTodas = useCallback(async () => {
     const sinDescripcion = fotos.filter((f) => !f.descripcion && !f.analizando);
     if (sinDescripcion.length === 0) return;
 
     setBatchProgress({ current: 0, total: sinDescripcion.length });
+    const CHUNK_SIZE = 3;
+    let processed = 0;
 
-    for (let i = 0; i < sinDescripcion.length; i++) {
-      setBatchProgress({ current: i + 1, total: sinDescripcion.length });
-      await analizarFoto(sinDescripcion[i].id);
+    for (let i = 0; i < sinDescripcion.length; i += CHUNK_SIZE) {
+      const chunk = sinDescripcion.slice(i, i + CHUNK_SIZE);
+      await Promise.allSettled(chunk.map((f) => analizarFoto(f.id)));
+      processed += chunk.length;
+      setBatchProgress({ current: processed, total: sinDescripcion.length });
     }
 
     setBatchProgress(null);

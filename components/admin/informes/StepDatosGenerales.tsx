@@ -9,6 +9,7 @@ export interface DatosGenerales {
   servicio_tipo: string;
   cliente_nombre: string;
   cliente_empresa: string;
+  cliente_email: string;
   obra: string;
   ubicacion: string;
   fecha_trabajo: string;
@@ -177,6 +178,17 @@ export default function StepDatosGenerales({ data, onChange, onTipoServicioChang
             value={data.cliente_empresa}
             onChange={(e) => update('cliente_empresa', e.target.value)}
             placeholder="Nombre de la empresa cliente"
+            className={inputCls}
+          />
+        </div>
+
+        <div>
+          <label className={labelCls}>Email del cliente</label>
+          <input
+            type="email"
+            value={data.cliente_email}
+            onChange={(e) => update('cliente_email', e.target.value)}
+            placeholder="email@empresa.cl"
             className={inputCls}
           />
         </div>

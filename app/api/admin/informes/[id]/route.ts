@@ -82,8 +82,8 @@ export async function PATCH(
 
   const ALLOWED = new Set([
     "titulo", "tipo", "servicio_tipo", "obra", "ubicacion",
-    "fecha_trabajo", "cliente_nombre", "cliente_empresa",
-    "contenido_json", "contenido_html", "estado", "resumen",
+    "fecha_trabajo", "cliente_nombre", "cliente_empresa", "cliente_email",
+    "descripcion_trabajos", "contenido_json", "contenido_html", "estado", "resumen",
   ]);
 
   const ESTADOS_VALIDOS = new Set(["borrador", "emitido", "aprobado", "archivado"]);

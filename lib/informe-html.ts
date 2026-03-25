@@ -102,7 +102,7 @@ export function generateInformeHTML(data: InformePDFData): string {
 
   // Separar secciones por tipo
   const seccionesTexto     = data.secciones.filter((s) => s.tipo === 'texto'     && s.contenido?.trim());
-  const seccionesConcluion = data.secciones.filter((s) => s.tipo === 'conclusion' && s.contenido?.trim());
+  const seccionesConclusion = data.secciones.filter((s) => s.tipo === 'conclusion' && s.contenido?.trim());
   const tieneFotos         = data.fotos.length > 0;
 
   // Fotos ordenadas
@@ -680,9 +680,9 @@ export function generateInformeHTML(data: InformePDFData): string {
   </div>` : ''}
 
   <!-- Secciones de conclusión / recomendaciones -->
-  ${seccionesConcluion.length > 0 ? `
+  ${seccionesConclusion.length > 0 ? `
   <div class="page-break-before" style="margin-top:0">
-    ${seccionesConcluion.map((s) => `
+    ${seccionesConclusion.map((s) => `
     <div class="section-conclusion">
       <div class="section-title">${esc(s.titulo)}</div>
       <div class="section-body">${paragraphs(s.contenido)}</div>

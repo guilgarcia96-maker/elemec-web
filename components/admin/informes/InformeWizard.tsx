@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { PRESETS } from '@/lib/informe-presets';
 import StepDatosGenerales, { type DatosGenerales } from './StepDatosGenerales';
 import StepFotos, { type FotoItem } from './StepFotos';
@@ -16,6 +17,7 @@ export interface InformeData {
   servicio_tipo: string;
   cliente_nombre: string;
   cliente_empresa: string;
+  cliente_email: string;
   obra: string;
   ubicacion: string;
   fecha_trabajo: string;
@@ -44,6 +46,7 @@ const DEFAULT_DATA: InformeData = {
   servicio_tipo: '',
   cliente_nombre: '',
   cliente_empresa: '',
+  cliente_email: '',
   obra: '',
   ubicacion: '',
   fecha_trabajo: new Date().toISOString().split('T')[0],
@@ -83,6 +86,7 @@ function IconChevronRight() {
 /* ─── Componente ──────────────────────────────────────────────────── */
 
 export default function InformeWizard({ editingId, initialData }: Props) {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [data, setData] = useState<InformeData>(initialData ?? DEFAULT_DATA);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -108,6 +112,28 @@ export default function InformeWizard({ editingId, initialData }: Props) {
   }, [step]);
 
   /* ─── Persistencia ────────────────────────────────────────────── */
+  const buildPatchBody = useCallback(() => ({
+    titulo: data.titulo,
+    servicio_tipo: data.servicio_tipo,
+    cliente_nombre: data.cliente_nombre,
+    cliente_empresa: data.cliente_empresa,
+    cliente_email: data.cliente_email,
+    obra: data.obra,
+    ubicacion: data.ubicacion,
+    fecha_trabajo: data.fecha_trabajo,
+    descripcion_trabajos: data.descripcion_trabajos,
+    contenido_json: {
+      secciones: data.secciones.map((s) => ({
+        id: s.id,
+        titulo: s.titulo,
+        contenido: s.contenido,
+        tipo: s.tipo,
+        visible: s.visible,
+        orden: s.orden,
+      })),
+    },
+  }), [data]);
+
   const autoSave = useCallback(async () => {
     if (!data.id) return;
     setSaveStatus('saving');
@@ -116,30 +142,7 @@ export default function InformeWizard({ editingId, initialData }: Props) {
       const res = await fetch(`/api/admin/informes/${data.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          titulo: data.titulo,
-          servicio_tipo: data.servicio_tipo,
-          cliente_nombre: data.cliente_nombre,
-          cliente_empresa: data.cliente_empresa,
-          obra: data.obra,
-          ubicacion: data.ubicacion,
-          fecha_trabajo: data.fecha_trabajo,
-          descripcion_trabajos: data.descripcion_trabajos,
-          fotos: data.fotos.map((f) => ({
-            id: f.id,
-            url: f.url,
-            descripcion: f.descripcion,
-            orden: f.orden,
-          })),
-          secciones: data.secciones.map((s) => ({
-            id: s.id,
-            titulo: s.titulo,
-            contenido: s.contenido,
-            tipo: s.tipo,
-            visible: s.visible,
-            orden: s.orden,
-          })),
-        }),
+        body: JSON.stringify(buildPatchBody()),
       });
       if (!res.ok) throw new Error('Error al guardar');
       setSaveStatus('saved');
@@ -149,7 +152,7 @@ export default function InformeWizard({ editingId, initialData }: Props) {
       setSaveError(msg);
       setSaveStatus('error');
     }
-  }, [data]);
+  }, [data, buildPatchBody]);
 
   /* Crear informe si no existe */
   const crearInforme = useCallback(async (): Promise<string | null> => {
@@ -164,6 +167,7 @@ export default function InformeWizard({ editingId, initialData }: Props) {
           servicio_tipo: data.servicio_tipo,
           cliente_nombre: data.cliente_nombre,
           cliente_empresa: data.cliente_empresa,
+          cliente_email: data.cliente_email,
           obra: data.obra,
           ubicacion: data.ubicacion,
           fecha_trabajo: data.fecha_trabajo,
@@ -241,41 +245,18 @@ export default function InformeWizard({ editingId, initialData }: Props) {
 
   /* ─── Acciones finales ────────────────────────────────────────── */
   const guardarBorrador = useCallback(async () => {
-    if (!data.id) {
-      const id = await crearInforme();
-      if (!id) throw new Error('No se pudo crear el informe');
-    }
-    const res = await fetch(`/api/admin/informes/${data.id}`, {
+    const efectiveId = data.id ?? await crearInforme();
+    if (!efectiveId) throw new Error('No se pudo crear el informe');
+    const res = await fetch(`/api/admin/informes/${efectiveId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         estado: 'borrador',
-        titulo: data.titulo,
-        servicio_tipo: data.servicio_tipo,
-        cliente_nombre: data.cliente_nombre,
-        cliente_empresa: data.cliente_empresa,
-        obra: data.obra,
-        ubicacion: data.ubicacion,
-        fecha_trabajo: data.fecha_trabajo,
-        descripcion_trabajos: data.descripcion_trabajos,
-        fotos: data.fotos.map((f) => ({
-          id: f.id,
-          url: f.url,
-          descripcion: f.descripcion,
-          orden: f.orden,
-        })),
-        secciones: data.secciones.map((s) => ({
-          id: s.id,
-          titulo: s.titulo,
-          contenido: s.contenido,
-          tipo: s.tipo,
-          visible: s.visible,
-          orden: s.orden,
-        })),
+        ...buildPatchBody(),
       }),
     });
     if (!res.ok) throw new Error('Error al guardar borrador');
-  }, [data, crearInforme]);
+  }, [data, crearInforme, buildPatchBody]);
 
   const emitirInforme = useCallback(async () => {
     if (!data.id) throw new Error('El informe no ha sido creado');
@@ -284,32 +265,12 @@ export default function InformeWizard({ editingId, initialData }: Props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         estado: 'emitido',
-        titulo: data.titulo,
-        servicio_tipo: data.servicio_tipo,
-        cliente_nombre: data.cliente_nombre,
-        cliente_empresa: data.cliente_empresa,
-        obra: data.obra,
-        ubicacion: data.ubicacion,
-        fecha_trabajo: data.fecha_trabajo,
-        descripcion_trabajos: data.descripcion_trabajos,
-        fotos: data.fotos.map((f) => ({
-          id: f.id,
-          url: f.url,
-          descripcion: f.descripcion,
-          orden: f.orden,
-        })),
-        secciones: data.secciones.map((s) => ({
-          id: s.id,
-          titulo: s.titulo,
-          contenido: s.contenido,
-          tipo: s.tipo,
-          visible: s.visible,
-          orden: s.orden,
-        })),
+        ...buildPatchBody(),
       }),
     });
     if (!res.ok) throw new Error('Error al emitir informe');
-  }, [data]);
+    router.push(`/admin/informes/${data.id}`);
+  }, [data, buildPatchBody, router]);
 
   /* ─── Render ──────────────────────────────────────────────────── */
   const isSaving = saveStatus === 'saving';
@@ -421,6 +382,7 @@ export default function InformeWizard({ editingId, initialData }: Props) {
               servicio_tipo: data.servicio_tipo,
               cliente_nombre: data.cliente_nombre,
               cliente_empresa: data.cliente_empresa,
+              cliente_email: data.cliente_email,
               obra: data.obra,
               ubicacion: data.ubicacion,
               fecha_trabajo: data.fecha_trabajo,
@@ -460,6 +422,7 @@ export default function InformeWizard({ editingId, initialData }: Props) {
         {step === 4 && (
           <StepPreview
             informeId={data.id}
+            clienteEmail={data.cliente_email}
             onGuardarBorrador={guardarBorrador}
             onEmitir={emitirInforme}
           />
