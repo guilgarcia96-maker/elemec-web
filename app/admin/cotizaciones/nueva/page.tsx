@@ -23,8 +23,8 @@ export default async function NuevaCotizacionPage({
   const params = await searchParams;
 
   // Si viene from_id, cargar la cotización completa desde la DB
-  let initialData: Record<string, string | undefined> = {};
-  let fromFolio: string | undefined;
+  let initialData: Record<string, string> = {};
+  let fromFolio = '';
 
   if (params.from_id) {
     const { data: cotiz } = await supabase
@@ -33,50 +33,49 @@ export default async function NuevaCotizacionPage({
       .eq('id', params.from_id)
       .maybeSingle();
 
-    console.log("[nueva] from_id:", params.from_id, "cotiz found:", !!cotiz, "keys:", cotiz ? Object.keys(cotiz).length : 0);
     if (cotiz) {
-      fromFolio = cotiz.codigo ?? undefined;
+      fromFolio = cotiz.codigo ?? '';
       initialData = {
-        cliente:        cotiz.compania ?? undefined,
-        nombreObra:     cotiz.nombre_obra ?? undefined,
-        email:          cotiz.email ?? undefined,
-        region:         cotiz.region ?? undefined,
-        tipoServicio:   cotiz.tipo_servicio ?? undefined,
-        contactoNombre: [cotiz.nombre, cotiz.apellidos].filter(Boolean).join(' ') || undefined,
-        direccion:      cotiz.direccion ?? undefined,
-        telefono:       cotiz.telefono ?? undefined,
-        movil:          cotiz.movil ?? undefined,
-        rutEmpresa:     cotiz.rut_empresa ?? undefined,
-        cargo:          cotiz.cargo ?? undefined,
-        prioridad:      cotiz.prioridad ?? undefined,
-        giro:           cotiz.giro ?? undefined,
-        comuna:         cotiz.comuna ?? undefined,
-        ciudad:         cotiz.ciudad ?? undefined,
-        glosa:          cotiz.glosa ?? undefined,
-        vendedor:       cotiz.vendedor ?? undefined,
-        listaPrecio:    cotiz.lista_precio ?? undefined,
-        observaciones:  cotiz.observaciones ?? undefined,
-        nombreDir:      cotiz.nombre_dir ?? undefined,
-        origen:         cotiz.origen ?? undefined,
-        sucursal:       cotiz.sucursal ?? undefined,
-        tipoDocumento:  cotiz.tipo_documento ?? undefined,
-        condVenta:      cotiz.condicion_venta ?? undefined,
-        fecha:          cotiz.fecha_inicio ?? undefined,
-        fechaVigencia:  cotiz.fecha_cierre_estimada ?? undefined,
-        comision:       cotiz.comision_pct != null ? String(cotiz.comision_pct) : undefined,
+        cliente:        cotiz.compania ?? '',
+        nombreObra:     cotiz.nombre_obra ?? '',
+        email:          cotiz.email ?? '',
+        region:         cotiz.region ?? '',
+        tipoServicio:   cotiz.tipo_servicio ?? '',
+        contactoNombre: [cotiz.nombre, cotiz.apellidos].filter(Boolean).join(' ') || '',
+        direccion:      cotiz.direccion ?? '',
+        telefono:       cotiz.telefono ?? '',
+        movil:          cotiz.movil ?? '',
+        rutEmpresa:     cotiz.rut_empresa ?? '',
+        cargo:          cotiz.cargo ?? '',
+        prioridad:      cotiz.prioridad ?? '',
+        giro:           cotiz.giro ?? '',
+        comuna:         cotiz.comuna ?? '',
+        ciudad:         cotiz.ciudad ?? '',
+        glosa:          cotiz.glosa ?? '',
+        vendedor:       cotiz.vendedor ?? '',
+        listaPrecio:    cotiz.lista_precio ?? '',
+        observaciones:  cotiz.observaciones ?? '',
+        nombreDir:      cotiz.nombre_dir ?? '',
+        origen:         cotiz.origen ?? '',
+        sucursal:       cotiz.sucursal ?? '',
+        tipoDocumento:  cotiz.tipo_documento ?? '',
+        condVenta:      cotiz.condicion_venta ?? '',
+        fecha:          cotiz.fecha_inicio ?? '',
+        fechaVigencia:  cotiz.fecha_cierre_estimada ?? '',
+        comision:       cotiz.comision_pct != null ? String(cotiz.comision_pct) : '',
         fromFolio,
       };
     }
   } else {
     // Sin from_id, usar params de URL (por si se linkea directamente)
     initialData = {
-      cliente:        params.compania,
-      nombreObra:     params.nombre_obra,
-      email:          params.email,
-      region:         params.region,
-      tipoServicio:   params.tipo_servicio,
-      contactoNombre: params.nombre,
-      direccion:      params.direccion,
+      cliente:        params.compania ?? '',
+      nombreObra:     params.nombre_obra ?? '',
+      email:          params.email ?? '',
+      region:         params.region ?? '',
+      tipoServicio:   params.tipo_servicio ?? '',
+      contactoNombre: params.nombre ?? '',
+      direccion:      params.direccion ?? '',
     };
   }
 
