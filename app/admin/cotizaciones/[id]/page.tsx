@@ -162,7 +162,7 @@ export default async function DetalleCotizacionPage({
   const pendingApproval = aprobaciones.find((a) => a.estado === "pendiente");
   const isAdmin = session.role === "admin";
 
-  const desarrollarHref = `/admin/cotizaciones/nueva?from_id=${cotizacion.id}`;
+  const completarHref = `/admin/cotizaciones/${cotizacion.id}/completar`;
 
   const hasMultipleVersions = (versionRows?.length ?? 0) > 1;
 
@@ -210,23 +210,23 @@ export default async function DetalleCotizacionPage({
 
         <EstadoConfirmDialog cotizacionId={cotizacion.id} estadoActual={cotizacion.estado} />
 
-        {/* Generar cotización formal */}
+        {/* Completar cotización */}
         <div className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-sm font-semibold text-orange-700">Generar cotización formal</h2>
+              <h2 className="text-sm font-semibold text-orange-700">Completar cotización</h2>
               <p className="mt-1 text-xs text-gray-500">
-                Desarrolla esta solicitud con items, precios y folio oficial. Puedes generar múltiples cotizaciones por solicitud.
+                Completa o modifica los datos, agrega items, precios y genera el documento formal.
               </p>
             </div>
             <Link
-              href={desarrollarHref}
+              href={completarHref}
               className="flex items-center gap-2 rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-700"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
-              Desarrollar cotización
+              Completar cotización
             </Link>
           </div>
         </div>

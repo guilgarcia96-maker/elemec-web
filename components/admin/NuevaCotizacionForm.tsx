@@ -151,6 +151,9 @@ interface InitialData {
   fecha?:          string;
   fechaVigencia?:  string;
   comision?:       string;
+  moneda?:         string;
+  tipoCambio?:     string;
+  fechaVenc?:      string;
 }
 
 /* ─── Component ──────────────────────────────────────────────────────── */
@@ -158,11 +161,17 @@ interface InitialData {
 export default function NuevaCotizacionForm({
   tipo,
   fromSolicitudId,
+  editingId,
   initialData,
+  initialItems,
+  initialRefs,
 }: {
   tipo: string;
   fromSolicitudId?: string;
+  editingId?: string;
   initialData?: InitialData;
+  initialItems?: Array<Record<string, unknown>>;
+  initialRefs?: Array<Record<string, unknown>>;
 }) {
   const router    = useRouter();
   const tipoEfectivo = tipo || initialData?.tipoDocumento || '';
@@ -199,18 +208,41 @@ export default function NuevaCotizacionForm({
 
   /* ── Condición de venta ────── */
   const [condVenta,      setCondVenta]      = useState(initialData?.condVenta ?? '');
-  const [fechaVenc,      setFechaVenc]      = useState(today());
+  const [fechaVenc,      setFechaVenc]      = useState(initialData?.fechaVenc ?? today());
 
   /* ── Moneda ─────────────────── */
-  const [otraMoneda,     setOtraMoneda]     = useState(false);
-  const [moneda,         setMoneda]         = useState('USD');
-  const [tipoCambio,     setTipoCambio]     = useState('');
+  const [otraMoneda,     setOtraMoneda]     = useState(initialData?.moneda ? initialData.moneda !== 'CLP' : false);
+  const [moneda,         setMoneda]         = useState(initialData?.moneda && initialData.moneda !== 'CLP' ? initialData.moneda : 'USD');
+  const [tipoCambio,     setTipoCambio]     = useState(initialData?.tipoCambio ?? '');
 
   /* ── Referencias ────────────── */
-  const [refs, setRefs] = useState<DocRef[]>([emptyRef()]);
+  const [refs, setRefs] = useState<DocRef[]>(() => {
+    if (initialRefs && initialRefs.length > 0) {
+      return initialRefs.map(r => ({
+        documento:  String(r.documento ?? ''),
+        numero:     String(r.numero ?? ''),
+        fecha:      String(r.fecha ?? today()),
+        cod_ref:    String(r.cod_ref ?? ''),
+        comentario: String(r.comentario ?? ''),
+      }));
+    }
+    return [emptyRef()];
+  });
 
   /* ── Line items ─────────────── */
-  const [items, setItems] = useState<LineItem[]>([emptyItem()]);
+  const [items, setItems] = useState<LineItem[]>(() => {
+    if (initialItems && initialItems.length > 0) {
+      return initialItems.map(it => ({
+        descripcion: String(it.descripcion ?? ''),
+        cantidad:    Number(it.cantidad ?? 0),
+        um:          String(it.unidad ?? it.um ?? 'UN'),
+        precio_un:   Number(it.precio_unitario ?? it.precio_un ?? 0),
+        desc_pct:    Number(it.descuento_pct ?? it.desc_pct ?? 0),
+        tipo_imp:    (String(it.tipo_impuesto ?? it.tipo_imp ?? 'afecta')) as 'afecta' | 'exenta',
+      }));
+    }
+    return [emptyItem()];
+  });
 
   /* ── Preview state ───────────── */
   const [showPreview, setShowPreview] = useState(false);
@@ -317,13 +349,14 @@ export default function NuevaCotizacionForm({
     setError('');
     try {
       const payload = buildBody(estado);
+      const targetId = editingId ?? fromSolicitudId;
 
-      if (fromSolicitudId) {
-        // Actualizar la cotización existente (PUT) + crear versión/items si no existen
+      if (targetId) {
+        // Modo edición: actualizar cotización existente con PUT
         const putRes = await fetch('/api/admin/cotizaciones', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: fromSolicitudId, ...payload }),
+          body: JSON.stringify({ id: targetId, ...payload }),
         });
         if (!putRes.ok) {
           const d = await putRes.json();
@@ -331,24 +364,9 @@ export default function NuevaCotizacionForm({
           setLoading(false);
           return;
         }
-
-        // Si hay items, crear versión con items en la cotización existente
-        if (payload.items && payload.items.length > 0) {
-          const postRes = await fetch('/api/admin/cotizaciones', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...payload, solicitud_id: fromSolicitudId }),
-          });
-          if (postRes.ok) {
-            const { id } = await postRes.json();
-            router.push(`/admin/cotizaciones/${id}`);
-            return;
-          }
-        }
-
-        router.push(`/admin/cotizaciones/${fromSolicitudId}`);
+        router.push(`/admin/cotizaciones/${targetId}`);
       } else {
-        // Crear nueva cotización (POST)
+        // Modo creación: nueva cotización con POST
         const res = await fetch('/api/admin/cotizaciones', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -400,17 +418,17 @@ export default function NuevaCotizacionForm({
         </Link>
       </div>
 
-      {fromSolicitudId && (
+      {(editingId || fromSolicitudId) && (
         <div className="flex items-center gap-3 rounded-lg border border-orange-300 bg-orange-50 px-4 py-3 text-sm text-orange-600">
           <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
           <span>
-            Desarrollando cotización desde solicitud{' '}
-            <Link href={`/admin/cotizaciones/${fromSolicitudId}`} className="font-semibold underline hover:text-orange-200">
-              {initialData?.fromFolio ?? `#${fromSolicitudId.slice(0, 8)}…`}
+            {editingId ? 'Completando' : 'Desarrollando'} cotización{' '}
+            <Link href={`/admin/cotizaciones/${editingId ?? fromSolicitudId}`} className="font-semibold underline hover:text-orange-700">
+              {initialData?.fromFolio ?? `#${(editingId ?? fromSolicitudId ?? '').slice(0, 8)}…`}
             </Link>
-            {' '}— al registrar se envía la cotización al cliente y queda vinculada con la solicitud original.
+            {' '}— los cambios se guardan directamente en esta cotización.
           </span>
         </div>
       )}
