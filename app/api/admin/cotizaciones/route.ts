@@ -259,17 +259,134 @@ export async function PUT(req: NextRequest) {
     }
   }
 
-  if (Object.keys(updatePayload).length === 0) {
-    return NextResponse.json({ error: "No hay campos válidos para actualizar" }, { status: 400 });
+  // Fecha normalisation (same as POST)
+  if (body.fecha) updatePayload["fecha_inicio"] = body.fecha;
+  if (body.fecha_vigencia) updatePayload["fecha_cierre_estimada"] = body.fecha_vigencia;
+
+  // Estado update if provided
+  const ESTADOS_VALIDOS = new Set(["proceso","nueva","en_revision","cotizada","ganada","perdida"]);
+  if (typeof body.estado === "string" && ESTADOS_VALIDOS.has(body.estado)) {
+    updatePayload["estado"] = body.estado;
   }
 
-  const { error: updateError } = await supabase
-    .from("cotizaciones")
-    .update(updatePayload)
-    .eq("id", id);
+  if (Object.keys(updatePayload).length > 0) {
+    const { error: updateError } = await supabase
+      .from("cotizaciones")
+      .update(updatePayload)
+      .eq("id", id);
 
-  if (updateError) {
-    return NextResponse.json({ error: updateError.message }, { status: 500 });
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
+  }
+
+  // ── Upsert versión + items ──
+  const rawItems = Array.isArray(body.items) ? body.items : [];
+  const hasItems = rawItems.some((it: Record<string, unknown>) =>
+    it.descripcion && String(it.descripcion).trim() !== ""
+  );
+
+  if (hasItems || body.referencias) {
+    // Buscar versión existente
+    const { data: existingVersions } = await supabase
+      .from("cotizacion_versiones")
+      .select("id, version_num")
+      .eq("cotizacion_id", id)
+      .order("version_num", { ascending: false })
+      .limit(1);
+
+    const existingVersion = existingVersions?.[0];
+    const versionNum = existingVersion ? existingVersion.version_num : 1;
+
+    const versionPayload: Record<string, unknown> = {
+      cotizacion_id:          id,
+      version_num:            versionNum,
+      estado:                 "borrador",
+      moneda:                 body.moneda ?? "CLP",
+      subtotal:               body.subtotal ?? 0,
+      impuestos:              body.impuestos ?? 0,
+      total:                  body.total ?? 0,
+      descuentos:             0,
+      condiciones_comerciales: body.condicion_venta ?? null,
+      notas_internas:         body.observaciones ?? null,
+      json_snapshot:          {
+        referencias:          body.referencias ?? [],
+        glosa:                body.glosa ?? null,
+        vendedor:             body.vendedor ?? null,
+        comision_pct:         body.comision_pct ?? null,
+        lista_precio:         body.lista_precio ?? null,
+        fecha_vencimiento:    body.fecha_vencimiento ?? null,
+        tipo_cambio:          body.tipo_cambio ?? null,
+      },
+      creado_por:             session.userId,
+    };
+
+    let versionId: string;
+
+    if (existingVersion) {
+      // Actualizar versión existente
+      const { error: verUpErr } = await supabase
+        .from("cotizacion_versiones")
+        .update(versionPayload)
+        .eq("id", existingVersion.id);
+
+      if (verUpErr) {
+        console.error("version update error:", verUpErr.message);
+      }
+      versionId = existingVersion.id;
+
+      // Borrar items viejos y reemplazar
+      await supabase
+        .from("cotizacion_items")
+        .delete()
+        .eq("cotizacion_version_id", versionId);
+    } else {
+      // Crear nueva versión
+      const { data: verData, error: verErr } = await supabase
+        .from("cotizacion_versiones")
+        .insert(versionPayload)
+        .select("id")
+        .single();
+
+      if (verErr) {
+        console.error("version insert error:", verErr.message);
+        return NextResponse.json({ ok: true });
+      }
+      versionId = (verData as { id: string }).id;
+    }
+
+    // Insertar items
+    if (hasItems) {
+      const itemPayloads = rawItems
+        .filter((raw: Record<string, unknown>) =>
+          raw.descripcion && String(raw.descripcion).trim() !== ""
+        )
+        .map((raw: Record<string, unknown>) => {
+          const item: Record<string, unknown> = { cotizacion_version_id: versionId };
+          for (const [key, value] of Object.entries(raw)) {
+            if (ITEM_FIELDS.has(key) && value !== undefined && value !== null) {
+              item[key] = value;
+            }
+          }
+          return item;
+        });
+
+      if (itemPayloads.length > 0) {
+        const { error: itemsErr } = await supabase
+          .from("cotizacion_items")
+          .insert(itemPayloads);
+
+        if (itemsErr) {
+          console.error("items insert error:", itemsErr.message);
+        }
+      }
+    }
+
+    // Actualizar version_actual
+    await supabase
+      .from("cotizaciones")
+      .update({ version_actual: versionNum })
+      .eq("id", id);
   }
 
   return NextResponse.json({ ok: true });
