@@ -4,6 +4,8 @@ import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/admin-auth";
 import AdminShell from "@/components/admin/AdminShell";
 import InformeWizard from "@/components/admin/informes/InformeWizard";
 
+export const dynamic = 'force-dynamic';
+
 export default async function NuevoInformePage() {
   const cookieStore = await cookies();
   const session = await verifyAdminSession(
