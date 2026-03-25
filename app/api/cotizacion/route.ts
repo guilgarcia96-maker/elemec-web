@@ -134,6 +134,14 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Validar campos obligatorios
+  if (!data.nombre || !data.nombre.trim()) {
+    return NextResponse.json({ error: "El nombre es obligatorio" }, { status: 422 });
+  }
+  if (!data.email || !data.email.trim()) {
+    return NextResponse.json({ error: "El correo electrónico es obligatorio" }, { status: 422 });
+  }
+
   const alcances = parseAlcances(data.alcances);
 
   if (alcances.length > 0) {

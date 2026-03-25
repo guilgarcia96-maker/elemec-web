@@ -45,6 +45,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const redirect = cotizacion_id ? `/admin/cotizaciones/${cotizacion_id}` : "/admin/cotizaciones";
-  return NextResponse.redirect(new URL(redirect, req.url));
+  return NextResponse.json({ ok: true });
 }

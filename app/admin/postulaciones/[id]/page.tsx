@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { ADMIN_SESSION_COOKIE, verifyAdminSession } from "@/lib/admin-auth";
 import AdminShell from "@/components/admin/AdminShell";
+import DeletePostulacionButton from "@/components/admin/DeletePostulacionButton";
 
 const ESTADOS = [
   "recibida",
@@ -70,9 +71,11 @@ export default async function DetallePostulacionPage({
 
   const { data: adjuntosRows } = await supabase
     .from("postulacion_adjuntos")
-    .select("id, nombre_archivo, tipo, created_at")
+    .select("id, nombre_archivo, tipo, storage_path, created_at")
     .eq("postulacion_id", id)
     .order("created_at", { ascending: false });
+
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 
   if (!postulacion) notFound();
 
@@ -210,23 +213,41 @@ export default async function DetallePostulacionPage({
             <p className="text-sm text-gray-300">Sin adjuntos registrados.</p>
           ) : (
             <div className="space-y-2">
-              {adjuntos.map((a) => (
-                <div
-                  key={a.id}
-                  className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3"
-                >
-                  <div>
-                    <p className="font-medium text-gray-700">{a.nombre_archivo}</p>
-                    <p className="text-xs text-gray-300">
-                      {a.tipo?.toUpperCase()} ·{" "}
-                      {new Date(a.created_at).toLocaleString("es-CL")}
-                    </p>
+              {adjuntos.map((a) => {
+                const url = `${SUPABASE_URL}/storage/v1/object/public/backoffice-docs/${a.storage_path}`;
+                return (
+                  <div
+                    key={a.id}
+                    className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-700">{a.nombre_archivo}</p>
+                      <p className="text-xs text-gray-300">
+                        {a.tipo?.toUpperCase()} ·{" "}
+                        {new Date(a.created_at).toLocaleString("es-CL")}
+                      </p>
+                    </div>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-4 shrink-0 rounded-lg border border-orange-300 px-3 py-1.5 text-xs font-semibold text-orange-500 hover:bg-orange-50 transition"
+                    >
+                      Descargar
+                    </a>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
+
+        {/* Eliminar postulación */}
+        {canEdit && (
+          <div className="mt-8 border-t border-gray-200 pt-6">
+            <DeletePostulacionButton id={postulacion.id} />
+          </div>
+        )}
       </main>
     </AdminShell>
   );

@@ -20,7 +20,14 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  await supabase.from("postulaciones").update({ notas }).eq("id", id);
+  const { error } = await supabase
+    .from("postulaciones")
+    .update({ notas })
+    .eq("id", id);
 
-  return NextResponse.redirect(new URL(`/admin/postulaciones/${id}`, req.url));
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
 }

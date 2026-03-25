@@ -1,20 +1,12 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
-const CATEGORIAS_DEFAULT = [
-  "Cobranza clientes",
-  "Pago proveedores",
-  "Remuneraciones",
-  "Gastos operacionales",
-  "Gastos administrativos",
-  "Ingresos por servicios",
-  "Devoluciones",
-  "Impuestos y contribuciones",
-  "Otros ingresos",
-  "Otros egresos",
-];
+interface CategoriaItem {
+  id: string;
+  nombre: string;
+}
 
 interface OcrResult {
   ocrText: string;
@@ -22,6 +14,7 @@ interface OcrResult {
   descripcion: string | null;
   fecha: string | null;
   categoria: string | null;
+  categoria_id: string | null;
   tipo: "ingreso" | "egreso";
   referencia: string | null;
   rut_emisor: string | null;
@@ -33,7 +26,7 @@ interface OcrResult {
   forma_pago: string | null;
   rut_receptor: string | null;
   storagePath: string;
-  categorias: string[];
+  categorias: CategoriaItem[];
 }
 
 const TIPOS_DOCUMENTO = [
@@ -58,7 +51,7 @@ export default function EscanearClient() {
   const [preview, setPreview] = useState<string | null>(null);
   const [ocrText, setOcrText] = useState("");
   const [storagePath, setStoragePath] = useState("");
-  const [categorias, setCategorias] = useState<string[]>(CATEGORIAS_DEFAULT);
+  const [categorias, setCategorias] = useState<CategoriaItem[]>([]);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -71,6 +64,7 @@ export default function EscanearClient() {
     fecha: new Date().toISOString().slice(0, 10),
     tipo: "egreso",
     categoria: "",
+    categoria_id: "",
     referencia: "",
     centro_costo: "",
     rut_emisor: "",
@@ -82,6 +76,16 @@ export default function EscanearClient() {
     forma_pago: "",
     rut_receptor: "",
   });
+
+  // Cargar categorías al montar
+  useEffect(() => {
+    fetch("/api/admin/gastos/categorias")
+      .then((r) => r.json())
+      .then((data: CategoriaItem[]) => {
+        if (Array.isArray(data)) setCategorias(data);
+      })
+      .catch(() => {});
+  }, []);
 
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -114,14 +118,32 @@ export default function EscanearClient() {
 
       setOcrText(data.ocrText || "");
       setStoragePath(data.storagePath || "");
+
+      // Si el OCR devuelve categorías actualizadas, usarlas; si no, mantener las ya cargadas
+      const catList: CategoriaItem[] = data.categorias?.length ? data.categorias : categorias;
       if (data.categorias?.length) setCategorias(data.categorias);
+
+      // Resolver categoria_id: el OCR puede devolver el id directamente o sólo el nombre
+      let resolvedCategoriaId = data.categoria_id || "";
+      let resolvedCategoriaNombre = data.categoria || "";
+      if (!resolvedCategoriaId && resolvedCategoriaNombre) {
+        const match = catList.find(
+          (c) => c.nombre.toLowerCase() === resolvedCategoriaNombre.toLowerCase()
+        );
+        if (match) resolvedCategoriaId = match.id;
+      }
+      if (!resolvedCategoriaNombre && resolvedCategoriaId) {
+        const match = catList.find((c) => c.id === resolvedCategoriaId);
+        if (match) resolvedCategoriaNombre = match.nombre;
+      }
 
       setForm({
         monto: data.monto != null ? String(data.monto) : "",
         descripcion: data.descripcion || "",
         fecha: data.fecha || new Date().toISOString().slice(0, 10),
         tipo: data.tipo || "egreso",
-        categoria: data.categoria || "",
+        categoria: resolvedCategoriaNombre,
+        categoria_id: resolvedCategoriaId,
         referencia: data.referencia || "",
         centro_costo: "",
         rut_emisor: data.rut_emisor || "",
@@ -173,6 +195,7 @@ export default function EscanearClient() {
           rut_emisor: form.rut_emisor || null,
           razon_social_emisor: form.razon_social_emisor || null,
           rut_receptor: form.rut_receptor || null,
+          categoria_id: form.categoria_id || null,
           storagePath,
         }),
       });
@@ -201,6 +224,7 @@ export default function EscanearClient() {
       fecha: new Date().toISOString().slice(0, 10),
       tipo: "egreso",
       categoria: "",
+      categoria_id: "",
       referencia: "",
       centro_costo: "",
       rut_emisor: "",
@@ -356,14 +380,21 @@ export default function EscanearClient() {
               <div>
                 <label className="mb-1 block text-sm text-gray-600">Categoría * (sugerida por IA)</label>
                 <select
-                  value={form.categoria}
-                  onChange={(e) => setForm({ ...form, categoria: e.target.value })}
+                  value={form.categoria_id}
+                  onChange={(e) => {
+                    const selected = categorias.find((c) => c.id === e.target.value);
+                    setForm({
+                      ...form,
+                      categoria_id: e.target.value,
+                      categoria: selected?.nombre ?? "",
+                    });
+                  }}
                   required
                   className={inputClass}
                 >
                   <option value="">Selecciona una categoría...</option>
                   {categorias.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c.id} value={c.id}>{c.nombre}</option>
                   ))}
                 </select>
               </div>

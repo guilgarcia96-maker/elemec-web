@@ -21,6 +21,38 @@ const perfilesBuscados = [
 
 export default function TrabajaConNosotrosPage() {
   const [enviado, setEnviado] = useState(false);
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setCargando(true);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const res = await fetch("/api/postulacion", {
+        method: "POST",
+        body: formData,
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error ?? "Error al enviar la postulación");
+      }
+
+      setEnviado(true);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Ocurrió un error inesperado. Por favor intenta nuevamente."
+      );
+    } finally {
+      setCargando(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
@@ -119,7 +151,7 @@ export default function TrabajaConNosotrosPage() {
               </p>
               <button
                 type="button"
-                onClick={() => setEnviado(false)}
+                onClick={() => { setEnviado(false); setError(null); }}
                 className="mt-4 text-xs text-[var(--accent)] hover:underline"
               >
                 Enviar otra postulación
@@ -128,10 +160,7 @@ export default function TrabajaConNosotrosPage() {
           ) : (
             <form
               className="mt-8 grid gap-4 sm:grid-cols-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setEnviado(true);
-              }}
+              onSubmit={handleSubmit}
             >
               <div>
                 <label className="mb-1 block text-sm text-[var(--text-soft)]">
@@ -140,6 +169,7 @@ export default function TrabajaConNosotrosPage() {
                 <input
                   required
                   type="text"
+                  name="nombre"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-soft)]"
                   placeholder="Tu nombre"
                 />
@@ -151,6 +181,7 @@ export default function TrabajaConNosotrosPage() {
                 <input
                   required
                   type="email"
+                  name="email"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-soft)]"
                   placeholder="tu@email.com"
                 />
@@ -161,6 +192,7 @@ export default function TrabajaConNosotrosPage() {
                 </label>
                 <input
                   type="tel"
+                  name="telefono"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-soft)]"
                   placeholder="+56 9 ..."
                 />
@@ -171,6 +203,7 @@ export default function TrabajaConNosotrosPage() {
                 </label>
                 <input
                   type="tel"
+                  name="celular"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-soft)]"
                   placeholder="+56 9 ..."
                 />
@@ -179,7 +212,7 @@ export default function TrabajaConNosotrosPage() {
                 <label className="mb-1 block text-sm text-[var(--text-soft)]">
                   Cargo al que postulas
                 </label>
-                <select className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]">
+                <select name="cargo" className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]">
                   <option value="">— Selecciona —</option>
                   {perfilesBuscados.map((p) => (
                     <option key={p.cargo}>{p.cargo}</option>
@@ -193,7 +226,8 @@ export default function TrabajaConNosotrosPage() {
                 </label>
                 <input
                   type="file"
-                  accept=".pdf"
+                  name="cv"
+                  accept=".pdf,.doc,.docx"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text-soft)] outline-none file:mr-3 file:rounded file:border-0 file:bg-[var(--accent)] file:px-2 file:py-1 file:text-xs file:font-semibold file:text-black"
                 />
               </div>
@@ -202,12 +236,17 @@ export default function TrabajaConNosotrosPage() {
                   Comentarios *
                 </label>
                 <textarea
-                  required
                   rows={4}
+                  name="mensaje"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-soft)]"
                   placeholder="Cuéntanos sobre tu experiencia y por qué te interesa ELEMEC..."
                 />
               </div>
+              {error && (
+                <div className="sm:col-span-2 rounded-lg border border-red-700/40 bg-red-900/20 px-4 py-3 text-sm text-red-400">
+                  {error}
+                </div>
+              )}
               <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-3 pt-2">
                 <label className="flex items-start gap-2 text-xs text-[var(--text-soft)]">
                   <input type="checkbox" required className="mt-0.5" />
@@ -215,9 +254,10 @@ export default function TrabajaConNosotrosPage() {
                 </label>
                 <button
                   type="submit"
-                  className="rounded-lg bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-black transition hover:bg-[var(--accent-hover)]"
+                  disabled={cargando}
+                  className="rounded-lg bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-black transition hover:bg-[var(--accent-hover)] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  ENVIAR
+                  {cargando ? "Enviando..." : "ENVIAR"}
                 </button>
               </div>
             </form>

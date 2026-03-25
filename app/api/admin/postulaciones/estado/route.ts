@@ -30,7 +30,14 @@ export async function POST(req: NextRequest) {
     .eq("id", id)
     .single();
 
-  await supabase.from("postulaciones").update({ estado }).eq("id", id);
+  const { error } = await supabase
+    .from("postulaciones")
+    .update({ estado })
+    .eq("id", id);
 
-  return NextResponse.redirect(new URL(`/admin/postulaciones/${id}`, req.url));
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
 }

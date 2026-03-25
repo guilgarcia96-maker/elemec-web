@@ -96,14 +96,18 @@ export async function POST(req: NextRequest) {
   const supabase = getSupabase();
 
   // Upsert: si ya existe presupuesto para esa categoria/mes/anio, actualizar
-  const { data: existing } = await supabase
+  let existingQuery = supabase
     .from("gastos_presupuestos")
     .select("id")
     .eq("categoria_id", categoria_id)
     .eq("mes", mes)
-    .eq("anio", anio)
-    .is("centro_costo", centro_costo)
-    .maybeSingle();
+    .eq("anio", anio);
+
+  existingQuery = centro_costo !== null
+    ? existingQuery.eq("centro_costo", centro_costo)
+    : existingQuery.is("centro_costo", null);
+
+  const { data: existing } = await existingQuery.maybeSingle();
 
   if (existing) {
     const { error } = await supabase
@@ -127,4 +131,24 @@ export async function POST(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true, created: true }, { status: 201 });
+}
+
+export async function DELETE(req: NextRequest) {
+  const session = await getAdminSessionFromRequest(req);
+  if (!session) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  if (!hasAnyRole(session, ["admin", "contabilidad"])) {
+    return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
+  }
+
+  const body = await req.json().catch(() => null);
+  if (!body?.id) return NextResponse.json({ error: "ID requerido" }, { status: 400 });
+
+  const supabase = getSupabase();
+  const { error } = await supabase
+    .from("gastos_presupuestos")
+    .delete()
+    .eq("id", body.id);
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
 }

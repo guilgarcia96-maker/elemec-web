@@ -24,7 +24,26 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  await supabase.from("cotizaciones").update({ notas_internas }).eq("id", id);
+  // Verificar que la cotización existe
+  const { data: existing, error: fetchError } = await supabase
+    .from("cotizaciones")
+    .select("id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (fetchError || !existing) {
+    return NextResponse.json({ error: "Cotización no encontrada" }, { status: 404 });
+  }
+
+  const { error: updateError } = await supabase
+    .from("cotizaciones")
+    .update({ notas_internas })
+    .eq("id", id);
+
+  if (updateError) {
+    return NextResponse.json({ error: updateError.message }, { status: 500 });
+  }
+
   await supabase.from("cotizacion_seguimientos").insert([
     {
       cotizacion_id: id,
@@ -34,5 +53,5 @@ export async function POST(req: NextRequest) {
     },
   ]);
 
-  return NextResponse.redirect(new URL(`/admin/cotizaciones/${id}`, req.url));
+  return NextResponse.json({ ok: true });
 }

@@ -1,32 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const CATEGORIAS = [
-  "Cobranza clientes",
-  "Pago proveedores",
-  "Remuneraciones",
-  "Gastos operacionales",
-  "Gastos administrativos",
-  "Ingresos por servicios",
-  "Devoluciones",
-  "Impuestos y contribuciones",
-  "Otros ingresos",
-  "Otros egresos",
-];
+interface Categoria {
+  id: string;
+  nombre: string;
+}
 
 export default function NuevoMovimientoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [categoriaId, setCategoriaId] = useState("");
+  const [categoriaNombre, setCategoriaNombre] = useState("");
+
+  useEffect(() => {
+    fetch("/api/admin/gastos/categorias")
+      .then((r) => r.json())
+      .then((data: Categoria[]) => {
+        if (Array.isArray(data)) setCategorias(data);
+      })
+      .catch(() => {
+        // Fallo silencioso; el usuario verá el select vacío
+      });
+  }, []);
+
+  function handleCategoriaChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const selected = categorias.find((c) => c.id === e.target.value);
+    setCategoriaId(e.target.value);
+    setCategoriaNombre(selected?.nombre ?? "");
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError("");
+
     const form = e.currentTarget;
-    const body = Object.fromEntries(new FormData(form));
+    const raw = Object.fromEntries(new FormData(form));
+
+    // Convertir campos numéricos opcionales: string vacío → null
+    const parseOptionalNumber = (v: unknown) => {
+      if (v === "" || v === null || v === undefined) return null;
+      const n = Number(v);
+      return isNaN(n) ? null : n;
+    };
+
+    const body = {
+      ...raw,
+      monto: Number(raw.monto),
+      monto_neto:  parseOptionalNumber(raw.monto_neto),
+      monto_iva:   parseOptionalNumber(raw.monto_iva),
+      monto_total: parseOptionalNumber(raw.monto_total),
+      // Sobreescribir con los valores de estado controlado
+      categoria:   categoriaNombre,
+      categoria_id: categoriaId || null,
+    };
 
     const res = await fetch("/api/admin/conciliacion", {
       method: "POST",
@@ -45,7 +76,7 @@ export default function NuevoMovimientoPage() {
 
   return (
     <div className="flex min-h-screen bg-[#f8f9fb] text-gray-900">
-      {/* Mini sidebar placeholder que coincide con AdminShell */}
+      {/* Mini sidebar que coincide con AdminShell */}
       <aside className="w-56 shrink-0 border-r border-gray-200 bg-white flex flex-col sticky top-0 h-screen">
         <div className="px-5 py-5 border-b border-gray-200">
           <p className="text-base font-bold text-orange-500">ELEMEC</p>
@@ -124,13 +155,14 @@ export default function NuevoMovimientoPage() {
           <div>
             <label className="mb-1 block text-sm text-gray-600">Categoría *</label>
             <select
-              name="categoria"
+              value={categoriaId}
+              onChange={handleCategoriaChange}
               required
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500"
             >
               <option value="">Selecciona una categoría...</option>
-              {CATEGORIAS.map((c) => (
-                <option key={c} value={c}>{c}</option>
+              {categorias.map((c) => (
+                <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}
             </select>
           </div>
@@ -142,7 +174,7 @@ export default function NuevoMovimientoPage() {
               type="text"
               name="descripcion"
               maxLength={500}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
               placeholder="Descripción del movimiento..."
             />
           </div>
@@ -155,7 +187,7 @@ export default function NuevoMovimientoPage() {
                 type="text"
                 name="referencia"
                 maxLength={100}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 placeholder="Ej: FAC-2026-001"
               />
             </div>
@@ -165,7 +197,7 @@ export default function NuevoMovimientoPage() {
                 type="text"
                 name="centro_costo"
                 maxLength={100}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 placeholder="Ej: Operaciones Sur"
               />
             </div>
@@ -180,7 +212,7 @@ export default function NuevoMovimientoPage() {
               required
               min={0}
               step={1}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
               placeholder="0"
             />
           </div>
@@ -231,7 +263,7 @@ export default function NuevoMovimientoPage() {
                 type="text"
                 name="rut_emisor"
                 maxLength={20}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 placeholder="Ej: 76.123.456-7"
               />
             </div>
@@ -241,7 +273,7 @@ export default function NuevoMovimientoPage() {
                 type="text"
                 name="razon_social_emisor"
                 maxLength={200}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 placeholder="Nombre legal del emisor"
               />
             </div>
@@ -256,7 +288,7 @@ export default function NuevoMovimientoPage() {
                 name="monto_neto"
                 step="1"
                 min={0}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 placeholder="Sin IVA"
               />
             </div>
@@ -267,7 +299,7 @@ export default function NuevoMovimientoPage() {
                 name="monto_iva"
                 step="1"
                 min={0}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 placeholder="IVA"
               />
             </div>
@@ -278,7 +310,7 @@ export default function NuevoMovimientoPage() {
                 name="monto_total"
                 step="1"
                 min={0}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
                 placeholder="Con IVA"
               />
             </div>
@@ -291,7 +323,7 @@ export default function NuevoMovimientoPage() {
               type="text"
               name="rut_receptor"
               maxLength={20}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
               placeholder="RUT de ELEMEC"
             />
           </div>
@@ -303,7 +335,7 @@ export default function NuevoMovimientoPage() {
               name="notas"
               rows={3}
               maxLength={2000}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400 bg-white"
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 placeholder:text-gray-400"
               placeholder="Observaciones adicionales..."
             />
           </div>

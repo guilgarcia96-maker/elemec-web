@@ -111,7 +111,7 @@ export async function GET(req: NextRequest) {
     moneda:            (version?.moneda as string) ?? cotiz.moneda ?? 'CLP',
     tipoCambio:        (snapshot.tipo_cambio as string) ?? undefined,
     glosa:             (snapshot.glosa as string) ?? cotiz.glosa ?? undefined,
-    observaciones:     (version?.notas_internas as string) ?? cotiz.observaciones ?? undefined,
+    observaciones:     cotiz.observaciones ?? undefined,
     items,
     referencias,
   };

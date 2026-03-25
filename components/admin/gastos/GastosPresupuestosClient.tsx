@@ -35,6 +35,8 @@ export default function GastosPresupuestosClient() {
   const [form, setForm] = useState({ categoria_id: "", monto: "" });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   function loadData() {
     fetch("/api/admin/gastos/categorias").then(r => r.json()).then(setCategorias);
@@ -67,6 +69,26 @@ export default function GastosPresupuestosClient() {
       loadData();
     }
     setSaving(false);
+  }
+
+  async function handleDelete(id: string) {
+    setDeleting(true);
+    setError("");
+
+    const res = await fetch("/api/admin/gastos/presupuestos", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error || "Error al eliminar");
+    } else {
+      setDeleteConfirm(null);
+      loadData();
+    }
+    setDeleting(false);
   }
 
   function prevMonth() {
@@ -219,11 +241,38 @@ export default function GastosPresupuestosClient() {
                       : `Restante: ${CLP(remaining)}`
                     }
                   </p>
-                  {b.centro_costo && (
-                    <span className="text-[10px] text-gray-300 border border-gray-200 rounded-full px-2 py-0.5">
-                      CC: {b.centro_costo}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {b.centro_costo && (
+                      <span className="text-[10px] text-gray-300 border border-gray-200 rounded-full px-2 py-0.5">
+                        CC: {b.centro_costo}
+                      </span>
+                    )}
+                    {deleteConfirm === b.id ? (
+                      <span className="flex items-center gap-1">
+                        <span className="text-[10px] text-gray-500">¿Eliminar?</span>
+                        <button
+                          onClick={() => handleDelete(b.id)}
+                          disabled={deleting}
+                          className="rounded border border-red-300 bg-red-50 px-2 py-0.5 text-[10px] text-red-700 hover:bg-red-100 transition disabled:opacity-50"
+                        >
+                          {deleting ? "..." : "Sí"}
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(null)}
+                          className="rounded border border-gray-200 px-2 py-0.5 text-[10px] text-gray-400 hover:bg-gray-100 transition"
+                        >
+                          No
+                        </button>
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => setDeleteConfirm(b.id)}
+                        className="rounded border border-red-200 px-2 py-0.5 text-[10px] text-red-600 hover:bg-red-50 transition"
+                      >
+                        Eliminar
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );

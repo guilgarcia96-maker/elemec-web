@@ -8,6 +8,8 @@ import CotizacionAdjuntoActions from "@/components/admin/CotizacionAdjuntoAction
 import CotizacionAdjuntoPreview from "@/components/admin/CotizacionAdjuntoPreview";
 import AdminShell from "@/components/admin/AdminShell";
 import EstadoConfirmDialog from "@/components/admin/EstadoConfirmDialog";
+import CotizacionEditForm from "@/components/admin/CotizacionEditForm";
+import CotizacionDeleteButton from "@/components/admin/CotizacionDeleteButton";
 
 const ESTADOS = ["proceso", "nueva", "en_revision", "cotizada", "ganada", "perdida"] as const;
 type Estado = (typeof ESTADOS)[number];
@@ -209,9 +211,15 @@ export default async function DetalleCotizacionPage({
               )}
             </p>
           </div>
-          <span className={`inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${BADGE[cotizacion.estado as Estado] ?? BADGE.nueva}`}>
-            {LABEL[cotizacion.estado as Estado] ?? cotizacion.estado}
-          </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className={`inline-flex rounded-full border px-3 py-1 text-sm font-semibold ${BADGE[cotizacion.estado as Estado] ?? BADGE.nueva}`}>
+              {LABEL[cotizacion.estado as Estado] ?? cotizacion.estado}
+            </span>
+            <CotizacionEditForm cotizacionId={cotizacion.id} cotizacion={cotizacion} />
+            {isAdmin && cotizacion.estado === "proceso" && (
+              <CotizacionDeleteButton cotizacionId={cotizacion.id} codigo={cotizacion.codigo} />
+            )}
+          </div>
         </div>
 
         <EstadoConfirmDialog cotizacionId={cotizacion.id} estadoActual={cotizacion.estado} />

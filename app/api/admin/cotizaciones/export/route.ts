@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
     .select(
       "id,codigo,nombre,apellidos,compania,rut_empresa,cargo,email,movil,telefono," +
       "nombre_obra,fecha_inicio,direccion,region,tipo_obra,tipo_servicio," +
+      "servicio_principal,modalidad,prioridad,plazo_deseado," +
       "comentarios,estado,monto_estimado,total,tipo_registro,created_at"
     )
     .order("created_at", { ascending: false });
@@ -72,8 +73,9 @@ export async function GET(req: NextRequest) {
   const headers = [
     "ID", "Folio", "Nombre", "Apellidos", "Compañía", "RUT Empresa", "Cargo",
     "Email", "Móvil", "Teléfono", "Obra / Proyecto", "Fecha Inicio",
-    "Dirección", "Región", "Tipo Obra", "Tipo Servicio", "Comentarios",
-    "Estado", "Monto Estimado", "Total", "Origen", "Fecha Solicitud",
+    "Dirección", "Región", "Tipo Obra", "Tipo Servicio",
+    "Servicio Principal", "Modalidad", "Prioridad", "Plazo Deseado",
+    "Comentarios", "Estado", "Monto Estimado", "Total", "Origen", "Fecha Solicitud",
   ];
 
   const csvLines = [
@@ -96,6 +98,10 @@ export async function GET(req: NextRequest) {
         r.region,
         r.tipo_obra,
         r.tipo_servicio,
+        r.servicio_principal ?? "",
+        r.modalidad ?? "",
+        r.prioridad ?? "",
+        r.plazo_deseado ?? "",
         r.comentarios,
         LABEL[r.estado as string] ?? r.estado,
         r.monto_estimado ?? "",

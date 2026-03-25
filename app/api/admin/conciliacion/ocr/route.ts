@@ -46,13 +46,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Error al subir la imagen" }, { status: 500 });
     }
 
-    // Obtener categorías existentes
+    // Obtener categorías desde gastos_categorias
     const { data: catRows } = await supabase
-      .from("conciliacion_movimientos")
-      .select("categoria")
-      .order("categoria");
+      .from("gastos_categorias")
+      .select("id, nombre")
+      .order("nombre");
 
-    const categorias = [...new Set((catRows ?? []).map((r: { categoria: string }) => r.categoria).filter(Boolean))];
+    const categorias: { id: string; nombre: string }[] = (catRows ?? []) as { id: string; nombre: string }[];
+    const categoriasNombres = categorias.map((c) => c.nombre);
 
     // OCR con OpenAI Vision
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
   "monto": número total (el monto más alto o el total final, solo número sin símbolo de moneda),
   "descripcion": "descripción corta del gasto o ingreso (nombre del negocio o concepto principal)",
   "fecha": "fecha del documento en formato YYYY-MM-DD si es visible, o null",
-  "categoria": "una de estas categorías: ${categorias.join(", ")}",
+  "categoria": "una de estas categorías: ${categoriasNombres.join(", ")}",
   "tipo": "ingreso o egreso según el tipo de documento",
   "referencia": "número de factura, boleta o recibo si es visible, o null",
   "rut_emisor": "RUT del emisor/proveedor en formato XX.XXX.XXX-X, o null",
@@ -105,12 +106,14 @@ Si no puedes extraer algún campo, usa null. Para categoria, elige la más aprop
       parsed = JSON.parse(jsonStr);
     } catch {
       // Si no se pudo parsear, devolver el texto crudo
+      const fallbackCat = categorias[0] ?? null;
       return NextResponse.json({
         ocrText: content,
         monto: null,
         descripcion: null,
         fecha: null,
-        categoria: categorias[0] || null,
+        categoria: fallbackCat?.nombre ?? null,
+        categoria_id: fallbackCat?.id ?? null,
         tipo: "egreso",
         referencia: null,
         rut_emisor: null,
@@ -126,15 +129,21 @@ Si no puedes extraer algún campo, usa null. Para categoria, elige la más aprop
       });
     }
 
-    const TIPOS_DOC_VALIDOS = ["boleta", "factura", "factura_exenta", "nota_credito", "guia_despacho"];
+    const TIPOS_DOC_VALIDOS   = ["boleta", "factura", "factura_exenta", "nota_credito", "guia_despacho"];
     const FORMAS_PAGO_VALIDAS = ["efectivo", "transferencia", "tarjeta_debito", "tarjeta_credito", "cheque", "otro"];
+
+    // Resolver categoría sugerida por IA
+    const matchedCat = categorias.find(
+      (c) => c.nombre.toLowerCase() === String(parsed.categoria ?? "").toLowerCase()
+    ) ?? categorias[0] ?? null;
 
     return NextResponse.json({
       ocrText: parsed.ocrText || content,
       monto: parsed.monto ?? null,
       descripcion: parsed.descripcion || null,
       fecha: parsed.fecha || null,
-      categoria: categorias.includes(parsed.categoria) ? parsed.categoria : categorias[0] || null,
+      categoria: matchedCat?.nombre ?? null,
+      categoria_id: matchedCat?.id ?? null,
       tipo: parsed.tipo === "ingreso" ? "ingreso" : "egreso",
       referencia: parsed.referencia || null,
       rut_emisor: parsed.rut_emisor || null,

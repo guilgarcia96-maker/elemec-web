@@ -93,6 +93,30 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: "ID requerido" }, { status: 400 });
 
   const supabase = getSupabase();
+
+  // 1. Obtener adjuntos del movimiento
+  const { data: adjuntos } = await supabase
+    .from("conciliacion_adjuntos")
+    .select("id, storage_path")
+    .eq("movimiento_id", id);
+
+  // 2. Eliminar archivos de Storage
+  if (adjuntos && adjuntos.length > 0) {
+    const paths = adjuntos
+      .map((a: { id: string; storage_path: string | null }) => a.storage_path)
+      .filter(Boolean) as string[];
+    if (paths.length > 0) {
+      await supabase.storage.from("backoffice-docs").remove(paths);
+    }
+
+    // 3. Eliminar registros de adjuntos
+    await supabase
+      .from("conciliacion_adjuntos")
+      .delete()
+      .eq("movimiento_id", id);
+  }
+
+  // 4. Eliminar el movimiento
   const { error } = await supabase
     .from("conciliacion_movimientos")
     .delete()

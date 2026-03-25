@@ -93,5 +93,5 @@ export async function POST(req: NextRequest) {
     },
   ]);
 
-  return NextResponse.redirect(new URL(`/admin/cotizaciones/${id}`, req.url));
+  return NextResponse.json({ ok: true });
 }

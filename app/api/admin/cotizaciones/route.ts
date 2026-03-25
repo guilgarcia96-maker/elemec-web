@@ -210,3 +210,160 @@ export async function POST(req: NextRequest) {
   }
   return NextResponse.json({ id: cotizId, codigo: cotizCodigo }, { status: 201 });
 }
+
+export async function PUT(req: NextRequest) {
+  const session = await getAdminSessionFromRequest(req);
+  if (!session) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!["admin", "ventas"].includes(session.role)) {
+    return NextResponse.json({ error: "Permiso denegado" }, { status: 403 });
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Cuerpo de solicitud inválido" }, { status: 400 });
+  }
+
+  const id = typeof body.id === "string" ? body.id.trim() : null;
+  if (!id) {
+    return NextResponse.json({ error: "Se requiere el campo id" }, { status: 400 });
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  // Verificar que la cotización existe
+  const { data: existing, error: fetchError } = await supabase
+    .from("cotizaciones")
+    .select("id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (fetchError || !existing) {
+    return NextResponse.json({ error: "Cotización no encontrada" }, { status: 404 });
+  }
+
+  // Construir payload solo con campos permitidos
+  const updatePayload: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(body)) {
+    if (key === "id") continue;
+    if (COTIZACION_FIELDS.has(key) && value !== undefined) {
+      updatePayload[key] = value === "" ? null : value;
+    }
+  }
+
+  if (Object.keys(updatePayload).length === 0) {
+    return NextResponse.json({ error: "No hay campos válidos para actualizar" }, { status: 400 });
+  }
+
+  const { error: updateError } = await supabase
+    .from("cotizaciones")
+    .update(updatePayload)
+    .eq("id", id);
+
+  if (updateError) {
+    return NextResponse.json({ error: updateError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(req: NextRequest) {
+  const session = await getAdminSessionFromRequest(req);
+  if (!session) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (session.role !== "admin") {
+    return NextResponse.json({ error: "Solo admin puede eliminar cotizaciones" }, { status: 403 });
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Cuerpo de solicitud inválido" }, { status: 400 });
+  }
+
+  const id = typeof body.id === "string" ? body.id.trim() : null;
+  if (!id) {
+    return NextResponse.json({ error: "Se requiere el campo id" }, { status: 400 });
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  // Verificar que existe y está en estado 'proceso'
+  const { data: cotiz, error: fetchError } = await supabase
+    .from("cotizaciones")
+    .select("id, estado")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (fetchError || !cotiz) {
+    return NextResponse.json({ error: "Cotización no encontrada" }, { status: 404 });
+  }
+
+  if (cotiz.estado !== "proceso") {
+    return NextResponse.json(
+      { error: "Solo se pueden eliminar cotizaciones en estado 'proceso'" },
+      { status: 422 }
+    );
+  }
+
+  // Eliminar archivos de Storage y registros de adjuntos
+  const { data: adjuntos } = await supabase
+    .from("cotizacion_adjuntos")
+    .select("id, storage_path, storage_bucket")
+    .eq("cotizacion_id", id);
+
+  if (adjuntos && adjuntos.length > 0) {
+    // Agrupar por bucket para borrar en lote
+    const byBucket: Record<string, string[]> = {};
+    for (const adj of adjuntos) {
+      if (adj.storage_path) {
+        const bucket = adj.storage_bucket ?? "backoffice-docs";
+        if (!byBucket[bucket]) byBucket[bucket] = [];
+        byBucket[bucket].push(adj.storage_path);
+      }
+    }
+    for (const [bucket, paths] of Object.entries(byBucket)) {
+      await supabase.storage.from(bucket).remove(paths);
+    }
+
+    await supabase.from("cotizacion_adjuntos").delete().eq("cotizacion_id", id);
+  }
+
+  // Eliminar seguimientos
+  await supabase.from("cotizacion_seguimientos").delete().eq("cotizacion_id", id);
+
+  // Eliminar versiones e items asociados
+  const { data: versiones } = await supabase
+    .from("cotizacion_versiones")
+    .select("id")
+    .eq("cotizacion_id", id);
+
+  if (versiones && versiones.length > 0) {
+    const versionIds = versiones.map((v: { id: string }) => v.id);
+    await supabase.from("cotizacion_items").delete().in("cotizacion_version_id", versionIds);
+    await supabase.from("cotizacion_versiones").delete().eq("cotizacion_id", id);
+  }
+
+  // Eliminar la cotización
+  const { error: deleteError } = await supabase
+    .from("cotizaciones")
+    .delete()
+    .eq("id", id);
+
+  if (deleteError) {
+    return NextResponse.json({ error: deleteError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
+}
