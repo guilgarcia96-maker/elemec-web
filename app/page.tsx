@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { servicios } from "./servicios/serviciosData";
 
 const noticias = [
   {
@@ -31,38 +32,6 @@ const noticias = [
   },
 ];
 
-const serviciosDestacados = [
-  {
-    titulo: "Montaje Industrial",
-    descripcion:
-      "Montaje de estructuras metálicas, equipos, cañerías y sistemas mecánicos para la industria.",
-    href: "/servicios/montaje-instalaciones",
-  },
-  {
-    titulo: "Mantención de Equipos y Redes",
-    descripcion:
-      "Mantenciones preventivas y correctivas de equipos industriales, redes de gas, vapor y calefacción.",
-    href: "/servicios/mantencion-equipos",
-  },
-  {
-    titulo: "Ingeniería y Diseño",
-    descripcion:
-      "Desarrollo de proyectos de ingeniería conceptual, básica y de detalle para la industria.",
-    href: "/servicios/ingenieria-diseno",
-  },
-  {
-    titulo: "Aislación Térmica",
-    descripcion:
-      "Aislación térmica industrial para cañerías, equipos, estanques y ductos con materiales certificados.",
-    href: "/servicios/aislacion-termica",
-  },
-  {
-    titulo: "Servicios Básicos Industriales",
-    descripcion:
-      "Soldadura, fabricación de piezas, apoyo operacional y servicios complementarios en terreno.",
-    href: "/servicios/servicios-basicos-industriales",
-  },
-];
 
 export default function HomePage() {
   return (
@@ -163,22 +132,39 @@ export default function HomePage() {
             Disponibilidad y respuesta efectiva a los requerimientos de sus
             proyectos e instalaciones industriales en la Región de Magallanes.
           </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-            {serviciosDestacados.map((s) => (
+          <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {servicios.map((s) => (
               <Link
-                key={s.titulo}
-                href={s.href}
-                className="group rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 transition hover:border-[var(--accent)] hover:bg-[var(--card-soft)]"
+                key={s.slug}
+                href={`/servicios/${s.slug}`}
+                className="group flex flex-col"
               >
-                <div className="mb-3 h-8 w-8 rounded-lg bg-[var(--accent)]/20 flex items-center justify-center">
-                  <div className="h-3 w-3 rounded-full bg-[var(--accent)]" />
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl">
+                  {s.iconoImg ? (
+                    <>
+                      <img
+                        src={s.iconoImg}
+                        alt={s.titulo}
+                        className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        style={{ filter: "brightness(1.05) saturate(0.9)" }}
+                      />
+                      <div className="absolute inset-0 bg-orange-600/10 mix-blend-multiply" />
+                    </>
+                  ) : (
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${s.gradiente} transition duration-300 group-hover:brightness-75`}
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-[var(--accent)]/0 transition duration-300 group-hover:bg-[var(--accent)]/20" />
+                  {s.badge && (
+                    <span className="absolute right-2 top-2 rounded-full bg-[var(--accent)] px-2 py-0.5 text-[10px] font-bold text-black">
+                      {s.badge}
+                    </span>
+                  )}
                 </div>
-                <h3 className="font-semibold text-[var(--brand-soft)] group-hover:text-[var(--accent)] transition">
+                <h3 className="mt-3 text-center text-sm font-semibold text-[var(--text)] group-hover:text-[var(--accent)] transition">
                   {s.titulo}
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
-                  {s.descripcion}
-                </p>
               </Link>
             ))}
           </div>
