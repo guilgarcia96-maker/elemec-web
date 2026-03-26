@@ -1,4 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "18 Años de Experiencia en Magallanes | ELEMEC",
+  description: "Desde 2007, ELEMEC brinda servicios de ingeniería y obras industriales en Punta Arenas y la Región de Magallanes. Conozca nuestra historia, misión y equipo.",
+  openGraph: {
+    title: "18 Años de Experiencia en Magallanes | ELEMEC",
+    description: "Desde 2007, ELEMEC brinda servicios de ingeniería y obras industriales en Punta Arenas y la Región de Magallanes.",
+  },
+};
 
 const valores = [
   {

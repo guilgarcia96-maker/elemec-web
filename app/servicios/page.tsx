@@ -1,5 +1,15 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { servicios } from "./serviciosData";
+
+export const metadata: Metadata = {
+  title: "Servicios Industriales en Magallanes | ELEMEC",
+  description: "Montaje industrial, mantención de equipos, ingeniería, aislación térmica y servicios básicos industriales en Punta Arenas y Magallanes. Cotiza con ELEMEC.",
+  openGraph: {
+    title: "Servicios Industriales en Magallanes | ELEMEC",
+    description: "Montaje industrial, mantención de equipos, ingeniería, aislación térmica y servicios básicos industriales en Punta Arenas y Magallanes.",
+  },
+};
 
 export default function ServiciosPage() {
   return (
