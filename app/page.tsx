@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { servicios } from "./servicios/serviciosData";
 
 const noticias = [
@@ -142,11 +143,13 @@ export default function HomePage() {
                 <div className="relative aspect-square w-full overflow-hidden rounded-xl">
                   {s.iconoImg ? (
                     <>
-                      <img
+                      <Image
                         src={s.iconoImg}
                         alt={s.titulo}
-                        className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        fill
+                        className="object-cover transition duration-300 group-hover:scale-105"
                         style={{ filter: "brightness(1.05) saturate(0.9)" }}
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                       />
                       <div className="absolute inset-0 bg-orange-600/10 mix-blend-multiply" />
                     </>

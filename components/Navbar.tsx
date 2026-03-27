@@ -30,7 +30,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-1 text-sm md:flex">
+        <nav aria-label="Navegación principal" className="hidden items-center gap-1 text-sm md:flex">
           {navLinks.map((link) => {
             const isActive =
               link.href === "/"
@@ -40,6 +40,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={isActive ? "page" : undefined}
                 className={`rounded-md px-3 py-2 transition ${
                   isActive
                     ? "bg-[var(--section-alt)] text-[var(--brand-soft)] font-semibold"
@@ -64,7 +65,7 @@ export default function Navbar() {
       </div>
 
       {/* Mobile nav strip */}
-      <div className="flex gap-1 overflow-x-auto border-t border-[var(--header-border)] px-4 py-2 md:hidden">
+      <nav aria-label="Navegación móvil" className="flex gap-1 overflow-x-auto border-t border-[var(--header-border)] px-4 py-2 md:hidden">
         {navLinks.map((link) => {
           const isActive =
             link.href === "/"
@@ -74,6 +75,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
+              aria-current={isActive ? "page" : undefined}
               className={`shrink-0 rounded px-3 py-1.5 text-xs transition ${
                 isActive
                   ? "bg-[var(--section-alt)] text-[var(--brand-soft)] font-semibold"
@@ -84,7 +86,7 @@ export default function Navbar() {
             </Link>
           );
         })}
-      </div>
+      </nav>
     </header>
   );
 }

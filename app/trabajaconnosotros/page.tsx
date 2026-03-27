@@ -163,10 +163,11 @@ export default function TrabajaConNosotrosPage() {
               onSubmit={handleSubmit}
             >
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="nombre" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Nombres *
                 </label>
                 <input
+                  id="nombre"
                   required
                   type="text"
                   name="nombre"
@@ -175,10 +176,11 @@ export default function TrabajaConNosotrosPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="email" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Email *
                 </label>
                 <input
+                  id="email"
                   required
                   type="email"
                   name="email"
@@ -187,10 +189,11 @@ export default function TrabajaConNosotrosPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="telefono" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Teléfono
                 </label>
                 <input
+                  id="telefono"
                   type="tel"
                   name="telefono"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-soft)]"
@@ -198,10 +201,11 @@ export default function TrabajaConNosotrosPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="celular" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Celular
                 </label>
                 <input
+                  id="celular"
                   type="tel"
                   name="celular"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-soft)]"
@@ -209,10 +213,10 @@ export default function TrabajaConNosotrosPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="cargo" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Cargo al que postulas
                 </label>
-                <select name="cargo" className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]">
+                <select id="cargo" name="cargo" className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]">
                   <option value="">— Selecciona —</option>
                   {perfilesBuscados.map((p) => (
                     <option key={p.cargo}>{p.cargo}</option>
@@ -221,10 +225,11 @@ export default function TrabajaConNosotrosPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="cv" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Adjuntar CV (PDF)
                 </label>
                 <input
+                  id="cv"
                   type="file"
                   name="cv"
                   accept=".pdf,.doc,.docx"
@@ -232,10 +237,11 @@ export default function TrabajaConNosotrosPage() {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="mensaje" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Comentarios *
                 </label>
                 <textarea
+                  id="mensaje"
                   rows={4}
                   name="mensaje"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-soft)]"

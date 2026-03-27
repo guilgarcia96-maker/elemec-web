@@ -299,10 +299,11 @@ export default function CotizaAquiPage() {
 
               {/* RUT — auto-format + mod-11 validation */}
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="rutEmpresa" className="mb-1 block text-sm text-[var(--text-soft)]">
                   RUT Empresa
                 </label>
                 <input
+                  id="rutEmpresa"
                   name="rutEmpresa"
                   value={rutVal}
                   onChange={(e) => {
@@ -329,10 +330,11 @@ export default function CotizaAquiPage() {
 
               {/* Móvil — auto-format +56 9 XXXX XXXX */}
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="movil" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Móvil
                 </label>
                 <input
+                  id="movil"
                   name="movil"
                   ref={movilRef}
                   defaultValue=""
@@ -354,10 +356,11 @@ export default function CotizaAquiPage() {
 
               {/* Teléfono — auto-format +56 XX XXX XXXX */}
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="telefono" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Teléfono
                 </label>
                 <input
+                  id="telefono"
                   name="telefono"
                   ref={telefonoRef}
                   defaultValue=""
@@ -392,10 +395,11 @@ export default function CotizaAquiPage() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="region" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Región
                 </label>
                 <select
+                  id="region"
                   name="region"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
                 >
@@ -407,10 +411,11 @@ export default function CotizaAquiPage() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="tipoObra" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Tipo de obra
                 </label>
                 <select
+                  id="tipoObra"
                   name="tipoObra"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
                 >
@@ -422,10 +427,11 @@ export default function CotizaAquiPage() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="modalidad" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Modalidad requerida
                 </label>
                 <select
+                  id="modalidad"
                   name="modalidad"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
                 >
@@ -437,10 +443,11 @@ export default function CotizaAquiPage() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="prioridad" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Prioridad operacional
                 </label>
                 <select
+                  id="prioridad"
                   name="prioridad"
                   className="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
                 >
@@ -453,10 +460,11 @@ export default function CotizaAquiPage() {
 
               {/* ── Servicio y alcances ─────────────────────────────────── */}
               <div className="sm:col-span-2">
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="servicioPrincipal" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Servicio principal solicitado
                 </label>
                 <select
+                  id="servicioPrincipal"
                   name="servicioPrincipal"
                   value={servicioSlug}
                   onChange={(e) => {
@@ -517,12 +525,13 @@ export default function CotizaAquiPage() {
 
               {/* Presupuesto — CLP format on blur */}
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="presupuestoDisplay" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Presupuesto estimado (CLP)
                 </label>
                 {/* hidden input carries the raw digits to FormData */}
                 <input type="hidden" name="presupuestoEstimado" value={presupuestoRaw} />
                 <input
+                  id="presupuestoDisplay"
                   type="text"
                   inputMode="numeric"
                   value={presupuestoDisplay}
@@ -546,10 +555,11 @@ export default function CotizaAquiPage() {
               />
 
               <div className="sm:col-span-2">
-                <label className="mb-1 block text-sm text-[var(--text-soft)]">
+                <label htmlFor="comentarios" className="mb-1 block text-sm text-[var(--text-soft)]">
                   Comentarios
                 </label>
                 <textarea
+                  id="comentarios"
                   name="comentarios"
                   rows={5}
                   onInput={(e) => {
@@ -565,7 +575,7 @@ export default function CotizaAquiPage() {
 
               {/* ── Adjuntos ────────────────────────────────────────────── */}
               <div className="sm:col-span-2 rounded-xl border border-[var(--border)] bg-[var(--section-alt)] p-4">
-                <label className="mb-1 block text-sm font-semibold text-[var(--text)]">
+                <label htmlFor="archivos" className="mb-1 block text-sm font-semibold text-[var(--text)]">
                   Adjuntos del cliente
                 </label>
                 <p className="mb-3 text-xs text-[var(--text-soft)]">
@@ -576,6 +586,7 @@ export default function CotizaAquiPage() {
                   </span>
                 </p>
                 <input
+                  id="archivos"
                   type="file"
                   name="archivos"
                   multiple
@@ -674,10 +685,11 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm text-[var(--text-soft)]">
+      <label htmlFor={name} className="mb-1 block text-sm text-[var(--text-soft)]">
         {label} {required && <span className="text-[var(--accent)]">*</span>}
       </label>
       <input
+        id={name}
         type={type}
         name={name}
         required={required}

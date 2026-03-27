@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[var(--header-border)] bg-[var(--section-alt)] text-[var(--text-soft)]">
+    <footer aria-label="Pie de página" className="border-t border-[var(--header-border)] bg-[var(--section-alt)] text-[var(--text-soft)]">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 md:grid-cols-3">
         {/* Columna 1: Empresa */}
         <div>
@@ -20,6 +20,7 @@ export default function Footer() {
           <p className="mt-3 text-sm">
             <a
               href="tel:+56996492917"
+              aria-label="Llamar al +56 9 9649 2917"
               className="hover:text-[var(--accent)] transition"
             >
               +56 9 9649 2917
@@ -28,6 +29,7 @@ export default function Footer() {
           <p className="text-sm">
             <a
               href="tel:+56932202001"
+              aria-label="Llamar al +56 9 3220 2001"
               className="hover:text-[var(--accent)] transition"
             >
               +56 9 3220 2001
@@ -36,6 +38,7 @@ export default function Footer() {
           <p className="text-sm">
             <a
               href="mailto:elemec.magallanes@gmail.com"
+              aria-label="Enviar email a elemec.magallanes@gmail.com"
               className="hover:text-[var(--accent)] transition"
             >
               elemec.magallanes@gmail.com
